@@ -12,8 +12,9 @@
 #include "mlir/IR/OwningOpRef.h"
 #include "mlir/Parser/Parser.h"
 
+#define GTEST_HAS_CXXABI_H_ 0
 #include "gtest/gtest.h"
-#include <llvm-20/llvm/Support/raw_ostream.h>
+#include <llvm/Support/raw_ostream.h>
 #include <mlir/IR/ValueRange.h>
 #include <mlir/IR/Visitors.h>
 #include <spdlog/spdlog.h>

@@ -357,3 +357,12 @@ target_link_libraries(python PRIVATE linenoise cxxopts python-cpp project_option
 add_executable(freeze utilities/freeze.cpp)
 target_link_libraries(freeze PRIVATE python-cpp cxxopts project_options project_warnings)
 target_include_directories(freeze SYSTEM PRIVATE ${MLIR_INCLUDE_DIRS})
+
+# Compiler Frontend
+add_library(pylang-compiler OBJECT compiler/Compiler.hpp)
+target_include_directories(pylang-compiler SYSTEM PRIVATE ${LLVM_INCLUDE_DIRS})
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+target_compile_definitions(pylang-compiler PRIVATE ${LLVM_DEFINITIONS_LIST})
+
+llvm_map_components_to_libnames(llvm_libs core irreader bitwriter support)
+target_link_libraries(pylang-compiler PRIVATE ${llvm_libs})
