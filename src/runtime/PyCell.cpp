@@ -3,6 +3,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -26,7 +27,7 @@ PyCell::PyCell(const Value &content)
 
 PyResult<PyCell *> PyCell::create()
 {
-	auto *obj = VirtualMachine::the().heap().allocate<PyCell>(Value{ nullptr });
+	auto *obj = PYLANG_ALLOC(PyCell, Value{ nullptr });
 	if (!obj) { return Err(memory_error(sizeof(PyCell))); }
 	return Ok(obj);
 }
@@ -34,7 +35,7 @@ PyResult<PyCell *> PyCell::create()
 PyResult<PyCell *> PyCell::create(const Value &content)
 {
 	if (std::holds_alternative<PyObject *>(content)) { ASSERT(std::get<PyObject *>(content)); }
-	auto *obj = VirtualMachine::the().heap().allocate<PyCell>(content);
+	auto *obj = PYLANG_ALLOC(PyCell, content);
 	if (!obj) { return Err(memory_error(sizeof(PyCell))); }
 	return Ok(obj);
 }

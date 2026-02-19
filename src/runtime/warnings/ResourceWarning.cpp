@@ -1,4 +1,5 @@
 #include "runtime/warnings/ResourceWarning.hpp"
+#include "runtime/compat.hpp"
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
 #include "runtime/warnings/Warning.hpp"
@@ -12,8 +13,8 @@ ResourceWarning::ResourceWarning(PyType *, PyTuple *args) : Warning(types::resou
 
 PyResult<ResourceWarning *> ResourceWarning::create(PyType *type, PyTuple *args)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *result = heap.allocate<ResourceWarning>(type, args);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *result = PYLANG_ALLOC(ResourceWarning, type, args);
 	if (!result) { return Err(memory_error(sizeof(Warning))); }
 	return Ok(result);
 }

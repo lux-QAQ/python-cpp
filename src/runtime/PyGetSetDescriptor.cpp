@@ -8,6 +8,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -40,7 +41,7 @@ PyResult<PyGetSetDescriptor *>
 	PyGetSetDescriptor::create(PyString *name, PyType *underlying_type, PropertyDefinition &getset)
 {
 	auto *obj =
-		VirtualMachine::the().heap().allocate<PyGetSetDescriptor>(name, underlying_type, getset);
+		PYLANG_ALLOC(PyGetSetDescriptor, name, underlying_type, getset);
 	if (!obj) { return Err(memory_error(sizeof(PyGetSetDescriptor))); }
 	return Ok(obj);
 }

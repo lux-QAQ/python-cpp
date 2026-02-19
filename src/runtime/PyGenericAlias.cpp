@@ -3,6 +3,7 @@
 #include "PyString.hpp"
 #include "PyTuple.hpp"
 #include "RuntimeError.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -31,14 +32,14 @@ PyGenericAlias::PyGenericAlias(PyObject *origin, PyTuple *args, PyObject *parame
 PyResult<PyGenericAlias *>
 	PyGenericAlias::create(PyObject *origin, PyObject *args, PyObject *parameters)
 {
-	auto &heap = VirtualMachine::the().heap();
+	// auto &heap = VirtualMachine::the().heap();
 	auto *args_as_tuple = as<PyTuple>(args);
 	if (!args_as_tuple) {
 		auto args_ = PyTuple::create(args);
 		if (args_.is_err()) return Err(args_.unwrap_err());
 		args_as_tuple = args_.unwrap();
 	}
-	if (auto *obj = heap.allocate<PyGenericAlias>(origin, args_as_tuple, parameters)) {
+	if (auto *obj = PYLANG_ALLOC(PyGenericAlias, origin, args_as_tuple, parameters)) {
 		return Ok(obj);
 	}
 	return Err(memory_error(sizeof(PyGenericAlias)));

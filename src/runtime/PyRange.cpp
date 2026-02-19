@@ -10,6 +10,7 @@
 #include "runtime/TypeError.hpp"
 #include "runtime/Value.hpp"
 #include "runtime/ValueError.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -32,7 +33,7 @@ PyResult<PyObject *> PyRange::__new__(const PyType *type, PyTuple *args, PyDict 
 					return Err(type_error("'{}' object cannot be interpreted as an integer",
 						arg1.unwrap()->type()->name()));
 				}
-				return VirtualMachine::the().heap().allocate<PyRange>(stop);
+				return PYLANG_ALLOC(PyRange, stop);
 			} else {
 				return Err(arg1.unwrap_err());
 			}
@@ -51,7 +52,7 @@ PyResult<PyObject *> PyRange::__new__(const PyType *type, PyTuple *args, PyDict 
 				return Err(type_error("'{}' object cannot be interpreted as an integer",
 					stop_.unwrap()->type()->name()));
 			}
-			return VirtualMachine::the().heap().allocate<PyRange>(start, stop);
+			return PYLANG_ALLOC(PyRange, start, stop);
 		} else if (args->size() == 3) {
 			auto start_ = PyObject::from(args->elements()[0]);
 			if (start_.is_err()) return Err(start_.unwrap_err());
@@ -74,7 +75,7 @@ PyResult<PyObject *> PyRange::__new__(const PyType *type, PyTuple *args, PyDict 
 				return Err(type_error("'{}' object cannot be interpreted as an integer",
 					step_.unwrap()->type()->name()));
 			}
-			return VirtualMachine::the().heap().allocate<PyRange>(start, stop, step);
+			return PYLANG_ALLOC(PyRange, start, stop, step);
 		}
 		ASSERT_NOT_REACHED();
 	}();
@@ -119,8 +120,8 @@ PyResult<PyObject *> PyRange::__repr__() const { return PyString::create(to_stri
 
 PyResult<PyObject *> PyRange::__iter__() const
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *obj = heap.allocate<PyRangeIterator>(*this);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *obj = PYLANG_ALLOC(PyRangeIterator, *this);
 	if (!obj) { return Err(memory_error(sizeof(PyRangeIterator))); }
 	return Ok(obj);
 }
@@ -134,7 +135,7 @@ PyResult<PyObject *> PyRange::__reversed__() const
 	BigIntType stop = m_start - m_step;
 	BigIntType step = -m_step;
 
-	auto *range = VirtualMachine::the().heap().allocate<PyRange>(start, stop, step);
+	auto *range = PYLANG_ALLOC(PyRange, start, stop, step);
 	if (!range) { return Err(memory_error(sizeof(PyRange))); }
 
 	return range->__iter__();
@@ -171,7 +172,7 @@ PyResult<PyObject *> PyRange::__getitem__(PyObject *key) const
 		BigIntType new_start = m_start + (start * m_step);
 		BigIntType new_stop = m_start + (stop * m_step);
 
-		auto *obj = VirtualMachine::the().heap().allocate<PyRange>(new_start, new_stop, new_step);
+		auto *obj = PYLANG_ALLOC(PyRange, new_start, new_stop, new_step);
 		if (!obj) { return Err(memory_error(sizeof(PyRange))); }
 		return Ok(obj);
 	}

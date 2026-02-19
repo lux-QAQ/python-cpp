@@ -5,6 +5,7 @@
 #include "PyString.hpp"
 #include "PyTuple.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -24,9 +25,8 @@ class LookupError : public Exception
   private:
 	LookupError(PyTuple *msg);
 
-	static LookupError *create(PyTuple *args)
-	{
-                return PYLANG_ALLOC(LookupError, args);
+	static LookupError *create(PyTuple *args) { return PYLANG_ALLOC(LookupError, args); }
+
   public:
 	static std::function<std::unique_ptr<TypePrototype>()> type_factory();
 

@@ -1,5 +1,6 @@
 #include "PyNone.hpp"
 #include "PyString.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -26,8 +27,8 @@ PyResult<bool> PyNone::true_() { return Ok(false); }
 
 PyNone *PyNone::create()
 {
-	auto &heap = VirtualMachine::the().heap();
-	return heap.allocate_static<PyNone>();
+	// auto &heap = VirtualMachine::the().heap();
+	return PYLANG_ALLOC(PyNone, );
 }
 
 PyType *PyNone::static_type() const { return types::none(); }

@@ -4,6 +4,7 @@
 #include "StopIteration.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -15,7 +16,7 @@ PyZip::PyZip(std::vector<PyObject *> &&iterators)
 
 PyResult<PyObject *> PyZip::create(PyTuple *iterables)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyZip>(std::vector<PyObject *>{});
+	auto *result = PYLANG_ALLOC(PyZip, std::vector<PyObject *>{});
 	if (!result) { return Err(memory_error(sizeof(PyZip))); }
 
 	// result keeps track of the iterators during GC

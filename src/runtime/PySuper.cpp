@@ -9,6 +9,7 @@
 #include "PyType.hpp"
 #include "RuntimeError.hpp"
 #include "interpreter/Interpreter.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -26,8 +27,8 @@ PySuper::PySuper(PyType *type, PyObject *object, PyType *object_type)
 PyResult<PyObject *> PySuper::__new__(const PyType *type, PyTuple *, PyDict *)
 {
 	ASSERT(type == types::super());
-	auto &heap = VirtualMachine::the().heap();
-	auto *result = heap.allocate<PySuper>();
+	// auto &heap = VirtualMachine::the().heap();
+	auto *result = PYLANG_ALLOC(PySuper, );
 	if (!result) { return Err(memory_error(sizeof(PySuper))); }
 	return Ok(result);
 }

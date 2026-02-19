@@ -9,6 +9,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -82,7 +83,7 @@ std::string PyProperty::to_string() const
 PyResult<PyProperty *>
 	PyProperty::create(PyObject *fget, PyObject *fset, PyObject *fdel, PyObject *name)
 {
-	auto *obj = VirtualMachine::the().heap().allocate<PyProperty>(fget, fset, fdel, name);
+	auto *obj = PYLANG_ALLOC(PyProperty, fget, fset, fdel, name);
 	if (!obj) return Err(memory_error(sizeof(PyProperty)));
 	return Ok(obj);
 }

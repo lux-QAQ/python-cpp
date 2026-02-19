@@ -6,6 +6,7 @@
 #include "interpreter/Interpreter.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -39,7 +40,7 @@ PyResult<PyMethodDescriptor *> PyMethodDescriptor::create(PyString *name,
 	MethodDefinition &method,
 	std::vector<PyObject *> &&captures)
 {
-	auto *obj = VirtualMachine::the().heap().allocate<PyMethodDescriptor>(
+	auto *obj = PYLANG_ALLOC(PyMethodDescriptor, 
 		name, underlying_type, method, std::move(captures));
 	if (!obj) { return Err(memory_error(sizeof(PyMethodDescriptor))); }
 	return Ok(obj);

@@ -2,6 +2,7 @@
 #include "MemoryError.hpp"
 #include "PySet.hpp"
 #include "StopIteration.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -28,7 +29,7 @@ PyFrozenSet::PyFrozenSet(SetType elements) : PyFrozenSet() { m_elements = std::m
 
 PyResult<PyFrozenSet *> PyFrozenSet::create(SetType elements)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyFrozenSet>(elements);
+	auto *result = PYLANG_ALLOC(PyFrozenSet, elements);
 	if (!result) { return Err(memory_error(sizeof(PyFrozenSet))); }
 	return Ok(result);
 }
@@ -40,8 +41,8 @@ namespace {
 PyResult<PyFrozenSet *> PyFrozenSet::create()
 {
 	if (!s_frozen_set) {
-		auto &heap = VirtualMachine::the().heap();
-		s_frozen_set = heap.allocate_static<PyFrozenSet>();
+		// auto &heap = VirtualMachine::the().heap();
+		s_frozen_set = PYLANG_ALLOC(PyFrozenSet, );
 		ASSERT(s_frozen_set);
 	}
 	return Ok(s_frozen_set);
@@ -139,8 +140,8 @@ PyResult<PyObject *> PyFrozenSet::__repr__() const { return PyString::create(to_
 
 PyResult<PyObject *> PyFrozenSet::__iter__() const
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *it = heap.allocate<PySetIterator>(*this);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *it = PYLANG_ALLOC(PySetIterator, *this);
 	if (!it) { return Err(memory_error(sizeof(PySetIterator))); }
 	return Ok(it);
 }

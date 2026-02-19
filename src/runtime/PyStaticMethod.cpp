@@ -7,6 +7,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -42,7 +43,7 @@ PyStaticMethod::PyStaticMethod(PyType *underlying_type, PyObject *function)
 
 PyResult<PyStaticMethod *> PyStaticMethod::create(PyObject *function)
 {
-	auto result = VirtualMachine::the().heap().allocate<PyStaticMethod>(nullptr, function);
+	auto result = PYLANG_ALLOC(PyStaticMethod, nullptr, function);
 	if (!result) { return Err(memory_error(sizeof(PyStaticMethod))); }
 	return Ok(result);
 }

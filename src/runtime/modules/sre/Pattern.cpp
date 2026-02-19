@@ -15,6 +15,7 @@
 #include "vm/VM.hpp"
 #include <cstdint>
 #include <limits>
+#include "runtime/compat.hpp"
 
 using namespace py;
 using namespace py::sre;
@@ -73,7 +74,7 @@ PyResult<Pattern *> Pattern::create(PyObject *pattern,
 		}
 	}
 
-	auto obj = VirtualMachine::the().heap().allocate<Pattern>(
+	auto obj = PYLANG_ALLOC(Pattern, 
 		groups, groupindex, indexgroup, flags, pattern, std::move(isbytes), std::move(code_vec));
 	if (!obj) { return Err(memory_error(sizeof(Pattern))); }
 	return Ok(obj);

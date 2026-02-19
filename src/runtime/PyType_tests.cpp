@@ -3,6 +3,7 @@
 #include "PyType.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 #include "gtest/gtest.h"
 
@@ -10,7 +11,8 @@ using namespace py;
 
 TEST(PyType, ObjectClassParent)
 {
-	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	// [[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	PYLANG_GC_PAUSE_SCOPE()
 	const auto &bases = types::object()->underlying_type().__bases__;
 	EXPECT_TRUE(bases.empty());
 
@@ -37,7 +39,8 @@ TypePrototype *new_type(const std::string &name, std::vector<PyType *> bases)
 
 TEST(PyType, InheritanceTriangle)
 {
-	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	//[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	PYLANG_GC_PAUSE_SCOPE()
 	PyType *B1 =
 		PyType::initialize(std::unique_ptr<TypePrototype>(new_type("B1", { types::object() })));
 	PyType *B2 =
@@ -58,7 +61,8 @@ TEST(PyType, InheritanceTriangle)
 
 TEST(PyType, InheritanceDiamond)
 {
-	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	// [[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	PYLANG_GC_PAUSE_SCOPE()
 	PyType *A =
 		PyType::initialize(std::unique_ptr<TypePrototype>(new_type("A", { types::object() })));
 	PyType *B1 = PyType::initialize(std::unique_ptr<TypePrototype>(new_type("B1", { A })));

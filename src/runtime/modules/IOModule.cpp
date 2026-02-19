@@ -24,6 +24,7 @@
 #if defined(__GLIBCXX__) || defined(__GLIBCPP__)
 #include <ext/stdio_filebuf.h>
 #endif
+#include "runtime/compat.hpp"
 #include <filesystem>
 #include <fstream>
 
@@ -126,8 +127,8 @@ class IOBase : public PyBaseObject
 
 	static PyResult<IOBase *> create(const PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		auto *result = heap.allocate<IOBase>(type);
+		// auto &heap = VirtualMachine::the().heap();
+		auto *result = PYLANG_ALLOC(IOBase, type);
 		if (!result) { return Err(memory_error(sizeof(IOBase))); }
 		return Ok(result);
 	}
@@ -508,8 +509,8 @@ class RawIOBase : public IOBase
 
 	static PyResult<RawIOBase *> create(const PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		auto *result = heap.allocate<RawIOBase>(type);
+		// auto &heap = VirtualMachine::the().heap();
+		auto *result = PYLANG_ALLOC(RawIOBase, type);
 		if (!result) { return Err(memory_error(sizeof(RawIOBase))); }
 		return Ok(result);
 	}
@@ -622,8 +623,8 @@ class BufferedIOBase : public IOBase
 
 	static PyResult<BufferedIOBase *> create(const PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		auto *result = heap.allocate<BufferedIOBase>(const_cast<PyType *>(type));
+		// auto &heap = VirtualMachine::the().heap();
+		auto *result = PYLANG_ALLOC(BufferedIOBase, const_cast<PyType *>(type));
 		if (!result) { return Err(memory_error(sizeof(BufferedIOBase))); }
 		return Ok(result);
 	}
@@ -991,15 +992,15 @@ class BufferedReader
   protected:
 	static PyResult<BufferedReader *> create(PyType *type, PyObject *raw, int buffer_size)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedReader>(type, raw, buffer_size)) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedReader, type, raw, buffer_size)) { return Ok(obj); }
 		return Err(memory_error(sizeof(BufferedReader)));
 	}
 
 	static PyResult<BufferedReader *> create(PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedReader>(type)) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedReader, type)) { return Ok(obj); }
 		return Err(memory_error(sizeof(BufferedReader)));
 	}
 
@@ -1012,8 +1013,8 @@ class BufferedReader
 
 	static PyResult<BufferedReader *> create(PyObject *raw, int buffer_size)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedReader>(s_io_buffered_reader, raw, buffer_size)) {
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedReader, s_io_buffered_reader, raw, buffer_size)) {
 			return Ok(obj);
 		}
 		return Err(memory_error(sizeof(BufferedReader)));
@@ -1250,15 +1251,15 @@ class BufferedWriter
   protected:
 	static PyResult<BufferedWriter *> create(PyType *type, PyObject *raw, int buffer_size)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedWriter>(type, raw, buffer_size)) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedWriter, type, raw, buffer_size)) { return Ok(obj); }
 		return Err(memory_error(sizeof(BufferedWriter)));
 	}
 
 	static PyResult<BufferedWriter *> create(PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedWriter>(type)) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedWriter, type)) { return Ok(obj); }
 		return Err(memory_error(sizeof(BufferedWriter)));
 	}
 
@@ -1275,8 +1276,8 @@ class BufferedWriter
 
 	static PyResult<BufferedWriter *> create(PyObject *raw, int buffer_size)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedWriter>(s_io_buffered_reader, raw, buffer_size)) {
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedWriter, s_io_buffered_reader, raw, buffer_size)) {
 			return Ok(obj);
 		}
 		return Err(memory_error(sizeof(BufferedWriter)));
@@ -1384,8 +1385,8 @@ class BufferedRWPair : public BufferedIOBase
   protected:
 	static PyResult<BufferedRWPair *> create(PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedRWPair>(type)) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedRWPair, type)) { return Ok(obj); }
 		return Err(memory_error(sizeof(BufferedRWPair)));
 	}
 
@@ -1576,15 +1577,15 @@ class BufferedRandom
   protected:
 	static PyResult<BufferedRandom *> create(PyType *type, PyObject *raw, int buffer_size)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedRandom>(type, raw, buffer_size)) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedRandom, type, raw, buffer_size)) { return Ok(obj); }
 		return Err(memory_error(sizeof(BufferedRandom)));
 	}
 
 	static PyResult<BufferedRandom *> create(PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedRandom>(type)) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedRandom, type)) { return Ok(obj); }
 		return Err(memory_error(sizeof(BufferedRandom)));
 	}
 
@@ -1601,8 +1602,8 @@ class BufferedRandom
 
 	static PyResult<BufferedRandom *> create(PyObject *raw, int buffer_size)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BufferedRandom>(s_io_buffered_reader, raw, buffer_size)) {
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BufferedRandom, s_io_buffered_reader, raw, buffer_size)) {
 			return Ok(obj);
 		}
 		return Err(memory_error(sizeof(BufferedRandom)));
@@ -1711,8 +1712,8 @@ class BytesIO : public BufferedIOBase
 
 	static PyResult<PyObject *> create(PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<BytesIO>(type)) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(BytesIO, type)) { return Ok(obj); }
 		return Err(memory_error(sizeof(BytesIO)));
 	}
 
@@ -1950,8 +1951,8 @@ class FileIO : public RawIOBase
 
 	static PyResult<PyObject *> __new__(const PyType *type, PyTuple *, PyDict *)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<FileIO>(type)) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(FileIO, type)) { return Ok(obj); }
 		return Err(memory_error(sizeof(FileIO)));
 	}
 
@@ -2218,8 +2219,8 @@ class TextIOBase : public IOBase
 
 	static PyResult<TextIOBase *> create(const PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		auto *result = heap.allocate<TextIOBase>(const_cast<PyType *>(type));
+		// auto &heap = VirtualMachine::the().heap();
+		auto *result = PYLANG_ALLOC(TextIOBase, const_cast<PyType *>(type));
 		if (!result) { return Err(memory_error(sizeof(TextIOBase))); }
 		return Ok(result);
 	}
@@ -2298,8 +2299,8 @@ class IncrementalNewlineDecoder : public PyBaseObject
 
 	static PyResult<IncrementalNewlineDecoder *> create(const PyType *type)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		auto *result = heap.allocate<IncrementalNewlineDecoder>(const_cast<PyType *>(type));
+		// auto &heap = VirtualMachine::the().heap();
+		auto *result = PYLANG_ALLOC(IncrementalNewlineDecoder, const_cast<PyType *>(type));
 		if (!result) { return Err(memory_error(sizeof(IncrementalNewlineDecoder))); }
 		return Ok(result);
 	}
@@ -2369,8 +2370,8 @@ class StringIO : public TextIOBase
 
 	static PyResult<PyObject *> __new__(const PyType *type, PyTuple *, PyDict *)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<StringIO>(const_cast<PyType *>(type))) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(StringIO, const_cast<PyType *>(type))) { return Ok(obj); }
 		return Err(memory_error(sizeof(StringIO)));
 	}
 
@@ -2741,8 +2742,8 @@ class TextIOWrapper : public TextIOBase
 		bool write_through)
 	{
 		ASSERT(s_io_textiowrapper);
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<TextIOWrapper>(s_io_textiowrapper)) {
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(TextIOWrapper, s_io_textiowrapper)) {
 			auto result =
 				obj->init(buffer, encoding, errors, newline, line_buffering, write_through);
 			if (result.is_err()) { return Err(result.unwrap_err()); }
@@ -2753,10 +2754,8 @@ class TextIOWrapper : public TextIOBase
 
 	static PyResult<PyObject *> __new__(const PyType *type, PyTuple *, PyDict *)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<TextIOWrapper>(const_cast<PyType *>(type))) {
-			return Ok(obj);
-		}
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(TextIOWrapper, const_cast<PyType *>(type))) { return Ok(obj); }
 		return Err(memory_error(sizeof(TextIOWrapper)));
 	}
 
@@ -2980,8 +2979,8 @@ class BlockingIOError : public OSError
 
 	static BlockingIOError *create(PyTuple *args)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		return heap.allocate<BlockingIOError>(args);
+		// auto &heap = VirtualMachine::the().heap();
+		return PYLANG_ALLOC(BlockingIOError, args);
 	}
 
   public:
@@ -3036,28 +3035,26 @@ PyModule *io_module()
 	(void)BlockingIOError::register_type(s_io_module);
 
 	s_io_module->add_symbol(PyString::create("open").unwrap(),
-		VirtualMachine::the().heap().allocate<PyNativeFunction>(
-			"open", [](PyTuple *args, PyDict *kwargs) {
-				ASSERT(!kwargs || kwargs->map().empty());
-				ASSERT(args && args->elements().size() == 2);
-				auto arg0 = PyObject::from(args->elements()[0]).unwrap();
-				auto arg1 = PyObject::from(args->elements()[1]).unwrap();
+		PYLANG_ALLOC(PyNativeFunction, "open", [](PyTuple *args, PyDict *kwargs) {
+			ASSERT(!kwargs || kwargs->map().empty());
+			ASSERT(args && args->elements().size() == 2);
+			auto arg0 = PyObject::from(args->elements()[0]).unwrap();
+			auto arg1 = PyObject::from(args->elements()[1]).unwrap();
 
-				ASSERT(as<PyString>(arg1));
-				const std::string rawmode = as<PyString>(arg1)->value();
+			ASSERT(as<PyString>(arg1));
+			const std::string rawmode = as<PyString>(arg1)->value();
 
-				return open(arg0, rawmode);
-			}));
+			return open(arg0, rawmode);
+		}));
 
 	s_io_module->add_symbol(PyString::create("open_code").unwrap(),
-		VirtualMachine::the().heap().allocate<PyNativeFunction>(
-			"open_code", [](PyTuple *args, PyDict *kwargs) {
-				ASSERT(!kwargs || kwargs->map().empty());
-				ASSERT(args && args->elements().size() == 1);
-				auto arg0 = PyObject::from(args->elements()[0]).unwrap();
+		PYLANG_ALLOC(PyNativeFunction, "open_code", [](PyTuple *args, PyDict *kwargs) {
+			ASSERT(!kwargs || kwargs->map().empty());
+			ASSERT(args && args->elements().size() == 1);
+			auto arg0 = PyObject::from(args->elements()[0]).unwrap();
 
-				return open(arg0, "rb");
-			}));
+			return open(arg0, "rb");
+		}));
 
 	// C++ standard streams currently do not provide an API to get default buffer size, and C's
 	// BUFSIZE doesn't have to be respected

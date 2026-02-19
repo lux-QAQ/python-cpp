@@ -8,6 +8,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -53,7 +54,7 @@ std::string PyClassMethod::to_string() const
 
 PyResult<PyClassMethod *> PyClassMethod::create()
 {
-	auto *obj = VirtualMachine::the().heap().allocate<PyClassMethod>();
+	auto *obj = PYLANG_ALLOC(PyClassMethod, );
 	if (!obj) { return Err(memory_error(sizeof(PyClassMethod))); }
 	return Ok(obj);
 }

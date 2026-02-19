@@ -24,6 +24,7 @@
 #include <iterator>
 #include <memory>
 #include <string_view>
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -221,7 +222,7 @@ PyResult<PyObject *> PyMemoryView::create(PyObject *object)
 		auto other_view = create_view(view->m_view);
 
 		auto obj =
-			VirtualMachine::the().heap().allocate<PyMemoryView>(std::move(other_view).unwrap());
+			PYLANG_ALLOC(PyMemoryView, std::move(other_view).unwrap());
 		if (!obj) { return Err(memory_error(sizeof(PyMemoryView))); }
 
 		obj->m_managed_buffer = view->m_managed_buffer;
@@ -234,7 +235,7 @@ PyResult<PyObject *> PyMemoryView::create(PyObject *object)
 		if (result.is_err()) { return Err(result.unwrap_err()); }
 		auto view = create_view(managed_buffer->m_main_view);
 
-		auto obj = VirtualMachine::the().heap().allocate<PyMemoryView>(std::move(view).unwrap());
+		auto obj = PYLANG_ALLOC(PyMemoryView, std::move(view).unwrap());
 		if (!obj) { return Err(memory_error(sizeof(PyMemoryView))); }
 
 		obj->m_managed_buffer = std::move(managed_buffer);
@@ -310,7 +311,7 @@ PyResult<PyObject *> PyMemoryView::cast(PyTuple *args, PyDict *kwargs)
 	new_view.shape = { new_view.len / new_view.itemsize };
 	new_view.strides = { new_view.itemsize };
 
-	auto obj = VirtualMachine::the().heap().allocate<PyMemoryView>(std::move(new_view));
+	auto obj = PYLANG_ALLOC(PyMemoryView, std::move(new_view));
 	if (!obj) { return Err(memory_error(sizeof(PyMemoryView))); }
 
 	obj->m_managed_buffer = m_managed_buffer;

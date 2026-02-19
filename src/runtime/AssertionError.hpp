@@ -1,11 +1,12 @@
 #pragma once
 
+
 #include "Exception.hpp"
 #include "MemoryError.hpp"
 #include "PyString.hpp"
 #include "PyTuple.hpp"
+#include "runtime/compat.hpp"
 #include "vm/VM.hpp"
-
 namespace py {
 
 class AssertionError : public Exception
@@ -21,8 +22,9 @@ class AssertionError : public Exception
 
 	static PyResult<AssertionError *> create(PyTuple *args)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		auto result = heap.allocate<AssertionError>(args);
+		// auto &heap = VirtualMachine::the().heap();
+		// auto result = heap.allocate<AssertionError>(args);
+		auto *result = PYLANG_ALLOC(AssertionError, args);
 		if (!result) { return Err(memory_error(sizeof(AssertionError))); }
 		return Ok(result);
 	}

@@ -21,6 +21,7 @@
 #include "utilities.hpp"
 #include "vm/VM.hpp"
 
+#include "runtime/compat.hpp"
 #include <algorithm>
 
 namespace py {
@@ -45,14 +46,14 @@ PySet::PySet(SetType elements) : PySet() { m_elements = std::move(elements); }
 
 PyResult<PySet *> PySet::create(SetType elements)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PySet>(elements);
+	auto *result = PYLANG_ALLOC(PySet, elements);
 	if (!result) { return Err(memory_error(sizeof(PySet))); }
 	return Ok(result);
 }
 
 PyResult<PySet *> PySet::create()
 {
-	auto *result = VirtualMachine::the().heap().allocate<PySet>();
+	auto *result = PYLANG_ALLOC(PySet, );
 	if (!result) { return Err(memory_error(sizeof(PySet))); }
 	return Ok(result);
 }
@@ -287,8 +288,8 @@ PyResult<PyObject *> PySet::__repr__() const
 
 PyResult<PyObject *> PySet::__iter__() const
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *it = heap.allocate<PySetIterator>(*this);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *it = PYLANG_ALLOC(PySetIterator, *this);
 	if (!it) { return Err(memory_error(sizeof(PySetIterator))); }
 	return Ok(it);
 }

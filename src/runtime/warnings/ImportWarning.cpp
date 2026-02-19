@@ -1,5 +1,6 @@
 #include "ImportWarning.hpp"
 #include "runtime/PyString.hpp"
+#include "runtime/compat.hpp"
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
 
@@ -11,8 +12,8 @@ ImportWarning::ImportWarning(PyType *type, PyTuple *args) : Warning(type, args) 
 
 PyResult<ImportWarning *> ImportWarning::create(PyType *type, PyTuple *args)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *result = heap.allocate<ImportWarning>(type, args);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *result = PYLANG_ALLOC(ImportWarning, type, args);
 	if (!result) { return Err(memory_error(sizeof(ImportWarning))); }
 	return Ok(result);
 }

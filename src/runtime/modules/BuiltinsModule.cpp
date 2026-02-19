@@ -40,6 +40,7 @@
 #include "runtime/types/builtin.hpp"
 #include "runtime/warnings/ImportWarning.hpp"
 #include "runtime/warnings/Warning.hpp"
+#include "runtime/compat.hpp"
 
 #include "executable/Mangler.hpp"
 #include "executable/Program.hpp"
@@ -57,6 +58,7 @@
 
 #include "vm/VM.hpp"
 
+#include "runtime/compat.hpp"
 #include "utilities.hpp"
 #include <algorithm>
 #include <variant>
@@ -1416,8 +1418,8 @@ PyModule *builtins_module(Interpreter &interpreter)
 		return s_builtin_module;
 	}
 
-	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
-
+	//[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	PYLANG_GC_PAUSE_SCOPE()
 	auto types = builtin_types();
 	auto exceptions = builtin_exceptions();
 
@@ -1435,176 +1437,173 @@ PyModule *builtins_module(Interpreter &interpreter)
 	}
 
 	s_builtin_module->add_symbol(PyString::create("__build_class__").unwrap(),
-		heap.allocate<PyNativeFunction>(
-			"__build_class__", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(
+			PyNativeFunction, "__build_class__", [&interpreter](PyTuple *args, PyDict *kwargs) {
 				return build_class(args, kwargs, interpreter);
 			}));
 
 	s_builtin_module->add_symbol(PyString::create("__import__").unwrap(),
-		heap.allocate<PyNativeFunction>(
-			"__import__", [&interpreter](PyTuple *args, PyDict *kwargs) {
-				return import(args, kwargs, interpreter);
-			}));
+		PYLANG_ALLOC(PyNativeFunction, "__import__", [&interpreter](PyTuple *args, PyDict *kwargs) {
+			return import(args, kwargs, interpreter);
+		}));
 
 	s_builtin_module->add_symbol(PyString::create("abs").unwrap(),
-		heap.allocate<PyNativeFunction>("abs", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "abs", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return abs(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("all").unwrap(),
-		heap.allocate<PyNativeFunction>("all", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "all", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return all(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("any").unwrap(),
-		heap.allocate<PyNativeFunction>("any", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "any", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return any(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("dir").unwrap(),
-		heap.allocate<PyNativeFunction>("dir", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "dir", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return dir(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("getattr").unwrap(),
-		heap.allocate<PyNativeFunction>("getattr", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "getattr", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return getattr(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("globals").unwrap(),
-		heap.allocate<PyNativeFunction>("globals", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "globals", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return globals(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("hasattr").unwrap(),
-		heap.allocate<PyNativeFunction>("hasattr", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "hasattr", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return hasattr(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("hash").unwrap(),
-		heap.allocate<PyNativeFunction>("hash", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "hash", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return hash(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("hex").unwrap(),
-		heap.allocate<PyNativeFunction>("hex", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "hex", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return hex(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("id").unwrap(),
-		heap.allocate<PyNativeFunction>("id", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "id", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return id(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("iter").unwrap(),
-		heap.allocate<PyNativeFunction>("iter", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "iter", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return iter(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("isinstance").unwrap(),
-		heap.allocate<PyNativeFunction>(
-			"isinstance", [&interpreter](PyTuple *args, PyDict *kwargs) {
-				return isinstance(args, kwargs, interpreter);
-			}));
+		PYLANG_ALLOC(PyNativeFunction, "isinstance", [&interpreter](PyTuple *args, PyDict *kwargs) {
+			return isinstance(args, kwargs, interpreter);
+		}));
 
 	s_builtin_module->add_symbol(PyString::create("issubclass").unwrap(),
-		heap.allocate<PyNativeFunction>(
-			"issubclass", [&interpreter](PyTuple *args, PyDict *kwargs) {
-				return issubclass(args, kwargs, interpreter);
-			}));
+		PYLANG_ALLOC(PyNativeFunction, "issubclass", [&interpreter](PyTuple *args, PyDict *kwargs) {
+			return issubclass(args, kwargs, interpreter);
+		}));
 
 	s_builtin_module->add_symbol(PyString::create("locals").unwrap(),
-		heap.allocate<PyNativeFunction>("locals", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "locals", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return locals(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("len").unwrap(),
-		heap.allocate<PyNativeFunction>("len", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "len", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return len(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("next").unwrap(),
-		heap.allocate<PyNativeFunction>("next", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "next", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return next(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("ord").unwrap(),
-		heap.allocate<PyNativeFunction>("ord", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "ord", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return ord(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("chr").unwrap(),
-		heap.allocate<PyNativeFunction>("chr", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "chr", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return chr(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("print").unwrap(),
-		heap.allocate<PyNativeFunction>("print", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "print", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return print(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("repr").unwrap(),
-		heap.allocate<PyNativeFunction>("repr", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "repr", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return repr(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("setattr").unwrap(),
-		heap.allocate<PyNativeFunction>("setattr", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "setattr", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return setattr(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("exec").unwrap(),
-		heap.allocate<PyNativeFunction>("exec", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "exec", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return exec(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("callable").unwrap(),
-		heap.allocate<PyNativeFunction>("callable", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "callable", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return callable(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("compile").unwrap(),
-		heap.allocate<PyNativeFunction>("compile", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "compile", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return compile(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("max").unwrap(),
-		heap.allocate<PyNativeFunction>("max", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "max", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return max(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("min").unwrap(),
-		heap.allocate<PyNativeFunction>("min", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "min", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return min(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("eval").unwrap(),
-		heap.allocate<PyNativeFunction>("eval", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "eval", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return eval(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("ascii").unwrap(),
-		heap.allocate<PyNativeFunction>("ascii", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "ascii", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return ascii(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("sorted").unwrap(),
-		heap.allocate<PyNativeFunction>("sorted", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "sorted", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return sorted(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("vars").unwrap(),
-		heap.allocate<PyNativeFunction>("vars", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "vars", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return vars(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("divmod").unwrap(),
-		heap.allocate<PyNativeFunction>("divmod", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "divmod", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return divmod(args, kwargs, interpreter);
 		}));
 
 	s_builtin_module->add_symbol(PyString::create("round").unwrap(),
-		heap.allocate<PyNativeFunction>("round", [&interpreter](PyTuple *args, PyDict *kwargs) {
+		PYLANG_ALLOC(PyNativeFunction, "round", [&interpreter](PyTuple *args, PyDict *kwargs) {
 			return round(args, kwargs, interpreter);
 		}));
 

@@ -4,6 +4,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -65,7 +66,7 @@ PyResult<PyObject *> PyBuiltInMethod::__call__(PyTuple *args, PyDict *kwargs)
 PyResult<PyBuiltInMethod *> PyBuiltInMethod::create(MethodDefinition &method_definition,
 	PyObject *self)
 {
-	auto *obj = VirtualMachine::the().heap().allocate<PyBuiltInMethod>(method_definition, self);
+	auto *obj = PYLANG_ALLOC(PyBuiltInMethod, method_definition, self);
 	if (!obj) { return Err(memory_error(sizeof(PyBuiltInMethod))); }
 	return Ok(obj);
 }

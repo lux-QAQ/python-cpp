@@ -21,6 +21,7 @@
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
 
+#include "runtime/compat.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -55,7 +56,7 @@ PyList::PyList(std::vector<Value> elements) : PyList() { m_elements = std::move(
 
 PyResult<PyList *> PyList::create(std::vector<Value> elements)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyList>(std::move(elements));
+	auto *result = PYLANG_ALLOC(PyList, std::move(elements));
 	if (!result) { return Err(memory_error(sizeof(PyList))); }
 	return Ok(result);
 }
@@ -65,14 +66,14 @@ PyResult<PyList *> PyList::create(std::span<const Value> s)
 	std::vector<Value> elements{ s.size(), nullptr };
 	for (size_t idx = 0; auto el : s) { elements[idx++] = el; }
 
-	auto *result = VirtualMachine::the().heap().allocate<PyList>(std::move(elements));
+	auto *result = PYLANG_ALLOC(PyList, std::move(elements));
 	if (!result) { return Err(memory_error(sizeof(PyList))); }
 	return Ok(result);
 }
 
 PyResult<PyList *> PyList::create()
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyList>();
+	auto *result = PYLANG_ALLOC(PyList, );
 	if (!result) { return Err(memory_error(sizeof(PyList))); }
 	return Ok(result);
 }
@@ -269,8 +270,8 @@ PyResult<PyObject *> PyList::__repr__() const
 
 PyResult<PyObject *> PyList::__iter__() const
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *it = heap.allocate<PyListIterator>(*this);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *it = PYLANG_ALLOC(PyListIterator, *this);
 	if (!it) { return Err(memory_error(sizeof(PyListIterator))); }
 	return Ok(it);
 }
@@ -751,7 +752,7 @@ PyListReverseIterator::PyListReverseIterator(PyList &pylist, size_t start_index)
 PyResult<PyListReverseIterator *> PyListReverseIterator::create(PyList &lst)
 {
 	auto list_size = lst.elements().size();
-	auto *result = VirtualMachine::the().heap().allocate<PyListReverseIterator>(lst, list_size - 1);
+	auto *result = PYLANG_ALLOC(PyListReverseIterator, lst, list_size - 1);
 	if (!result) { return Err(memory_error(sizeof(PyListReverseIterator))); }
 	return Ok(result);
 }

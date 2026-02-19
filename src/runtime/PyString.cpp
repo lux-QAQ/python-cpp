@@ -27,6 +27,7 @@
 #include <optional>
 #include <span>
 
+#include "runtime/compat.hpp"
 #include <unicode/stringpiece.h>
 #include <unicode/uchar.h>
 #include <unicode/umachine.h>
@@ -123,8 +124,8 @@ PyString::PyString(PyType *type) : PyBaseObject(type) {}
 
 PyResult<PyString *> PyString::create(const std::string &value)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *result = heap.allocate<PyString>(value);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *result = PYLANG_ALLOC(PyString, value);
 	if (!result) { return Err(memory_error(sizeof(PyString))); }
 	return Ok(result);
 }
@@ -1211,8 +1212,8 @@ PyType *PyString::static_type() const { return types::str(); }
 
 PyResult<PyObject *> PyString::__iter__() const
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *it = heap.allocate<PyStringIterator>(*this);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *it = PYLANG_ALLOC(PyStringIterator, *this);
 	if (!it) { return Err(memory_error(sizeof(PyStringIterator))); }
 	return Ok(it);
 }

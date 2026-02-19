@@ -4,6 +4,7 @@
 #include "PyString.hpp"
 #include "PyTuple.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -28,7 +29,7 @@ class ImportError : public Exception
 
 	static ImportError *create(PyTuple *args)
 	{
-        return PYLANG_ALLOC(ImportError, args);
+        return PYLANG_ALLOC(ImportError, args);}
   public:
 	static PyResult<PyObject *> __new__(const PyType *type, PyTuple *args, PyDict *kwargs);
 	PyResult<int32_t> __init__(PyTuple *args, PyDict *kwargs);

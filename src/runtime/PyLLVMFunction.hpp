@@ -2,6 +2,7 @@
 
 #include "MemoryError.hpp"
 #include "PyObject.hpp"
+#include "runtime/compat.hpp"
 #include "vm/VM.hpp"
 
 namespace py {
@@ -36,8 +37,9 @@ class PyLLVMFunction : public PyBaseObject
 	static PyResult<PyLLVMFunction *>
 		create(std::string name, FunctionType &&function, Args &&...args)
 	{
-		auto *result = VirtualMachine::the().heap().allocate<PyLLVMFunction>(
-			std::move(name), std::move(function), std::forward<Args>(args)...);
+		// auto *result = VirtualMachine::the().heap().allocate<PyLLVMFunction>(
+		// 	std::move(name), std::move(function), std::forward<Args>(args)...);
+		auto *result = PYLANG_ALLOC(PyLLVMFunction, std::move(name), std::move(function), std::forward<Args>(args)...);
 		if (!result) { return Err(memory_error(sizeof(PyLLVMFunction))); }
 		return Ok(result);
 	}

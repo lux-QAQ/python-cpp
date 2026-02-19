@@ -1,6 +1,7 @@
 #include "RuntimeError.hpp"
 #include "MemoryError.hpp"
 #include "PyString.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -28,8 +29,8 @@ RuntimeError::RuntimeError(PyTuple *args)
 
 PyResult<RuntimeError *> RuntimeError::create(PyTuple *args)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *obj = heap.allocate<RuntimeError>(args);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *obj = PYLANG_ALLOC(RuntimeError, args);
 	if (!obj) { return Err(memory_error(sizeof(RuntimeError))); }
 	return Ok(obj);
 }

@@ -5,6 +5,8 @@
 #include "PyTuple.hpp"
 #include "vm/VM.hpp"
 
+#include "runtime/compat.hpp"
+
 namespace py {
 class AttributeError : public Exception
 {
@@ -20,6 +22,7 @@ class AttributeError : public Exception
 	static AttributeError *create(PyTuple *args)
 	{
                 return PYLANG_ALLOC(AttributeError, args);
+	}
   public:
 	static PyResult<PyObject *> __new__(const PyType *type, PyTuple *args, PyDict *kwargs);
 

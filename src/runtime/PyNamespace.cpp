@@ -2,6 +2,7 @@
 #include "MemoryError.hpp"
 #include "NotImplemented.hpp"
 #include "PyDict.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -39,8 +40,8 @@ PyResult<PyNamespace *> PyNamespace::create()
 
 PyResult<PyNamespace *> PyNamespace::create(PyDict *dict)
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PyNamespace>(dict)) { return Ok(obj); }
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PyNamespace, dict)) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyNamespace)));
 }
 

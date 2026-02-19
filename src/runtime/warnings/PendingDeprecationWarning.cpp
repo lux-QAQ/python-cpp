@@ -1,4 +1,5 @@
 #include "runtime/warnings/PendingDeprecationWarning.hpp"
+#include "runtime/compat.hpp"
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
 #include "runtime/warnings/Warning.hpp"
@@ -13,8 +14,8 @@ PendingDeprecationWarning::PendingDeprecationWarning(PyType *, PyTuple *args)
 
 PyResult<PendingDeprecationWarning *> PendingDeprecationWarning::create(PyType *type, PyTuple *args)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *result = heap.allocate<PendingDeprecationWarning>(type, args);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *result = PYLANG_ALLOC(PendingDeprecationWarning, type, args);
 	if (!result) { return Err(memory_error(sizeof(Warning))); }
 	return Ok(result);
 }

@@ -6,6 +6,7 @@
 #include "forward.hpp"
 #include "memory/GarbageCollector.hpp"
 #include "runtime/forward.hpp"
+#include "runtime/compat.hpp"
 #include "vm/VM.hpp"
 
 #include <cstddef>
@@ -543,10 +544,13 @@ std::unique_ptr<TypePrototype> TypePrototype::create(std::string_view name, Args
 	type_prototype->__alloc__ = [](PyType *t) -> PyResult<PyObject *> {
 		auto *obj = [t]() -> Type * {
 			if (const auto nslots = py::detail::slot_count(t); nslots > 0) {
-				return VirtualMachine::the().heap().allocate_with_extra_bytes<Type>(
-					nslots * sizeof(PyObject *), t);
+				// return VirtualMachine::the().heap().allocate_with_extra_bytes<Type>(
+				// 	nslots * sizeof(PyObject *), t);
+				auto *obj = PYLANG_ALLOC_WITH_EXTRA(Type, nslots * sizeof(PyObject *), t);
+				return obj;
+
 			} else {
-				return VirtualMachine::the().heap().allocate<Type>(t);
+				return PYLANG_ALLOC(Type, t);
 			};
 		}();
 		if (!obj) { return Err(memory_error(sizeof(Type))); }

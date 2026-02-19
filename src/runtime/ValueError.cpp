@@ -1,6 +1,7 @@
 #include "ValueError.hpp"
 #include "MemoryError.hpp"
 #include "PyString.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -26,8 +27,8 @@ ValueError::ValueError(PyTuple *args) : Exception(types::BuiltinTypes::the().val
 
 PyResult<ValueError *> ValueError::create(PyTuple *args)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto result = heap.allocate<ValueError>(args);
+	// auto &heap = VirtualMachine::the().heap();
+	auto result = PYLANG_ALLOC(ValueError, args);
 	if (!result) { return Err(memory_error(sizeof(ValueError))); }
 	return Ok(result);
 }

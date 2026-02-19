@@ -17,6 +17,7 @@
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
 
+#include "runtime/compat.hpp"
 #include <string_view>
 
 namespace py {
@@ -108,16 +109,16 @@ PyResult<PyObject *> PyBytes::__new__(const PyType *type, PyTuple *, PyDict *)
 
 PyResult<PyBytes *> PyBytes::create(Bytes value)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *obj = heap.allocate<PyBytes>(std::move(value));
+	// auto &heap = VirtualMachine::the().heap();
+	auto *obj = PYLANG_ALLOC(PyBytes, std::move(value));
 	if (!obj) { return Err(memory_error(sizeof(PyBytes))); }
 	return Ok(obj);
 }
 
 PyResult<PyBytes *> PyBytes::create()
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *obj = heap.allocate<PyBytes>();
+	// auto &heap = VirtualMachine::the().heap();
+	auto *obj = PYLANG_ALLOC(PyBytes, );
 	if (!obj) { return Err(memory_error(sizeof(PyBytes))); }
 	return Ok(obj);
 }
@@ -312,8 +313,8 @@ PyBytesIterator::PyBytesIterator(PyBytes *bytes, size_t index)
 
 PyResult<PyBytesIterator *> PyBytesIterator::create(PyBytes *bytes)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *obj = heap.allocate<PyBytesIterator>(bytes, 0);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *obj = PYLANG_ALLOC(PyBytesIterator, bytes, 0);
 	if (!obj) { return Err(memory_error(sizeof(PyBytesIterator))); }
 	return Ok(obj);
 }

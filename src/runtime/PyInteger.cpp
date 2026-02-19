@@ -7,10 +7,11 @@
 #include "runtime/PyByteArray.hpp"
 #include "runtime/PyObject.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
-#include "runtime/compat.hpp"
+
 
 #include <gmpxx.h>
 
@@ -52,8 +53,10 @@ PyResult<PyInteger *> PyInteger::create(int64_t value)
 
 PyResult<PyInteger *> PyInteger::create(BigIntType value)
 {
-        auto *result = PYLANG_ALLOC(PyInteger, value);
-        PYLANG_CHECK_ALLOC(result, PyInteger);
+	auto *result = PYLANG_ALLOC(PyInteger, value);
+	PYLANG_CHECK_ALLOC(result, PyInteger);
+	return Ok(result);
+}
 
 PyResult<PyInteger *> PyInteger::create(PyType *type, BigIntType value)
 {

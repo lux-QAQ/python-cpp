@@ -3,6 +3,7 @@
 #include "runtime/PyList.hpp"
 #include "runtime/StopIteration.hpp"
 #include "runtime/types/api.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 namespace {
@@ -19,7 +20,7 @@ namespace itertools {
 	PyResult<PyObject *> StarMap::create(PyObject *function, PyObject *iterable)
 	{
 		return iterable->iter().and_then([function](PyObject *iterator) -> PyResult<PyObject *> {
-			auto *obj = VirtualMachine::the().heap().allocate<StarMap>(function, iterator);
+			auto *obj = PYLANG_ALLOC(StarMap, function, iterator);
 			if (!obj) { return Err(memory_error(sizeof(StarMap))); }
 			return Ok(obj);
 		});

@@ -4,6 +4,7 @@
 #include "PyObject.hpp"
 #include "PyTuple.hpp"
 #include "executable/Program.hpp"
+#include "runtime/compat.hpp"
 #include "vm/VM.hpp"
 
 namespace py {
@@ -90,7 +91,7 @@ class PyNativeFunction : public PyBaseObject
 	static PyResult<PyNativeFunction *>
 		create(std::string name, FreeFunctionType function, Args &&...args)
 	{
-		auto *result = VirtualMachine::the().heap().allocate<PyNativeFunction>(
+		auto *result = PYLANG_ALLOC(PyNativeFunction,
 			std::move(name), std::move(function), nullptr, std::forward<Args>(args)...);
 		if (!result) { return Err(memory_error(sizeof(PyNativeFunction))); }
 		return Ok(result);
@@ -100,8 +101,10 @@ class PyNativeFunction : public PyBaseObject
 	static PyResult<PyNativeFunction *>
 		create(std::string name, MethodType function, PyObject *self, Args &&...args)
 	{
-		auto *result = VirtualMachine::the().heap().allocate<PyNativeFunction>(
-			std::move(name), std::move(function), self, std::forward<Args>(args)...);
+		// auto *result = VirtualMachine::the().heap().allocate<PyNativeFunction>(
+			// std::move(name), std::move(function), self, std::forward<Args>(args)...);
+			auto *result = PYLANG_ALLOC(PyNativeFunction, std::move(name), std::move(function), self, std::forward<Args>(args)...);
+
 		if (!result) { return Err(memory_error(sizeof(PyNativeFunction))); }
 		return Ok(result);
 	}

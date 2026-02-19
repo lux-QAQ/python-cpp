@@ -2,6 +2,7 @@
 #include "MemoryError.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 PyMappingProxy::PyMappingProxy(PyType *type) : PyBaseObject(type) {}
@@ -13,7 +14,7 @@ PyMappingProxy::PyMappingProxy(PyObject *mapping)
 PyResult<PyObject *> PyMappingProxy::create(PyObject *mapping)
 {
 	if (as<PyList>(mapping) || as<PyTuple>(mapping) || mapping->as_mapping().is_ok()) {
-		auto *result = VirtualMachine::the().heap().allocate<PyMappingProxy>(mapping);
+		auto *result = PYLANG_ALLOC(PyMappingProxy, mapping);
 		if (!result) { return Err(memory_error(sizeof(PyMappingProxy))); }
 		return Ok(result);
 	}

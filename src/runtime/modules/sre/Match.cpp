@@ -10,6 +10,7 @@
 #include "runtime/types/builtin.hpp"
 #include "utilities.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 using namespace py;
 using namespace py::sre;
@@ -24,7 +25,7 @@ Match::Match() : PyBaseObject(s_sre_match) {}
 
 PyResult<Match *> Match::create()
 {
-	auto obj = VirtualMachine::the().heap().allocate<Match>();
+	auto obj = PYLANG_ALLOC(Match, );
 	if (!obj) { return Err(memory_error(sizeof(Match))); }
 	return Ok(obj);
 }

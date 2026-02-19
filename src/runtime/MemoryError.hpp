@@ -3,6 +3,7 @@
 #include "Exception.hpp"
 #include "PyString.hpp"
 #include "PyTuple.hpp"
+#include "runtime/compat.hpp"
 #include "vm/VM.hpp"
 
 namespace py {
@@ -19,8 +20,9 @@ class MemoryError : public Exception
 
 	static PyResult<MemoryError *> create(PyTuple *args)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		auto result = heap.allocate<MemoryError>(args);
+		// auto &heap = VirtualMachine::the().heap();
+		// auto result = heap.allocate<MemoryError>(args);
+		auto result = PYLANG_ALLOC(MemoryError, args);
 		if (!result) {
 			// TODO: if this exception fails to allocated we need to find a solution to signal it.
 			//       could force a GC run and try again?

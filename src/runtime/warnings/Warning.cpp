@@ -1,5 +1,6 @@
 #include "Warning.hpp"
 #include "runtime/PyString.hpp"
+#include "runtime/compat.hpp"
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
 
@@ -11,8 +12,8 @@ Warning::Warning(PyType *, PyTuple *args) : Exception(types::BuiltinTypes::the()
 
 PyResult<Warning *> Warning::create(PyType *type, PyTuple *args)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *result = heap.allocate<Warning>(type, args);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *result = PYLANG_ALLOC(Warning, type, args);
 	if (!result) { return Err(memory_error(sizeof(Warning))); }
 	return Ok(result);
 }

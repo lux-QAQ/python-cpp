@@ -1,6 +1,7 @@
 #include "PyGenerator.hpp"
 #include "MemoryError.hpp"
 #include "PyCode.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -41,9 +42,9 @@ PyResult<PyGenerator *> PyGenerator::create(PyFrame *frame,
 	PyString *name,
 	PyString *qualname)
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PyGenerator>(
-			frame, std::move(stack_frame), false, frame->code(), name, qualname)) {
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(
+			PyGenerator, frame, std::move(stack_frame), false, frame->code(), name, qualname)) {
 		return Ok(obj);
 	}
 	return Err(memory_error(sizeof(PyGenerator)));

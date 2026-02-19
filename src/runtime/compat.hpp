@@ -162,13 +162,24 @@ class CellCompat
 	virtual bool is_pyobject() const { return false; }
 };
 
+// GC 暂停的 No-op 替代品 (RAII)
+struct ScopedNoOp
+{
+};
+
 }// namespace py::compat
+
+#define PYLANG_GC_PAUSE_SCOPE() \
+	[[maybe_unused]] ::py::compat::ScopedNoOp _pylang_gc_pause_guard_##__LINE__ {}
 
 #else
 // ---- 旧路径: Heap + GC ----
 
 // 什么都不改，保持原有行为
 #define PYLANG_ALLOC(Type, ...) VirtualMachine::the().heap().allocate<Type>(__VA_ARGS__)
+
+#define PYLANG_ALLOC_WITH_EXTRA(Type, Extra, ...) \
+	VirtualMachine::the().heap().allocate_with_extra_bytes<Type>(Extra, __VA_ARGS__)
 
 #define PYLANG_VISIT_GRAPH_BODY(visitor) /* use original implementation */
 
@@ -178,6 +189,10 @@ class CellCompat
 // =============================================================================
 // 通用辅助宏（两种模式下都可用）
 // =============================================================================
+
+
+#define PYLANG_GC_PAUSE_SCOPE() \
+	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
 
 // 检查分配结果并返回 MemoryError
 // 用法:
@@ -200,7 +215,49 @@ class CellCompat
 //   if (!obj) { return Err(memory_error(sizeof(PyInteger))); }
 //
 #define PYLANG_CREATE(Type, ...)                      \
-	[&]() -> Type * {                                 \
+	([&]() -> Type * {                                \
 		auto *_obj = PYLANG_ALLOC(Type, __VA_ARGS__); \
 		return _obj;                                  \
-	}()
+	}())
+
+
+
+
+// =============================================================================
+// WeakRef 兼容层
+// =============================================================================
+
+#ifdef PYLANG_USE_SHARED_PTR
+
+// 在 SharedPtr 模式初期，暂不支持完整的 WeakRef 语义自动清理
+// 这里的实现主要是为了让代码能编译通过。
+// TODO: 未来需将 PyWeakRef 内部改造为持有 std::weak_ptr<PyObject>
+
+#define PYLANG_ALLOC_WEAKREF(Type, Obj, Callback) \
+    ::py::compat::heap_allocate<Type>(Obj, Callback)
+
+// 在 shared_ptr 模式下，如果持有的是裸指针，很难判断其是否已析构（除非使用 weak_ptr）
+// 暂时假定总是存活，直到 Type 系统重构完成
+#define PYLANG_WEAKREF_ALIVE(ObjPtr) (true)
+
+#define PYLANG_WEAKREF_COUNT(ObjPtr) (0)
+
+// 返回空列表
+#define PYLANG_WEAKREF_LIST(ObjPtr) (std::vector<py::PyObject *>{})
+
+#else
+// ---- 旧路径: Heap + GC ----
+
+#define PYLANG_ALLOC_WEAKREF(Type, Obj, Callback) \
+    VirtualMachine::the().heap().allocate_weakref<Type>(Obj, Callback)
+
+#define PYLANG_WEAKREF_ALIVE(ObjPtr) \
+    VirtualMachine::the().heap().has_weakref_object(std::bit_cast<uint8_t *>(ObjPtr))
+
+#define PYLANG_WEAKREF_COUNT(ObjPtr) \
+    VirtualMachine::the().heap().weakref_count(std::bit_cast<uint8_t *>(ObjPtr))
+
+#define PYLANG_WEAKREF_LIST(ObjPtr) \
+    VirtualMachine::the().heap().get_weakrefs(std::bit_cast<uint8_t *>(ObjPtr))
+
+#endif// PYLANG_USE_SHARED_PTR

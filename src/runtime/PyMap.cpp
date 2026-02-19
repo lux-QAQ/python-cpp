@@ -2,6 +2,7 @@
 #include "PyList.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -49,7 +50,7 @@ PyResult<PyObject *> PyMap::__new__(const PyType *type, PyTuple *args, PyDict *k
 	auto *iters = iters_.unwrap();
 
 	auto obj =
-		VirtualMachine::the().heap().allocate<PyMap>(const_cast<PyType *>(type), func, iters);
+		PYLANG_ALLOC(PyMap, const_cast<PyType *>(type), func, iters);
 	if (!obj) { return Err(memory_error(sizeof(PyMap))); }
 	return Ok(obj);
 }

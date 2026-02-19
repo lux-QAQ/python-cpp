@@ -10,6 +10,7 @@
 #include "TypeError.hpp"
 #include "ValueError.hpp"
 #include "interpreter/Interpreter.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -80,43 +81,43 @@ PyTuple::PyTuple(PyType *type, const std::vector<PyObject *> &elements)
 
 PyResult<PyTuple *> PyTuple::create()
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PyTuple>()) { return Ok(obj); }
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PyTuple, )) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(std::vector<Value> &&elements)
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PyTuple>(std::move(elements))) { return Ok(obj); }
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PyTuple, std::move(elements))) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(PyType *type, std::vector<Value> elements)
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PyTuple>(type, std::move(elements))) { return Ok(obj); }
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PyTuple, type, std::move(elements))) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(PyType *type, const std::vector<PyObject *> &elements)
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PyTuple>(type, elements)) { return Ok(obj); }
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PyTuple, type, elements)) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(const std::vector<PyObject *> &elements)
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PyTuple>(elements)) { return Ok(obj); }
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PyTuple, elements)) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(std::vector<PyObject *> &&elements)
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PyTuple>(make_value_vector(std::move(elements)))) {
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PyTuple, make_value_vector(std::move(elements)))) {
 		return Ok(obj);
 	}
 	return Err(memory_error(sizeof(PyTuple)));
@@ -172,8 +173,8 @@ PyResult<PyObject *> PyTuple::__new__(const PyType *type, PyTuple *args, PyDict 
 
 	auto [iterable] = result.unwrap();
 	if (!iterable) {
-		auto &heap = VirtualMachine::the().heap();
-		if (auto *obj = heap.allocate<PyTuple>(const_cast<PyType *>(type))) { return Ok(obj); }
+		// auto &heap = VirtualMachine::the().heap();
+		if (auto *obj = PYLANG_ALLOC(PyTuple, const_cast<PyType *>(type))) { return Ok(obj); }
 		return Err(memory_error(sizeof(PyTuple)));
 	}
 
@@ -335,8 +336,8 @@ PyTupleIterator::PyTupleIterator(const PyTuple &pytuple, size_t position) : PyTu
 
 PyResult<PyTupleIterator *> PyTupleIterator::create(const PyTuple &pytuple)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *obj = heap.allocate<PyTupleIterator>(pytuple);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *obj = PYLANG_ALLOC(PyTupleIterator, pytuple);
 	if (!obj) return Err(memory_error(sizeof(PyTupleIterator)));
 	return Ok(obj);
 }

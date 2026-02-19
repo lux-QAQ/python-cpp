@@ -5,6 +5,7 @@
 #include "runtime/StopIteration.hpp"
 #include "runtime/ValueError.hpp"
 #include "runtime/types/api.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 namespace {
@@ -53,7 +54,7 @@ namespace itertools {
 		auto step_ = get_big_int(step, "step");
 		if (step_.is_err()) { return Err(step_.unwrap_err()); }
 
-		auto *obj = VirtualMachine::the().heap().allocate<ISlice>(iterator.unwrap(),
+		auto *obj = PYLANG_ALLOC(ISlice, iterator.unwrap(),
 			start_.unwrap().value_or(BigIntType{ 0 }),
 			stop_.unwrap(),
 			step_.unwrap().value_or(BigIntType{ 1 }));

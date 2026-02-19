@@ -12,12 +12,14 @@
 #include "runtime/PyTuple.hpp"
 #include "runtime/PyType.hpp"
 #include "runtime/types/api.hpp"
+#include "runtime/compat.hpp"
 
 #include "config.hpp"
 #include "interpreter/Interpreter.hpp"
 #include "runtime/modules/paths.hpp"
 #include "vm/VM.hpp"
 
+#include "runtime/compat.hpp"
 #include <bit>
 #include <filesystem>
 #include <format>
@@ -152,7 +154,8 @@ class Flags : public PyBaseObject
 		bool dev_mode,
 		uint8_t utf8_mode)
 	{
-		auto *result = VirtualMachine::the().heap().allocate<Flags>(debug,
+		auto *result = PYLANG_ALLOC(Flags,
+			debug,
 			inspect,
 			interactive,
 			optimize,
@@ -266,8 +269,8 @@ class Version : public PyTuple
 		auto *release_level_obj = PyString::create(release_level).unwrap();
 		auto *serial_obj = PyInteger::create(serial).unwrap();
 
-		auto *result = VirtualMachine::the().heap().allocate<Version>(
-			major_obj, minor_obj, micro_obj, release_level_obj, serial_obj);
+		auto *result =
+			PYLANG_ALLOC(Version, major_obj, minor_obj, micro_obj, release_level_obj, serial_obj);
 		if (!result) { return Err(memory_error(sizeof(Version))); }
 		return Ok(result);
 	}
@@ -373,7 +376,8 @@ PyModule *sys_module(Interpreter &interpreter)
 	s_sys_module->add_symbol(PyString::create("dont_write_bytecode").unwrap(), py_true());
 
 	// avoid GC'ing implementation and version
-	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	// [[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	PYLANG_GC_PAUSE_SCOPE()
 
 	auto *implementation = PyDict::create().unwrap();
 	auto *version = Version::create(3, 19, 0, "prerelease", 0).unwrap();

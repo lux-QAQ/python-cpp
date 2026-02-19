@@ -1,6 +1,7 @@
 #include "PyEllipsis.hpp"
 #include "MemoryError.hpp"
 #include "PyString.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -12,8 +13,8 @@ PyEllipsis::PyEllipsis() : PyBaseObject(types::BuiltinTypes::the().ellipsis()) {
 
 PyResult<PyEllipsis *> PyEllipsis::create()
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *obj = heap.allocate_static<PyEllipsis>();
+	// auto &heap = VirtualMachine::the().heap();
+	auto *obj = PYLANG_ALLOC(PyEllipsis, );
 	if (!obj) { return Err(memory_error(sizeof(PyEllipsis))); }
 	return Ok(obj);
 }

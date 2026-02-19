@@ -18,6 +18,7 @@
 #include "runtime/PyObject.hpp"
 #include "runtime/PyString.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/compat.hpp"
 #include "vm/VM.hpp"
 
 namespace py {
@@ -302,7 +303,7 @@ PyResult<PyModule *> import_frozen_module(PyString *name)
 	const auto &serialised_code = frozen_module->get().code;
 	std::shared_ptr<Program> program = BytecodeProgram::deserialize(serialised_code);
 
-	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	PYLANG_GC_PAUSE_SCOPE();
 
 	if (!program) { return Err(import_error("TODO")); }
 

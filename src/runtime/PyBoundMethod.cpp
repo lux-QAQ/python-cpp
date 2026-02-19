@@ -4,6 +4,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -15,7 +16,7 @@ PyBoundMethod::PyBoundMethod(PyObject *self, PyFunction *method)
 
 PyResult<PyBoundMethod *> PyBoundMethod::create(PyObject *self, PyFunction *method)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyBoundMethod>(self, method);
+	auto *result = PYLANG_ALLOC(PyBoundMethod, self, method);
 	if (!result) { return Err(memory_error(sizeof(PyBoundMethod))); }
 	return Ok(result);
 }

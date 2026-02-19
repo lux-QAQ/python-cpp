@@ -13,6 +13,7 @@
 #include "runtime/types/builtin.hpp"
 #include "utilities.hpp"
 #include <variant>
+#include "runtime/compat.hpp"
 
 namespace py {
 namespace {
@@ -45,7 +46,7 @@ namespace itertools {
 
 	PyResult<PyObject *> Count::create(Number start, Number step)
 	{
-		auto *obj = VirtualMachine::the().heap().allocate<Count>(std::move(start), std::move(step));
+		auto *obj = PYLANG_ALLOC(Count, std::move(start), std::move(step));
 		if (!obj) { return Err(memory_error(sizeof(Count))); }
 		return Ok(obj);
 	}

@@ -12,6 +12,7 @@
 #include "executable/Function.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -53,7 +54,7 @@ PyFrame *PyFrame::create(PyFrame *parent,
 		TODO();
 	}
 
-	auto *new_frame = VirtualMachine::the().heap().allocate<PyFrame>(std::move(names));
+	auto *new_frame = PYLANG_ALLOC(PyFrame, std::move(names));
 	new_frame->m_f_back = parent;
 	new_frame->m_register_count = register_count;
 	new_frame->m_globals = globals;

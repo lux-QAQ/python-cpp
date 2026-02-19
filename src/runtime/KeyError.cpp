@@ -1,6 +1,7 @@
 #include "KeyError.hpp"
 #include "MemoryError.hpp"
 #include "PyString.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -26,8 +27,8 @@ KeyError::KeyError(PyTuple *args) : Exception(types::BuiltinTypes::the().key_err
 
 PyResult<KeyError *> KeyError::create(PyTuple *args)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto result = heap.allocate<KeyError>(args);
+	// auto &heap = VirtualMachine::the().heap();
+	auto result = PYLANG_ALLOC(KeyError, args);
 	if (!result) { return Err(memory_error(sizeof(KeyError))); }
 	return Ok(result);
 }

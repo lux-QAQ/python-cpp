@@ -15,6 +15,7 @@
 #include "vm/VM.hpp"
 
 #include <filesystem>
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -165,7 +166,7 @@ std::string PyModule::to_string() const
 
 PyResult<PyModule *> PyModule::create(PyDict *symbol_table, PyString *module_name, PyObject *doc)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyModule>(symbol_table, module_name, doc);
+	auto *result = PYLANG_ALLOC(PyModule, symbol_table, module_name, doc);
 	if (!result) { return Err(memory_error(sizeof(PyModule))); }
 	return Ok(result);
 }

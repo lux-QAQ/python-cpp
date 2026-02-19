@@ -4,6 +4,7 @@
 #include "runtime/PyNone.hpp"
 #include "runtime/StopIteration.hpp"
 #include "runtime/types/api.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 namespace {
@@ -21,14 +22,14 @@ namespace itertools {
 	PyResult<PyObject *> Repeat::create(PyObject *object, BigIntType times)
 	{
 		if (times < 0) { times = 0; }
-		auto *obj = VirtualMachine::the().heap().allocate<Repeat>(object, times);
+		auto *obj = PYLANG_ALLOC(Repeat, object, times);
 		if (!obj) { return Err(memory_error(sizeof(Repeat))); }
 		return Ok(obj);
 	}
 
 	PyResult<PyObject *> Repeat::create(PyObject *object)
 	{
-		auto *obj = VirtualMachine::the().heap().allocate<Repeat>(object);
+		auto *obj = PYLANG_ALLOC(Repeat, object);
 		if (!obj) { return Err(memory_error(sizeof(Repeat))); }
 		return Ok(obj);
 	}

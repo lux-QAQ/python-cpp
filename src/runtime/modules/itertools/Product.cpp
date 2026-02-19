@@ -10,6 +10,7 @@
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
 #include <variant>
+#include "runtime/compat.hpp"
 
 namespace py {
 namespace {
@@ -26,7 +27,7 @@ namespace itertools {
 	PyResult<PyObject *> Product::create(PyObject *iterable, std::optional<size_t> repeat)
 	{
 		if (repeat.has_value() && repeat == 0) {
-			auto *obj = VirtualMachine::the().heap().allocate<Product>(
+			auto *obj = PYLANG_ALLOC(Product, 
 				PyList::create().unwrap(), size_t{ 0 });
 			if (!obj) { return Err(memory_error(sizeof(Product))); }
 			return Ok(obj);
@@ -62,7 +63,7 @@ namespace itertools {
 				auto &els = pools->elements();
 				els.insert(els.end(), els.begin(), els.begin() + pool_size);
 			}
-			auto *obj = VirtualMachine::the().heap().allocate<Product>(pools, repeat.value_or(1));
+			auto *obj = PYLANG_ALLOC(Product, pools, repeat.value_or(1));
 			if (!obj) { return Err(memory_error(sizeof(Product))); }
 			return Ok(obj);
 		});

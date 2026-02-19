@@ -16,6 +16,7 @@
 #include <string_view>
 
 #include <sys/stat.h>
+#include "runtime/compat.hpp"
 
 namespace fs = std::filesystem;
 
@@ -78,7 +79,7 @@ namespace {
 	  public:
 		static PyResult<PyStatResult *> create(std::unique_ptr<struct stat> &&stat_)
 		{
-			auto *result = VirtualMachine::the().heap().allocate<PyStatResult>(std::move(stat_));
+			auto *result = PYLANG_ALLOC(PyStatResult, std::move(stat_));
 			if (!result) { return Err(memory_error(sizeof(PyStatResult))); }
 			return Ok(result);
 		}

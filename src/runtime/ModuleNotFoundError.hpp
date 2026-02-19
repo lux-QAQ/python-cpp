@@ -5,6 +5,7 @@
 #include "PyNone.hpp"
 #include "PyString.hpp"
 #include "PyTuple.hpp"
+#include "runtime/compat.hpp"
 #include "vm/VM.hpp"
 
 namespace py {
@@ -25,8 +26,11 @@ class ModuleNotFoundError : public ImportError
 
 	static ModuleNotFoundError *create(PyTuple *args, PyObject *name, PyObject *path)
 	{
-		auto &heap = VirtualMachine::the().heap();
-		return heap.allocate<ModuleNotFoundError>(args, name, path);
+		// // auto &heap = VirtualMachine::the().heap();
+		// return heap.allocate<ModuleNotFoundError>(args, name, path);
+		auto *obj = PYLANG_ALLOC(ModuleNotFoundError, args, name, path);
+		if (!obj) { return nullptr; }
+		return obj;
 	}
 
   public:

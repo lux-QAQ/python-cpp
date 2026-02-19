@@ -4,7 +4,7 @@
 #include "PyString.hpp"
 #include "PyTuple.hpp"
 #include "vm/VM.hpp"
-
+#include "runtime/compat.hpp"
 namespace py {
 
 class NameError : public Exception
@@ -20,7 +20,7 @@ class NameError : public Exception
 
 	static NameError *create(PyTuple *args)
 	{
-                return PYLANG_ALLOC(NameError, args);
+                return PYLANG_ALLOC(NameError, args);}
   public:
 	static std::function<std::unique_ptr<TypePrototype>()> type_factory();
 

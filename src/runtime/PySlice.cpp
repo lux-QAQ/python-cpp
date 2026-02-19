@@ -6,6 +6,7 @@
 #include "PyType.hpp"
 #include "TypeError.hpp"
 #include "ValueError.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -61,15 +62,15 @@ PyResult<PySlice *> PySlice::create(int64_t start, int64_t stop, int64_t end)
 
 PyResult<PySlice *> PySlice::create(PyObject *stop)
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PySlice>(stop)) { return Ok(obj); }
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PySlice, stop)) { return Ok(obj); }
 	return Err(memory_error(sizeof(PySlice)));
 }
 
 PyResult<PySlice *> PySlice::create(PyObject *start, PyObject *stop, PyObject *end)
 {
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PySlice>(start, stop, end)) { return Ok(obj); }
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PySlice, start, stop, end)) { return Ok(obj); }
 	return Err(memory_error(sizeof(PySlice)));
 }
 
@@ -77,8 +78,8 @@ PyResult<PyObject *> PySlice::__new__(const PyType *type, PyTuple *, PyDict *)
 {
 	ASSERT(type == types::slice());
 
-	auto &heap = VirtualMachine::the().heap();
-	if (auto *obj = heap.allocate<PySlice>()) { return Ok(obj); }
+	// auto &heap = VirtualMachine::the().heap();
+	if (auto *obj = PYLANG_ALLOC(PySlice, )) { return Ok(obj); }
 	return Err(memory_error(sizeof(PySlice)));
 }
 

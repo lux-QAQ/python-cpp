@@ -1,5 +1,6 @@
 #include "PyBool.hpp"
 #include "PyString.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -56,8 +57,8 @@ PyResult<bool> PyBool::true_()
 
 PyResult<PyBool *> PyBool::create(bool value)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *result = heap.allocate_static<PyBool>(value);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *result = PYLANG_ALLOC(PyBool, value);
 	ASSERT(result);
 	return Ok(result);
 }

@@ -15,6 +15,7 @@
 
 #include <unordered_set>
 #include <variant>
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -44,21 +45,21 @@ PyDict::PyDict(PyType *type) : PyBaseObject(type) {}
 
 PyResult<PyDict *> PyDict::create()
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDict>();
+	auto *result = PYLANG_ALLOC(PyDict, );
 	if (!result) { return Err(memory_error(sizeof(PyDict))); }
 	return Ok(result);
 }
 
 PyResult<PyDict *> PyDict::create(MapType &&map)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDict>(std::move(map));
+	auto *result = PYLANG_ALLOC(PyDict, std::move(map));
 	if (!result) { return Err(memory_error(sizeof(PyDict))); }
 	return Ok(result);
 }
 
 PyResult<PyDict *> PyDict::create(const MapType &map)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDict>(map);
+	auto *result = PYLANG_ALLOC(PyDict, map);
 	if (!result) { return Err(memory_error(sizeof(PyDict))); }
 	return Ok(result);
 }
@@ -167,7 +168,7 @@ PyResult<size_t> PyDict::__len__() const { return Ok(m_map.size()); }
 
 PyDictItems *PyDict::items() const
 {
-	return VirtualMachine::the().heap().allocate<PyDictItems>(*this);
+	return PYLANG_ALLOC(PyDictItems, *this);
 }
 
 std::optional<Value> PyDict::operator[](Value key) const
@@ -523,7 +524,7 @@ std::function<std::unique_ptr<TypePrototype>()> PyDict::type_factory()
 
 PyResult<PyDictItems *> PyDictItems::create(const PyDict &pydict)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDictItems>(pydict);
+	auto *result = PYLANG_ALLOC(PyDictItems, pydict);
 	if (!result) { return Err(memory_error(sizeof(PyDictItems))); }
 	return Ok(result);
 }
@@ -595,7 +596,7 @@ std::function<std::unique_ptr<TypePrototype>()> PyDictItems::type_factory()
 
 PyResult<PyDictKeys *> PyDictKeys::create(const PyDict &pydict)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDictKeys>(pydict);
+	auto *result = PYLANG_ALLOC(PyDictKeys, pydict);
 	if (!result) { return Err(memory_error(sizeof(PyDictKeys))); }
 	return Ok(result);
 }
@@ -663,7 +664,7 @@ std::function<std::unique_ptr<TypePrototype>()> PyDictKeys::type_factory()
 
 PyResult<PyDictValues *> PyDictValues::create(const PyDict &pydict)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDictValues>(pydict);
+	auto *result = PYLANG_ALLOC(PyDictValues, pydict);
 	if (!result) { return Err(memory_error(sizeof(PyDictKeys))); }
 	return Ok(result);
 }
@@ -797,7 +798,7 @@ PyDictItemsIterator::PyDictItemsIterator(const PyDictItems &pydict_items, size_t
 
 PyResult<PyDictItemsIterator *> PyDictItemsIterator::create(const PyDictItems &pydict_items)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDictItemsIterator>(pydict_items);
+	auto *result = PYLANG_ALLOC(PyDictItemsIterator, pydict_items);
 	if (!result) { return Err(memory_error(sizeof(PyDictItemsIterator))); }
 	return Ok(result);
 }
@@ -806,7 +807,7 @@ PyResult<PyDictItemsIterator *> PyDictItemsIterator::create(const PyDictItems &p
 	size_t position)
 {
 	auto *result =
-		VirtualMachine::the().heap().allocate<PyDictItemsIterator>(pydict_items, position);
+		PYLANG_ALLOC(PyDictItemsIterator, pydict_items, position);
 	if (!result) { return Err(memory_error(sizeof(PyDictItemsIterator))); }
 	return Ok(result);
 }
@@ -858,7 +859,7 @@ PyDictItemsIterator &PyDictItemsIterator::operator++()
 PyTuple *PyDictItemsIterator::operator*() const
 {
 	const auto &[key, value] = *m_current_iterator;
-	return VirtualMachine::the().heap().allocate<PyTuple>(std::vector{ key, value });
+	return PYLANG_ALLOC(PyTuple, std::vector{ key, value });
 }
 
 PyType *PyDictItemsIterator::static_type() const { return types::dict_items_iterator(); }
@@ -898,7 +899,7 @@ PyDictKeyIterator::PyDictKeyIterator(const PyDictKeys &pydict_keys, size_t posit
 
 PyResult<PyDictKeyIterator *> PyDictKeyIterator::create(const PyDictKeys &pydict_keys)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDictKeyIterator>(pydict_keys);
+	auto *result = PYLANG_ALLOC(PyDictKeyIterator, pydict_keys);
 	if (!result) { return Err(memory_error(sizeof(PyDictKeyIterator))); }
 	return Ok(result);
 }
@@ -906,7 +907,7 @@ PyResult<PyDictKeyIterator *> PyDictKeyIterator::create(const PyDictKeys &pydict
 PyResult<PyDictKeyIterator *> PyDictKeyIterator::create(const PyDictKeys &pydict_keys,
 	size_t position)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDictKeyIterator>(pydict_keys, position);
+	auto *result = PYLANG_ALLOC(PyDictKeyIterator, pydict_keys, position);
 	if (!result) { return Err(memory_error(sizeof(PyDictKeyIterator))); }
 	return Ok(result);
 }
@@ -994,7 +995,7 @@ PyDictValueIterator::PyDictValueIterator(const PyDictValues &pydict_values, size
 
 PyResult<PyDictValueIterator *> PyDictValueIterator::create(const PyDictValues &pydict_values)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyDictValueIterator>(pydict_values);
+	auto *result = PYLANG_ALLOC(PyDictValueIterator, pydict_values);
 	if (!result) { return Err(memory_error(sizeof(PyDictValueIterator))); }
 	return Ok(result);
 }
@@ -1003,7 +1004,7 @@ PyResult<PyDictValueIterator *> PyDictValueIterator::create(const PyDictValues &
 	size_t position)
 {
 	auto *result =
-		VirtualMachine::the().heap().allocate<PyDictValueIterator>(pydict_values, position);
+		PYLANG_ALLOC(PyDictValueIterator, pydict_values, position);
 	if (!result) { return Err(memory_error(sizeof(PyDictValueIterator))); }
 	return Ok(result);
 }

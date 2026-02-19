@@ -4,6 +4,7 @@
 #include "PyFrame.hpp"
 #include "PyTraceback.hpp"
 #include "PyType.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
@@ -38,8 +39,8 @@ BaseException::BaseException(const TypePrototype &type, PyTuple *args)
 
 PyResult<BaseException *> BaseException::create(PyTuple *args)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto *result = heap.allocate<BaseException>(args);
+	// auto &heap = VirtualMachine::the().heap();
+	auto *result = PYLANG_ALLOC(BaseException, args);
 	if (!result) { return Err(memory_error(sizeof(BaseException))); }
 	return Ok(result);
 }

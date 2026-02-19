@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <string_view>
 #include <unordered_set>
+#include "runtime/compat.hpp"
 
 namespace py {
 template<> PyType *as(PyObject *obj)
@@ -211,7 +212,7 @@ PyType::PyType(std::unique_ptr<TypePrototype> &&type_prototype)
 PyResult<PyType *> PyType::create(PyType *type)
 {
 	auto new_type_prototype = std::make_unique<TypePrototype>();
-	auto *new_type = VirtualMachine::the().heap().allocate<PyType>(std::move(new_type_prototype));
+	auto *new_type = PYLANG_ALLOC(PyType, std::move(new_type_prototype));
 	new_type->m_metaclass = type;
 	if (!new_type) { return Err(memory_error(sizeof(PyType))); }
 	return Ok(new_type);
@@ -243,7 +244,7 @@ PyType *PyType::static_type() const
 
 PyType *PyType::initialize(TypePrototype &type_prototype)
 {
-	auto *type = VirtualMachine::the().heap().allocate<PyType>(type_prototype);
+	auto *type = PYLANG_ALLOC(PyType, type_prototype);
 	auto result = type->ready();
 	ASSERT(result.is_ok());
 	return type;
@@ -251,7 +252,7 @@ PyType *PyType::initialize(TypePrototype &type_prototype)
 
 PyType *PyType::initialize(std::unique_ptr<TypePrototype> &&type_prototype)
 {
-	auto *type = VirtualMachine::the().heap().allocate<PyType>(std::move(type_prototype));
+	auto *type = PYLANG_ALLOC(PyType, std::move(type_prototype));
 	auto result = type->ready();
 	ASSERT(result.is_ok());
 	return type;

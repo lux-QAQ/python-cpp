@@ -6,6 +6,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include <limits>
+#include "runtime/compat.hpp"
 
 
 using namespace py;
@@ -16,7 +17,7 @@ PyIterator::PyIterator(PyObject *iterator)
 
 PyResult<PyIterator *> PyIterator::create(PyObject *iterator)
 {
-	auto *result = VirtualMachine::the().heap().allocate<PyIterator>(iterator);
+	auto *result = PYLANG_ALLOC(PyIterator, iterator);
 	if (!result) { return Err(memory_error(sizeof(PyIterator))); }
 	return Ok(result);
 }

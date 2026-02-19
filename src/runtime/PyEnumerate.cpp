@@ -2,6 +2,7 @@
 #include "MemoryError.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 PyEnumerate::PyEnumerate(PyType *type) : PyBaseObject(type) {}
@@ -17,7 +18,7 @@ PyResult<PyObject *> PyEnumerate::create(int64_t current_index, PyObject *iterab
 		return Err(type_error("'{}' object is not iterable", iterable->type()->name()));
 	} else {
 		auto *result =
-			VirtualMachine::the().heap().allocate<PyEnumerate>(current_index, iterator.unwrap());
+			PYLANG_ALLOC(PyEnumerate, current_index, iterator.unwrap());
 		if (!result) { return Err(memory_error(sizeof(PyEnumerate))); }
 		return Ok(result);
 	}

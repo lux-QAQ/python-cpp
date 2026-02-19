@@ -4,6 +4,7 @@
 #include "PyString.hpp"
 #include "PyTuple.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 class Exception : public BaseException
@@ -23,7 +24,7 @@ class Exception : public BaseException
 
 	static Exception *create(PyTuple *args)
 	{
-                return PYLANG_ALLOC(Exception, args);
+                return PYLANG_ALLOC(Exception, args);}
   public:
 	static PyResult<PyObject *> __new__(const PyType *type, PyTuple *args, PyDict *kwargs);
 

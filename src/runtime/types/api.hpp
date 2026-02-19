@@ -8,6 +8,7 @@
 #include "runtime/PyTuple.hpp"
 #include "runtime/PyType.hpp"
 #include "runtime/TypeError.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -295,7 +296,8 @@ template<typename T> struct klass
 		//        klass isn't visited by the GC visitors so `type` is not visited, and
 		//        and the allocated `__bases__` tuple can be GC'ed before PyType takes
 		//        ownership
-		[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+		//[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+		PYLANG_GC_PAUSE_SCOPE()
 		auto *type_ = PyType::initialize(std::move(type));
 		spdlog::trace("Added type@{} with name {}", (void *)type_, type_->name());
 		auto name = PyString::create(type_->name());

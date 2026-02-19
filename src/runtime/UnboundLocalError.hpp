@@ -20,7 +20,9 @@ class UnboundLocalError : public Exception
 
 	static UnboundLocalError *create(PyTuple *args)
 	{
-        return PYLANG_ALLOC(UnboundLocalError, args);
+		return PYLANG_ALLOC(UnboundLocalError, args);
+	}
+
   public:
 	static PyResult<PyObject *> __new__(const PyType *type, PyTuple *args, PyDict *kwargs);
 

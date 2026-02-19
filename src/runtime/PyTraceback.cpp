@@ -4,6 +4,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "vm/VM.hpp"
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -32,7 +33,7 @@ PyResult<PyTraceback *>
 	PyTraceback::create(PyFrame *tb_frame, size_t tb_lasti, size_t tb_lineno, PyTraceback *tb_next)
 {
 	auto *obj =
-		VirtualMachine::the().heap().allocate<PyTraceback>(tb_frame, tb_lasti, tb_lineno, tb_next);
+		PYLANG_ALLOC(PyTraceback, tb_frame, tb_lasti, tb_lineno, tb_next);
 	if (!obj) return Err(memory_error(sizeof(PyTraceback)));
 	return Ok(obj);
 }

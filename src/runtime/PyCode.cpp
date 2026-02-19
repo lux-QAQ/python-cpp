@@ -17,6 +17,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include <cstdint>
+#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -81,7 +82,7 @@ PyResult<PyCode *> PyCode::create(std::unique_ptr<Function> &&function,
 	std::vector<std::string> varnames)
 {
 	auto program = function->program();
-	auto *result = VirtualMachine::the().heap().allocate<PyCode>(std::move(function),
+	auto *result = PYLANG_ALLOC(PyCode, std::move(function),
 		std::move(cell2arg),
 		arg_count,
 		std::move(cellvars),

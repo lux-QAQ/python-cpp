@@ -2,6 +2,7 @@
 #include "MemoryError.hpp"
 #include "PyString.hpp"
 #include "runtime/PyType.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -29,8 +30,8 @@ OSError::OSError(PyType *t) : OSError(t, nullptr) {}
 
 PyResult<OSError *> OSError::create(PyType *type, PyTuple *args)
 {
-	auto &heap = VirtualMachine::the().heap();
-	auto result = heap.allocate<OSError>(type, args);
+	// auto &heap = VirtualMachine::the().heap();
+	auto result = PYLANG_ALLOC(OSError, type, args);
 	if (!result) { return Err(memory_error(sizeof(OSError))); }
 	return Ok(result);
 }
