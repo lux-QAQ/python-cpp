@@ -7,7 +7,7 @@
 
 class PythonVMEnvironment : public ::testing::Environment
 {
-	char **m_argv;
+	char **m_argv [[maybe_unused]];
 
   public:
 	PythonVMEnvironment(char **argv) : m_argv(argv) {}
@@ -15,7 +15,7 @@ class PythonVMEnvironment : public ::testing::Environment
 
 	void SetUp() override
 	{
-		auto &vm = VirtualMachine::the();
+		[[maybe_unused]] auto &vm = VirtualMachine::the();
 #ifndef PYLANG_USE_ARENA
 		vm.heap().set_start_stack_pointer(bit_cast<uintptr_t *>(m_argv));
 #endif

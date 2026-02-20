@@ -36,8 +36,8 @@
 #define PYLANG_ALLOC_WITH_EXTRA(Type, Extra, ...) \
 	::py::Arena::current().allocate_with_extra<Type>(Extra, __VA_ARGS__)
 
-// Arena 模式下无 GC，暂停操作为 no-op
-#define PYLANG_GC_PAUSE_SCOPE() do {} while(0)
+// Arena 模式下无 GC，暂停操作为 no-op（空展开兼容有无分号两种调用方式）
+#define PYLANG_GC_PAUSE_SCOPE()
 
 // WeakRef: Arena 模式下通过 WeakRefRegistry 实现
 #include "modules/weakref/WeakRefRegistry.hpp"
