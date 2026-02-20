@@ -16,10 +16,9 @@ class PythonVMEnvironment : public ::testing::Environment
 	void SetUp() override
 	{
 		auto &vm = VirtualMachine::the();
-		vm.heap().set_start_stack_pointer(bit_cast<uintptr_t *>(m_argv));
-		initialize_types();
-	}
-
+#ifndef PYLANG_USE_ARENA
+                vm.heap().set_start_stack_pointer(bit_cast<uintptr_t *>(m_argv));
+#endif
 	void TearDown() override {}
 };
 

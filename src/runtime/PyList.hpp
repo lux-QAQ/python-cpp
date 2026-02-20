@@ -8,7 +8,9 @@ class PyList
 	: public PyBaseObject
 	, PySequence
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	std::vector<Value> m_elements;
@@ -64,7 +66,9 @@ class PyList
 
 class PyListIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	const PyList &m_pylist;
@@ -86,7 +90,9 @@ class PyListIterator : public PyBaseObject
 
 class PyListReverseIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	std::optional<std::reference_wrapper<PyList>> m_pylist;

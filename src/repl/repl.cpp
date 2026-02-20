@@ -76,7 +76,9 @@ int run_and_execute_script(size_t argc,
 	while (arg_idx < argc) { argv_vector.emplace_back(argv[arg_idx++]); }
 
 	auto &vm = VirtualMachine::the();
+#ifndef PYLANG_USE_ARENA
 	vm.heap().garbage_collector().set_frequency(gc_frequency);
+#endif
 	initialize_types();
 	auto lexer = Lexer::create(std::filesystem::absolute(filename));
 	if (print_tokens) {

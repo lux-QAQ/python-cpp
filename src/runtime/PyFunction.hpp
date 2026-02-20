@@ -10,7 +10,9 @@
 namespace py {
 class PyFunction : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	PyString *m_name{ nullptr };
@@ -59,7 +61,9 @@ class PyFunction : public PyBaseObject
 
 class PyNativeFunction : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	using FreeFunctionSignature = PyResult<PyObject *>(PyTuple *, PyDict *);
 	using MethodSignature = PyResult<PyObject *>(PyObject *, PyTuple *, PyDict *);

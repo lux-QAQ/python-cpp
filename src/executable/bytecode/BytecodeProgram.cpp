@@ -3,6 +3,7 @@
 #include "executable/Function.hpp"
 #include "executable/Mangler.hpp"
 #include "interpreter/InterpreterSession.hpp"
+#include "runtime/compat.hpp"
 #include "runtime/PyCode.hpp"
 #include "runtime/PyFrame.hpp"
 #include "runtime/PyFunction.hpp"
@@ -23,7 +24,7 @@ std::shared_ptr<BytecodeProgram> BytecodeProgram::create(FunctionBlocks &&func_b
 {
 	auto program = std::shared_ptr<BytecodeProgram>(new BytecodeProgram{ filename, argv });
 
-	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	PYLANG_GC_PAUSE_SCOPE();
 
 	std::vector<size_t> functions_instruction_count;
 	functions_instruction_count.reserve(func_blocks.functions.size());
@@ -172,7 +173,7 @@ PyObject *BytecodeProgram::as_pyfunction(const std::string &function_name,
 			});
 		it != m_functions.end()) {
 		auto *code = *it;
-		return VirtualMachine::the().heap().allocate<PyFunction>(default_values,
+		return PYLANG_ALLOC(PyFunction, default_values,
 			kw_default_values,
 			code,
 			closure,
@@ -221,7 +222,7 @@ std::vector<uint8_t> BytecodeProgram::serialize() const
 
 std::shared_ptr<BytecodeProgram> BytecodeProgram::deserialize(const std::vector<uint8_t> &buffer)
 {
-	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+	PYLANG_GC_PAUSE_SCOPE();
 	auto program = std::shared_ptr<BytecodeProgram>(new BytecodeProgram);
 
 	auto span = std::span{ buffer };

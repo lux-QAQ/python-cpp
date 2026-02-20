@@ -6,7 +6,9 @@ namespace py {
 
 class PyBoundMethod : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	PyObject *m_self;
 	PyFunction *m_method;

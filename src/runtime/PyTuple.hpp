@@ -8,7 +8,9 @@ class PyTuple
 	: public PyBaseObject
 	, PySequence
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend class PyTupleIterator;
 
@@ -70,7 +72,9 @@ template<> const PyTuple *as(const PyObject *obj);
 
 class PyTupleIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend PyTuple;
 

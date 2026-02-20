@@ -30,8 +30,10 @@ using namespace py;
 
 void initialize_types()
 {
+#ifndef PYLANG_USE_ARENA
 	[[maybe_unused]] auto scope_static_alloc =
 		VirtualMachine::the().heap().scoped_static_allocation();
+#endif
 	types::object();
 	types::type();
 	types::super();
@@ -132,7 +134,7 @@ void Interpreter::internal_setup(const std::string &name,
 {
 	PyModule *sys = nullptr;
 	{
-		[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+		PYLANG_GC_PAUSE_SCOPE();
 
 		initialize_types();
 		m_modules = PyDict::create().unwrap();

@@ -74,7 +74,9 @@ class VirtualMachine
 	std::vector<py::Value>::iterator m_stack_pointer;
 	std::vector<py::Value>::const_iterator m_base_pointer;
 	std::unique_ptr<Interpreter> m_interpreter;
+#ifndef PYLANG_USE_ARENA
 	std::unique_ptr<Heap> m_heap;
+#endif
 	py::RuntimeContext m_runtime_ctx;
 	State *m_state{ nullptr };
 
@@ -88,6 +90,8 @@ class VirtualMachine
 		static auto *vm = new VirtualMachine();
 		return *vm;
 	}
+
+
 
 	py::Value &reg(size_t idx)
 	{
@@ -148,7 +152,9 @@ class VirtualMachine
 	const State &state() const { return *m_state; }
 	State &state() { return *m_state; }
 
+#ifndef PYLANG_USE_ARENA
 	Heap &heap() { return *m_heap; }
+#endif
 
 	Interpreter &initialize_interpreter(std::shared_ptr<Program> &&);
 	Interpreter &interpreter();

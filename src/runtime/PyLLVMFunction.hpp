@@ -13,7 +13,9 @@ namespace py {
 // and it doesn't make sense to force all functions to return PyResult by pointer).
 class PyLLVMFunction : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	using FunctionType = std::function<PyObject *(PyTuple *, PyDict *)>;
 

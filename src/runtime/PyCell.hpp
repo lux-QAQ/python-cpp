@@ -6,7 +6,9 @@ namespace py {
 
 class PyCell : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	Value m_content{ nullptr };

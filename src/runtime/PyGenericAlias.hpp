@@ -5,7 +5,10 @@
 namespace py {
 class PyGenericAlias : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	PyObject *m_origin{ nullptr };
 	PyTuple *m_args{ nullptr };

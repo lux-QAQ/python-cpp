@@ -1,6 +1,10 @@
 #pragma once
 
 #include "GarbageCollector.hpp"
+
+#ifndef PYLANG_USE_ARENA
+// Heap is only available in GC mode (non-Arena)
+
 #include "runtime/forward.hpp"
 #include "utilities.hpp"
 
@@ -437,3 +441,5 @@ class Heap
 
 	Heap();
 };
+
+#endif // PYLANG_USE_ARENA

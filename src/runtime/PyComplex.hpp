@@ -11,7 +11,9 @@ namespace py {
 
 class PyComplex : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	std::complex<BigIntType> m_complex;

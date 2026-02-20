@@ -6,7 +6,10 @@ namespace py {
 
 class PySuper : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	PyType *m_type{ nullptr };
 	PyObject *m_object{ nullptr };

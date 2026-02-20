@@ -4,7 +4,9 @@ namespace py {
 
 class PyFloat final : public PyNumber
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	PyFloat(double);

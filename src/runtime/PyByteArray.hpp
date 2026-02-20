@@ -9,7 +9,9 @@ namespace py {
 
 class PyByteArray : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	Bytes m_value;
@@ -56,7 +58,9 @@ class PyByteArray : public PyBaseObject
 
 class PyByteArrayIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	PyByteArray *m_bytes{ nullptr };

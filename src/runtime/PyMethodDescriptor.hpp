@@ -13,7 +13,9 @@ class PyMethodDescriptor : public PyBaseObject
 	std::optional<std::reference_wrapper<MethodDefinition>> m_method;
 	std::vector<PyObject *> m_captures;
 
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	PyMethodDescriptor(PyType *);

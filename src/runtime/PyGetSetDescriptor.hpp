@@ -10,7 +10,9 @@ class PyGetSetDescriptor : public PyBaseObject
 	PyType *m_underlying_type;
 	std::optional<std::reference_wrapper<PropertyDefinition>> m_getset;
 
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	PyGetSetDescriptor(PyType *);

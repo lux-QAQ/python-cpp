@@ -19,7 +19,9 @@ namespace {
 
 class Lock : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	std::timed_mutex m_mutex;

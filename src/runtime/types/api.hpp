@@ -297,7 +297,7 @@ template<typename T> struct klass
 		//        and the allocated `__bases__` tuple can be GC'ed before PyType takes
 		//        ownership
 		
-		PYLANG_GC_PAUSE_SCOPE()
+			PYLANG_GC_PAUSE_SCOPE();
 		auto *type_ = PyType::initialize(std::move(type));
 		spdlog::trace("Added type@{} with name {}", (void *)type_, type_->name());
 		auto name = PyString::create(type_->name());

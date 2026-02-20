@@ -27,7 +27,10 @@ namespace {
 
 	class PyStatResult : public PyBaseObject
 	{
+#ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
+#endif
+		friend class ::py::Arena;
 
 	  public:
 		mode_t m_st_mode;

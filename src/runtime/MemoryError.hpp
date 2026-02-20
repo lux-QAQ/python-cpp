@@ -10,7 +10,9 @@ namespace py {
 
 class MemoryError : public Exception
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend BaseException *memory_error(size_t failed_allocation_size);
 

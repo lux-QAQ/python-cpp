@@ -6,7 +6,9 @@ namespace py {
 namespace sre {
 	class Match : public PyBaseObject
 	{
+#ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 		Match();

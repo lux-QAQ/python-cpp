@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef PYLANG_USE_ARENA
+
 #include "Heap.hpp"
 #include "vm/VM.hpp"
 
@@ -23,3 +25,5 @@ struct TestHeap : ::testing::Test
 
 	void TearDown() final { m_heap->reset(); }
 };
+
+#endif // PYLANG_USE_ARENA

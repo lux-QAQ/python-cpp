@@ -6,7 +6,9 @@ namespace py {
 
 class PyRange : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	const BigIntType m_start{ 0 };
@@ -43,7 +45,9 @@ class PyRange : public PyBaseObject
 
 class PyRangeIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	const PyRange &m_pyrange;

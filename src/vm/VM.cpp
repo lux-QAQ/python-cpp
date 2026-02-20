@@ -94,12 +94,16 @@ void StackFrame::leave()
 }
 
 VirtualMachine::VirtualMachine()
-	: m_stack(10'000, nullptr), m_stack_pointer(m_stack.begin()), m_base_pointer(m_stack_pointer),
-	  m_heap(Heap::create())
+	: m_stack(10'000, nullptr), m_stack_pointer(m_stack.begin()), m_base_pointer(m_stack_pointer)
+#ifndef PYLANG_USE_ARENA
+	  , m_heap(Heap::create())
+#endif
 {
+#ifndef PYLANG_USE_ARENA
 	uintptr_t *rbp;
 	asm volatile("movq %%rbp, %0" : "=r"(rbp));
 	m_heap->set_start_stack_pointer(rbp);
+#endif
 
 	py::RuntimeContext::set_current(&m_runtime_ctx);
 }
@@ -237,7 +241,9 @@ void VirtualMachine::dump() const
 
 void VirtualMachine::clear()
 {
+#ifndef PYLANG_USE_ARENA
 	m_heap->reset();
+#endif
 	while (!m_stack_frames.empty()) m_stack_frames.pop();
 	// should instruction pointer be optional?
 	// m_instruction_pointer = nullptr;

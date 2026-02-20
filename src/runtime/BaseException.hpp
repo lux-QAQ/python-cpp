@@ -6,7 +6,9 @@ namespace py {
 
 class BaseException : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	template<typename T> friend struct klass;
 

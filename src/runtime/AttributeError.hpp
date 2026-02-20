@@ -10,7 +10,9 @@
 namespace py {
 class AttributeError : public Exception
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	template<typename... Args>
 	friend BaseException *attribute_error(const std::string &message, Args &&...args);

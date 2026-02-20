@@ -5,7 +5,9 @@
 namespace py {
 class PyEnumerate : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	int64_t m_current_index{ 0 };

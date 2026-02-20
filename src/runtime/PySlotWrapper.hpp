@@ -94,7 +94,9 @@ class PySlotWrapper : public PyBaseObject
 	std::optional<std::reference_wrapper<Slot>> m_base;
 	FunctionType m_slot;
 
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	PySlotWrapper(PyType *type);

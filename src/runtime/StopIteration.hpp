@@ -9,7 +9,9 @@ namespace py {
 
 class StopIteration : public Exception
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	template<typename... Args> friend BaseException *stop_iteration(Args &&...args);
 

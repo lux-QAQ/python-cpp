@@ -37,10 +37,10 @@
 	::py::Arena::current().allocate_with_extra<Type>(Extra, __VA_ARGS__)
 
 // Arena 模式下无 GC，暂停操作为 no-op
-#define PYLANG_GC_PAUSE_SCOPE() ((void)0)
+#define PYLANG_GC_PAUSE_SCOPE() do {} while(0)
 
 // WeakRef: Arena 模式下通过 WeakRefRegistry 实现
-#include "weakref/WeakRefRegistry.hpp"
+#include "modules/weakref/WeakRefRegistry.hpp"
 
 #define PYLANG_ALLOC_WEAKREF(Type, Obj, Callback) \
 	::py::Arena::current().allocate<Type>(Obj, Callback)

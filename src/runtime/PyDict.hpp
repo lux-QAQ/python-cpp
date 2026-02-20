@@ -24,7 +24,9 @@ class PyDict : public PyBaseObject
 	using MapType = tsl::ordered_map<Value, Value, ValueHash, ValueEq>;
 
   private:
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend PyDictItems;
 	friend PyDictItemsIterator;
@@ -86,7 +88,9 @@ class PyDict : public PyBaseObject
 
 class PyDictItems : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend PyDict;
 	friend PyDictItemsIterator;
@@ -115,7 +119,9 @@ class PyDictItems : public PyBaseObject
 
 class PyDictKeys : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend PyDict;
 	friend PyDictKeyIterator;
@@ -144,7 +150,9 @@ class PyDictKeys : public PyBaseObject
 
 class PyDictValues : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend PyDict;
 	friend PyDictValueIterator;
@@ -173,7 +181,9 @@ class PyDictValues : public PyBaseObject
 
 class PyDictItemsIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend PyDictItems;
 
@@ -213,7 +223,9 @@ class PyDictItemsIterator : public PyBaseObject
 
 class PyDictKeyIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend PyDictItems;
 	friend PyDictKeys;
@@ -253,7 +265,9 @@ class PyDictKeyIterator : public PyBaseObject
 
 class PyDictValueIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend PyDictItems;
 	friend PyDictValues;

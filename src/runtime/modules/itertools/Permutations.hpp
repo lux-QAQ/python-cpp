@@ -6,7 +6,9 @@ namespace py {
 namespace itertools {
 	class Permutations : public PyBaseObject
 	{
+#ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 		PyList *m_pool{ nullptr };

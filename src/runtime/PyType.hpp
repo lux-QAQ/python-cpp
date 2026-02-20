@@ -7,7 +7,9 @@ namespace py {
 class PyType : public PyBaseObject
 {
 	template<typename T> friend struct klass;
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend class PyObject;
 

@@ -7,7 +7,9 @@ namespace py {
 
 class PySet : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
   public:
@@ -66,7 +68,9 @@ class PySet : public PyBaseObject
 
 class PySetIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	const std::variant<std::monostate,

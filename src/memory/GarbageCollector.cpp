@@ -1,4 +1,7 @@
 #include "GarbageCollector.hpp"
+
+#ifndef PYLANG_USE_ARENA
+
 #include "interpreter/Interpreter.hpp"
 #include "interpreter/InterpreterSession.hpp"
 #include "memory/Heap.hpp"
@@ -327,3 +330,5 @@ void MarkSweepGC::pause()
 }
 
 bool MarkSweepGC::is_active() const { return !m_pause; }
+
+#endif // PYLANG_USE_ARENA

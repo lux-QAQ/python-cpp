@@ -9,7 +9,9 @@ namespace py {
 
 class DeprecationWarning : public Warning
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	template<typename... Args>
 	friend BaseException *deprecation_warning(const std::string &message, Args &&...args);

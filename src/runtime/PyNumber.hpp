@@ -7,7 +7,9 @@ namespace py {
 
 class PyNumber : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend Interface<PyNumber, PyInteger>;
 	friend class PyFloat;

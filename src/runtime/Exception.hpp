@@ -9,7 +9,9 @@
 namespace py {
 class Exception : public BaseException
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	template<typename... Args>
 	friend BaseException *exception(const std::string &message, Args &&...args);

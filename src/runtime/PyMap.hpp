@@ -6,7 +6,9 @@ namespace py {
 
 class PyMap : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	PyObject *m_func{ nullptr };

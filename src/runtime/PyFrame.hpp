@@ -12,11 +12,12 @@ namespace py {
 
 class PyFrame : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend Heap;
+#endif
+	friend class ::py::Arena;
 	friend Interpreter;
 	template<typename T> friend class GeneratorInterface;
-
-  public:
 	struct ExceptionStackItem
 	{
 		BaseException *exception{ nullptr };

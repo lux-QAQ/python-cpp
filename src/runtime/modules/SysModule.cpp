@@ -92,7 +92,10 @@ static PyType *s_sys_version = nullptr;
 
 class Flags : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
   public:
 	uint8_t m_debug;
@@ -233,7 +236,10 @@ class Flags : public PyBaseObject
 
 class Version : public PyTuple
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
   public:
 	PyInteger *m_major{ nullptr };
@@ -380,8 +386,7 @@ PyModule *sys_module(Interpreter &interpreter)
 	s_sys_module->add_symbol(PyString::create("dont_write_bytecode").unwrap(), py_true());
 
 	// avoid GC'ing implementation and version
-	// [[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
-	PYLANG_GC_PAUSE_SCOPE()
+	PYLANG_GC_PAUSE_SCOPE();
 
 	auto *implementation = PyDict::create().unwrap();
 	auto *version = Version::create(3, 19, 0, "prerelease", 0).unwrap();

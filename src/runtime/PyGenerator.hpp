@@ -5,7 +5,10 @@
 namespace py {
 class PyGenerator : public GeneratorInterface<PyGenerator>
 {
+#ifndef PYLANG_USE_ARENA
 	friend ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	PyGenerator(PyType *);
 

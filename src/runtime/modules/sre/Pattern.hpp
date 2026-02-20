@@ -10,7 +10,9 @@ namespace py {
 namespace sre {
 	class Pattern : public PyBaseObject
 	{
+#ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 		size_t m_groups;

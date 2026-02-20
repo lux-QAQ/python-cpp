@@ -12,7 +12,9 @@ class PyString
 	: public PyBaseObject
 	, public PySequence
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	std::string m_value;
 
@@ -146,7 +148,9 @@ class PyString
 
 class PyStringIterator : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	const PyString &m_pystring;

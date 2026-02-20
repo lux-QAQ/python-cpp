@@ -20,6 +20,7 @@ class Instruction;
 class Program;
 class VirtualMachine;
 class Label;
+struct StackFrame;
 
 namespace parser {
 class Parser;

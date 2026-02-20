@@ -5,7 +5,10 @@
 namespace py {
 class PyCoroutine : public GeneratorInterface<PyCoroutine>
 {
+#ifndef PYLANG_USE_ARENA
 	friend ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	PyCoroutine(PyType *);
 

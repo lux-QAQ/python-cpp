@@ -19,7 +19,9 @@ namespace {
 
 class RLock : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 	std::recursive_timed_mutex m_mutex;

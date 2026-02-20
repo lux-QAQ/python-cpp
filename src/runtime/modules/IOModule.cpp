@@ -61,7 +61,10 @@ Exception *unsupported_operation(PyTuple *args, PyDict *kwargs)
 
 class IOBase : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
   private:
 	IOBase() : IOBase(s_io_base->type()) {}
@@ -496,7 +499,10 @@ class IOBase : public PyBaseObject
 
 class RawIOBase : public IOBase
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
   private:
 	RawIOBase() : RawIOBase(s_io_raw_iobase->type()) {}
@@ -598,7 +604,10 @@ class RawIOBase : public IOBase
 
 class BufferedIOBase : public IOBase
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	BufferedIOBase() : BufferedIOBase(s_io_buffered_io_base) {}
 
@@ -975,7 +984,10 @@ class BufferedReader
 	: public BufferedIOBase
 	, public Buffered<BufferedReader>
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	BufferedReader(PyType *type, PyObject *raw, int buffer_size) : BufferedIOBase(type)
 	{
@@ -1234,7 +1246,10 @@ class BufferedWriter
 	: public BufferedIOBase
 	, public Buffered<BufferedWriter>
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	BufferedWriter(PyType *type, PyObject *raw, int buffer_size) : BufferedIOBase(type)
 	{
@@ -1375,7 +1390,10 @@ template<> const BufferedWriter *as(const PyObject *obj)
 
 class BufferedRWPair : public BufferedIOBase
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 	BufferedReader *m_reader;
 	BufferedWriter *m_writer;
 	size_t m_buffer_size;
@@ -1559,7 +1577,10 @@ class BufferedRandom
 	: public BufferedIOBase
 	, public Buffered<BufferedRandom>
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	BufferedRandom(PyType *type, PyObject *raw, int buffer_size) : BufferedIOBase(type)
 	{
@@ -1696,7 +1717,10 @@ class BufferedRandom
 
 class BytesIO : public BufferedIOBase
 {
+#ifndef PYLANG_USE_ARENA
 	friend ::Heap;
+#endif
+	friend class ::py::Arena;
 	PyObject *m_buf;
 	int64_t m_pos;
 	int64_t m_string_size;
@@ -1901,7 +1925,10 @@ PyResult<std::bitset<8>> read_flags(const std::string &mode)
 
 class FileIO : public RawIOBase
 {
+#ifndef PYLANG_USE_ARENA
 	friend ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	int m_file_descriptor{ -1 };
 	std::fstream m_filestream;
@@ -1910,9 +1937,9 @@ class FileIO : public RawIOBase
 	bool m_writable{ false };
 	bool m_appending{ false };
 	std::optional<bool> m_seekable;
-	bool m_close_file_descriptor{ true };
-	bool m_finalizing;
-	uint32_t m_bulksize{ 0 };
+	[[maybe_unused]] bool m_close_file_descriptor{ true };
+	[[maybe_unused]] bool m_finalizing;
+	[[maybe_unused]] uint32_t m_bulksize{ 0 };
 
 	FileIO(const PyType *type) : RawIOBase(type) {}
 
@@ -2202,7 +2229,10 @@ class FileIO : public RawIOBase
 
 class TextIOBase : public IOBase
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	TextIOBase() : TextIOBase(s_io_textiobase) {}
 
@@ -2273,10 +2303,13 @@ class TextIOBase : public IOBase
 
 class IncrementalNewlineDecoder : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 	PyObject *m_decoder{ nullptr };
 	PyObject *m_errors{ nullptr };
-	bool m_translate{ false };
+	[[maybe_unused]] bool m_translate{ false };
 
 	IncrementalNewlineDecoder() : IncrementalNewlineDecoder(s_io_incremental_newline_decoder) {}
 
@@ -2338,7 +2371,10 @@ class IncrementalNewlineDecoder : public PyBaseObject
 
 class StringIO : public TextIOBase
 {
+#ifndef PYLANG_USE_ARENA
 	friend ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	std::stringstream m_stringstream;
 	std::string m_newline;
@@ -2685,7 +2721,10 @@ class StringIO : public TextIOBase
 
 class TextIOWrapper : public TextIOBase
 {
+#ifndef PYLANG_USE_ARENA
 	friend ::Heap;
+#endif
+	friend class ::py::Arena;
 
 	PyObject *m_buffer{ nullptr };
 	std::string m_errors;
@@ -2970,7 +3009,10 @@ PyResult<PyObject *> open(PyObject *file, const std::string &mode)
 // TODO: move this to a header file since it is part of builtin module
 class BlockingIOError : public OSError
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
+	friend class ::py::Arena;
 
   private:
 	BlockingIOError(PyType *t) : OSError(t) {}

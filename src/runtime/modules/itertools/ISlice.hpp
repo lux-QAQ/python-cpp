@@ -4,7 +4,9 @@ namespace py {
 namespace itertools {
 	class ISlice : public PyBaseObject
 	{
+#ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 		PyObject *m_iterator{ nullptr };

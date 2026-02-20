@@ -4,7 +4,9 @@ namespace py {
 namespace itertools {
 	class StarMap : public PyBaseObject
 	{
+#ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 
 		PyObject *m_function{ nullptr };

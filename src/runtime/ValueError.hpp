@@ -9,7 +9,9 @@ namespace py {
 
 class ValueError : public Exception
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	template<typename... Args>
 	friend BaseException *value_error(const std::string &message, Args &&...args);

@@ -1,4 +1,7 @@
 #include "Heap.hpp"
+
+#ifndef PYLANG_USE_ARENA
+
 #include "GarbageCollector.hpp"
 #include "runtime/PyType.hpp"
 
@@ -174,3 +177,5 @@ uint8_t *Heap::allocate_gc(uint8_t *ptr) const
 	new (ptr) GarbageCollected();
 	return ptr + sizeof(GarbageCollected);
 }
+
+#endif // PYLANG_USE_ARENA

@@ -6,7 +6,9 @@ namespace py {
 
 class NotImplemented : public PyBaseObject
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend NotImplemented *not_implemented();
 

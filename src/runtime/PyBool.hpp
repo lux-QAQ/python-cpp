@@ -6,7 +6,9 @@ namespace py {
 
 class PyBool : public PyInteger
 {
+#ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
+#endif
 	friend class ::py::Arena;
 	friend PyObject *py_true();
 	friend PyObject *py_false();
