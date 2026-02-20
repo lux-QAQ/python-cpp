@@ -1,5 +1,8 @@
 #include "interpreter/Interpreter.hpp"
 #include "vm/VM.hpp"
+#ifdef PYLANG_USE_ARENA
+#include "memory/ArenaManager.hpp"
+#endif
 
 #include "gtest/gtest.h"
 
@@ -15,14 +18,21 @@ class PythonVMEnvironment : public ::testing::Environment
 
 	void SetUp() override
 	{
+#ifdef PYLANG_USE_ARENA
+		py::ArenaManager::initialize();
+#else
 		[[maybe_unused]] auto &vm = VirtualMachine::the();
-#ifndef PYLANG_USE_ARENA
 		vm.heap().set_start_stack_pointer(bit_cast<uintptr_t *>(m_argv));
 #endif
 		initialize_types();
 	}
 
-	void TearDown() override {}
+	void TearDown() override
+	{
+#ifdef PYLANG_USE_ARENA
+		py::ArenaManager::shutdown();
+#endif
+	}
 };
 
 int main(int argc, char **argv)
