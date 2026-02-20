@@ -36,11 +36,11 @@
 #include "runtime/UnboundLocalError.hpp"
 #include "runtime/Value.hpp"
 #include "runtime/ValueError.hpp"
+#include "runtime/compat.hpp"
 #include "runtime/modules/Modules.hpp"
 #include "runtime/types/builtin.hpp"
 #include "runtime/warnings/ImportWarning.hpp"
 #include "runtime/warnings/Warning.hpp"
-#include "runtime/compat.hpp"
 
 #include "executable/Mangler.hpp"
 #include "executable/Program.hpp"
@@ -1409,17 +1409,10 @@ namespace py {
 
 PyModule *builtins_module(Interpreter &interpreter)
 {
-	auto &heap = VirtualMachine::the().heap();
+	if (s_builtin_module) { return s_builtin_module; }
 
-	// FIXME: second check (check address is valid) is only needed for unittests since each test
-	// 		  clears the heap but is still the same executable (so it still uses the same static
-	// 		  address)
-	if (s_builtin_module && heap.slab().has_address(bit_cast<uint8_t *>(s_builtin_module))) {
-		return s_builtin_module;
-	}
+	PYLANG_GC_PAUSE_SCOPE();
 
-	//[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
-	PYLANG_GC_PAUSE_SCOPE()
 	auto types = builtin_types();
 	auto exceptions = builtin_exceptions();
 

@@ -39,7 +39,7 @@ BaseException::BaseException(const TypePrototype &type, PyTuple *args)
 
 PyResult<BaseException *> BaseException::create(PyTuple *args)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *result = PYLANG_ALLOC(BaseException, args);
 	if (!result) { return Err(memory_error(sizeof(BaseException))); }
 	return Ok(result);

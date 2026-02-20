@@ -29,7 +29,7 @@ RuntimeError::RuntimeError(PyTuple *args)
 
 PyResult<RuntimeError *> RuntimeError::create(PyTuple *args)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *obj = PYLANG_ALLOC(RuntimeError, args);
 	if (!obj) { return Err(memory_error(sizeof(RuntimeError))); }
 	return Ok(obj);

@@ -27,7 +27,7 @@ PySuper::PySuper(PyType *type, PyObject *object, PyType *object_type)
 PyResult<PyObject *> PySuper::__new__(const PyType *type, PyTuple *, PyDict *)
 {
 	ASSERT(type == types::super());
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *result = PYLANG_ALLOC(PySuper, );
 	if (!result) { return Err(memory_error(sizeof(PySuper))); }
 	return Ok(result);
@@ -47,25 +47,27 @@ PyResult<int32_t> PySuper::__init__(PyTuple *args, PyDict *kwargs)
 	auto [type_, obj] = parse_result.unwrap();
 
 	// call to super without arguments
-	if (!type_) {
-		auto &interpreter = VirtualMachine::the().interpreter();
-		auto *frame = interpreter.execution_frame();
-		// This should never happen?
-		if (!frame) { return Err(runtime_error("super(): no current frame")); }
-		auto *code = frame->code();
+    if (!type_) {
+        // 修改：使用 RuntimeContext 替代 VirtualMachine::the().interpreter()
+        ASSERT(RuntimeContext::has_current() && RuntimeContext::current().has_interpreter());
+        auto *interpreter = RuntimeContext::current().interpreter();
+        auto *frame = interpreter->execution_frame();
+        // This should never happen?
+        if (!frame) { return Err(runtime_error("super(): no current frame")); }
+        auto *code = frame->code();
 
-		if (code->arg_count() == 0) {
-			return Err(runtime_error("super(): caller takes no arguments"));
-		}
+        if (code->arg_count() == 0) {
+            return Err(runtime_error("super(): caller takes no arguments"));
+        }
 
-		auto obj_ = infer_object(frame, code);
-		if (obj_.is_err()) return Err(obj_.unwrap_err());
-		obj = obj_.unwrap();
+        auto obj_ = infer_object(frame, code);
+        if (obj_.is_err()) return Err(obj_.unwrap_err());
+        obj = obj_.unwrap();
 
-		auto type__ = infer_type(frame, code);
-		if (type__.is_err()) return Err(type__.unwrap_err());
-		type_ = type__.unwrap();
-	}
+        auto type__ = infer_type(frame, code);
+        if (type__.is_err()) return Err(type__.unwrap_err());
+        type_ = type__.unwrap();
+    }
 
 	if (obj) {
 		auto object_type_ = check(type_, obj);
@@ -174,11 +176,13 @@ PyResult<PyType *> PySuper::check(PyType *type, PyObject *object)
 
 PyResult<PyObject *> PySuper::infer_object(PyFrame *, PyCode *)
 {
-	auto first_arg = VirtualMachine::the().stack_local(0);
-	if (std::holds_alternative<PyObject *>(first_arg) && !std::get<PyObject *>(first_arg)) {
-		TODO();
-	}
-	return PyObject::from(first_arg);
+    // 修改：使用 RuntimeContext 替代 VirtualMachine::the().stack_local()
+    ASSERT(RuntimeContext::has_current());
+    auto first_arg = RuntimeContext::current().stack_local(0);
+    if (std::holds_alternative<PyObject *>(first_arg) && !std::get<PyObject *>(first_arg)) {
+        TODO();
+    }
+    return PyObject::from(first_arg);
 }
 
 PyResult<PyType *> PySuper::infer_type(PyFrame *frame, PyCode *code)

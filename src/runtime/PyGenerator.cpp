@@ -42,7 +42,7 @@ PyResult<PyGenerator *> PyGenerator::create(PyFrame *frame,
 	PyString *name,
 	PyString *qualname)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	if (auto *obj = PYLANG_ALLOC(
 			PyGenerator, frame, std::move(stack_frame), false, frame->code(), name, qualname)) {
 		return Ok(obj);

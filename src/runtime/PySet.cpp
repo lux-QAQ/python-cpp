@@ -288,7 +288,7 @@ PyResult<PyObject *> PySet::__repr__() const
 
 PyResult<PyObject *> PySet::__iter__() const
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *it = PYLANG_ALLOC(PySetIterator, *this);
 	if (!it) { return Err(memory_error(sizeof(PySetIterator))); }
 	return Ok(it);

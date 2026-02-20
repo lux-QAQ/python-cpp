@@ -2,6 +2,7 @@
 
 #include "PyDict.hpp"
 #include "PyInteger.hpp"
+#include "PyBool.hpp"
 #include "PyNone.hpp"
 #include "PyTuple.hpp"
 #include "PyType.hpp"
@@ -42,13 +43,28 @@ template<typename... ArgTypes> struct PyArgsParser
 				}
 			} else if constexpr (std::is_same_v<bool,
 									 std::remove_pointer_t<std::remove_cv_t<ExpectedType>>>) {
-				if (auto bool_arg = truthy(args[Idx], VirtualMachine::the().interpreter());
-					bool_arg.is_ok()) {
-					std::get<Idx>(result) = bool_arg.unwrap();
-				} else {
-					return Err(bool_arg.unwrap_err());
-				}
-			} else if constexpr (std::is_same_v<bool,
+                // 旧代码:
+                // if (auto bool_arg = truthy(args[Idx], VirtualMachine::the().interpreter());
+                //     bool_arg.is_ok()) {
+                //     std::get<Idx>(result) = bool_arg.unwrap();
+                // } else {
+                //     return Err(bool_arg.unwrap_err());
+                // }
+
+                // 新代码:
+                auto arg_obj = PyObject::from(args[Idx]);
+                if (arg_obj.is_ok()) {
+                    if (RuntimeContext::has_current()) {
+                        std::get<Idx>(result) = RuntimeContext::current().is_true(arg_obj.unwrap());
+                    } else {
+                        // 降级
+                        std::get<Idx>(result) = arg_obj.unwrap() != py_false() 
+                            && arg_obj.unwrap() != py_none();
+                    }
+                } else {
+                    return Err(arg_obj.unwrap_err());
+                }
+            } else if constexpr (std::is_same_v<bool,
 									 std::remove_pointer_t<std::remove_cv_t<ExpectedType>>>) {
 				TODO();
 			} else if constexpr (std::is_integral_v<ExpectedType>) {

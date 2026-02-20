@@ -27,7 +27,7 @@ KeyError::KeyError(PyTuple *args) : Exception(types::BuiltinTypes::the().key_err
 
 PyResult<KeyError *> KeyError::create(PyTuple *args)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto result = PYLANG_ALLOC(KeyError, args);
 	if (!result) { return Err(memory_error(sizeof(KeyError))); }
 	return Ok(result);

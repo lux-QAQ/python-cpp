@@ -142,53 +142,57 @@ PyResult<std::monostate> PyFrame::put_global(const std::string &name, const Valu
 
 PyObject *PyFrame::locals() const
 {
-	auto insert = [this](const Value &key, const Value &value) {
-		if (auto l = as<PyDict>(m_locals)) {
-			l->insert(key, value);
-		} else {
-			m_locals->setitem(PyObject::from(key).unwrap(), PyObject::from(value).unwrap());
-		}
-	};
-	auto remove = [this](const Value &key) {
-		if (auto l = as<PyDict>(m_locals)) {
-			l->remove(key);
-		} else {
-			m_locals->delitem(PyObject::from(key).unwrap());
-		}
-	};
-	const auto &fast_locals = VirtualMachine::the().stack_locals();
-	for (size_t i = 0; const auto &varname : m_f_code->m_varnames) {
-		ASSERT(i < fast_locals.size());
-		const auto &value = fast_locals[i++];
-		if (std::holds_alternative<PyObject *>(value) && !std::get<PyObject *>(value)) {
-			remove(String{ varname });
-		} else {
-			insert(String{ varname }, value);
-		}
-	}
+    auto insert = [this](const Value &key, const Value &value) {
+        if (auto l = as<PyDict>(m_locals)) {
+            l->insert(key, value);
+        } else {
+            m_locals->setitem(PyObject::from(key).unwrap(), PyObject::from(value).unwrap());
+        }
+    };
+    auto remove = [this](const Value &key) {
+        if (auto l = as<PyDict>(m_locals)) {
+            l->remove(key);
+        } else {
+            m_locals->delitem(PyObject::from(key).unwrap());
+        }
+    };
 
-	size_t i = 0;
-	for (const auto &cell_name : m_f_code->m_cellvars) {
-		const auto &cell = freevars()[i++];
-		if (!cell || cell->empty()) {
-			remove(String{ cell_name });
-		} else {
-			insert(String{ cell_name }, cell->content());
-		}
-	}
+    // 修改：使用 RuntimeContext 替代 VirtualMachine::the().stack_locals()
+    ASSERT(RuntimeContext::has_current());
+    auto &ctx = RuntimeContext::current();
 
-	if (!m_f_code->flags().is_set(CodeFlags::Flag::CLASS)) {
-		for (const auto &freevar_name : m_f_code->m_freevars) {
-			const auto &cell = freevars()[i++];
-			if (!cell || cell->empty()) {
-				remove(String{ freevar_name });
-			} else {
-				insert(String{ freevar_name }, cell->content());
-			}
-		}
-	}
+    for (size_t i = 0; i < m_f_code->m_varnames.size(); ++i) {
+        const auto &varname = m_f_code->m_varnames[i];
+        const auto &value = ctx.stack_local(i);
+        if (std::holds_alternative<PyObject *>(value) && !std::get<PyObject *>(value)) {
+            remove(String{ varname });
+        } else {
+            insert(String{ varname }, value);
+        }
+    }
 
-	return m_locals;
+    size_t i = 0;
+    for (const auto &cell_name : m_f_code->m_cellvars) {
+        const auto &cell = freevars()[i++];
+        if (!cell || cell->empty()) {
+            remove(String{ cell_name });
+        } else {
+            insert(String{ cell_name }, cell->content());
+        }
+    }
+
+    if (!m_f_code->flags().is_set(CodeFlags::Flag::CLASS)) {
+        for (const auto &freevar_name : m_f_code->m_freevars) {
+            const auto &cell = freevars()[i++];
+            if (!cell || cell->empty()) {
+                remove(String{ freevar_name });
+            } else {
+                insert(String{ freevar_name }, cell->content());
+            }
+        }
+    }
+
+    return m_locals;
 }
 
 PyObject *PyFrame::globals() const { return m_globals; }

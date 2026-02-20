@@ -33,7 +33,7 @@ Deque::Deque(PyType *type) : PyBaseObject(type) {}
 PyResult<PyObject *>
 	Deque::create(PyType *type, std::deque<Value> deque, std::optional<size_t> maxlength)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *result = PYLANG_ALLOC(Deque, const_cast<PyType *>(type));
 	if (!result) { return Err(memory_error(sizeof(BaseException))); }
 
@@ -46,7 +46,7 @@ PyResult<PyObject *>
 
 PyResult<PyObject *> Deque::__new__(const PyType *type, PyTuple *, PyDict *)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *result = PYLANG_ALLOC(Deque, const_cast<PyType *>(type));
 	if (!result) { return Err(memory_error(sizeof(BaseException))); }
 	return Ok(result);

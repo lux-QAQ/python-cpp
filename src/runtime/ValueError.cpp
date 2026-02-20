@@ -27,7 +27,7 @@ ValueError::ValueError(PyTuple *args) : Exception(types::BuiltinTypes::the().val
 
 PyResult<ValueError *> ValueError::create(PyTuple *args)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto result = PYLANG_ALLOC(ValueError, args);
 	if (!result) { return Err(memory_error(sizeof(ValueError))); }
 	return Ok(result);

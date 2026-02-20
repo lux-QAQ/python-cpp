@@ -10,7 +10,8 @@
 #include "PyNumber.hpp"
 #include "PySlice.hpp"
 #include "PyString.hpp"
-#include "PyTuple.hpp"
+
+#include "RuntimeContext.hpp"  
 #include "StopIteration.hpp"
 #include "ValueError.hpp"
 #include "interpreter/Interpreter.hpp"
@@ -19,7 +20,7 @@
 #include "runtime/Value.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-#include "vm/VM.hpp"
+
 
 #include "runtime/compat.hpp"
 #include <algorithm>
@@ -270,7 +271,7 @@ PyResult<PyObject *> PyList::__repr__() const
 
 PyResult<PyObject *> PyList::__iter__() const
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *it = PYLANG_ALLOC(PyListIterator, *this);
 	if (!it) { return Err(memory_error(sizeof(PyListIterator))); }
 	return Ok(it);
@@ -515,25 +516,35 @@ PyResult<PyObject *> PyList::__mul__(size_t count) const
 
 PyResult<PyObject *> PyList::__eq__(const PyObject *other) const
 {
-	if (!as<PyList>(other)) { return Ok(py_false()); }
+    if (!as<PyList>(other)) { return Ok(py_false()); }
 
-	auto *other_list = as<PyList>(other);
-	// Value contains PyObject* so we can't just compare vectors with std::vector::operator==
-	// otherwise if we compare PyObject* with PyObject* we compare the pointers, rather
-	// than PyObject::__eq__(const PyObject*)
-	if (m_elements.size() != other_list->elements().size()) { return Ok(py_false()); }
-	auto &interpreter = VirtualMachine::the().interpreter();
-	const bool result = std::equal(m_elements.begin(),
-		m_elements.end(),
-		other_list->elements().begin(),
-		[&interpreter](const auto &lhs, const auto &rhs) -> bool {
-			const auto &result = equals(lhs, rhs, interpreter);
-			ASSERT(result.is_ok());
-			auto is_true = truthy(result.unwrap(), interpreter);
-			ASSERT(is_true.is_ok());
-			return is_true.unwrap();
-		});
-	return Ok(result ? py_true() : py_false());
+    auto *other_list = as<PyList>(other);
+    if (m_elements.size() != other_list->elements().size()) { return Ok(py_false()); }
+
+    // 新代码: 使用 RuntimeContext
+    const bool result = std::equal(m_elements.begin(),
+        m_elements.end(),
+        other_list->elements().begin(),
+        [](const auto &lhs, const auto &rhs) -> bool {
+            if (RuntimeContext::has_current()) {
+                auto &ctx = RuntimeContext::current();
+                
+                // 正确处理 PyResult - 使用 and_then 链式调用
+                auto lhs_obj = PyObject::from(lhs);
+                auto rhs_obj = PyObject::from(rhs);
+                
+                if (lhs_obj.is_err() || rhs_obj.is_err()) {
+                    return false;
+                }
+                
+                auto *eq_result = ctx.equals(lhs_obj.unwrap(), rhs_obj.unwrap());
+                return ctx.is_true(eq_result);
+            }
+            // 降级：直接比较
+            return false;
+        });
+
+    return Ok(result ? py_true() : py_false());
 }
 
 PyResult<PyObject *> PyList::__reversed__() const
@@ -543,95 +554,97 @@ PyResult<PyObject *> PyList::__reversed__() const
 
 PyResult<PyObject *> PyList::sort(PyTuple *args, PyDict *kwargs)
 {
-	PyObject *key = nullptr;
-	bool reverse = false;
-	if (args && !args->elements().empty()) {
-		return Err(type_error("sort() takes no positional arguments"));
-	}
-	if (kwargs) {
-		if (auto it = kwargs->map().find(String{ "key" }); it != kwargs->map().end()) {
-			key = PyObject::from(it->second).unwrap();
-		}
-		if (auto it = kwargs->map().find(String{ "reverse" }); it != kwargs->map().end()) {
-			auto reverse_ = truthy(it->second, VirtualMachine::the().interpreter());
-			if (reverse_.is_err()) { return Err(reverse_.unwrap_err()); }
-			reverse = reverse_.unwrap();
-		}
-	}
+    PyObject *key = nullptr;
+    bool reverse = false;
+    if (args && !args->elements().empty()) {
+        return Err(type_error("sort() takes no positional arguments"));
+    }
+    if (kwargs) {
+        if (auto it = kwargs->map().find(String{ "key" }); it != kwargs->map().end()) {
+            key = PyObject::from(it->second).unwrap();
+        }
+        if (auto it = kwargs->map().find(String{ "reverse" }); it != kwargs->map().end()) {
+            if (RuntimeContext::has_current()) {
+                reverse = RuntimeContext::current().is_true(PyObject::from(it->second).unwrap());
+            }
+        }
+    }
 
-	if (m_elements.empty()) { return Ok(py_none()); }
+    if (m_elements.empty()) { return Ok(py_none()); }
 
-	PyResult<PyObject *> err = Ok(py_none());
-	if (key && key != py_none()) {
-		auto cmp_list_ = PyList::create();
-		if (cmp_list_.is_err()) { return cmp_list_; }
-		auto *cmp_list = cmp_list_.unwrap();
+    PyResult<PyObject *> err = Ok(py_none());
+    if (key && key != py_none()) {
+        auto cmp_list_ = PyList::create();
+        if (cmp_list_.is_err()) { return cmp_list_; }
+        auto *cmp_list = cmp_list_.unwrap();
 
-		for (const auto &el : m_elements) {
-			auto cmp_value = key->call(PyTuple::create({ el }).unwrap(), nullptr);
-			if (cmp_value.is_err()) { return cmp_value; }
-			cmp_list->elements().push_back(cmp_value.unwrap());
-		}
-		std::vector<size_t> indices(cmp_list->elements().size());
-		std::iota(indices.begin(), indices.end(), 0);
-		// FIXME: should throw exception when comparing, as returning true is
-		// probably messing up the C++ Compare requirment
-		auto cmp = [&err, cmp_list](size_t lhs_index, size_t rhs_index) -> bool {
-			const auto &lhs = cmp_list->elements()[lhs_index];
-			const auto &rhs = cmp_list->elements()[rhs_index];
-			if (auto cmp = less_than(lhs, rhs, VirtualMachine::the().interpreter()); cmp.is_ok()) {
-				auto is_true = truthy(cmp.unwrap(), VirtualMachine::the().interpreter());
-				if (is_true.is_err()) {
-					err = Err(is_true.unwrap_err());
-					return true;
-				}
-				return is_true.unwrap();
-			} else {
-				return false;
-			}
-		};
-		if (reverse) {
-			std::stable_sort(indices.rbegin(), indices.rend(), cmp);
-		} else {
-			std::stable_sort(indices.begin(), indices.end(), cmp);
-		}
+        for (const auto &el : m_elements) {
+            auto cmp_value = key->call(PyTuple::create({ el }).unwrap(), nullptr);
+            if (cmp_value.is_err()) { return cmp_value; }
+            cmp_list->elements().push_back(cmp_value.unwrap());
+        }
+        std::vector<size_t> indices(cmp_list->elements().size());
+        std::iota(indices.begin(), indices.end(), 0);
 
-		if (err.is_err()) { return err; }
+        // 修改：使用 RuntimeContext 替代 VirtualMachine::the()
+        auto cmp = [&err, cmp_list](size_t lhs_index, size_t rhs_index) -> bool {
+            if (!RuntimeContext::has_current()) { return false; }
 
-		for (size_t i = 0; i < indices.size() - 1; ++i) {
-			if (indices[i] == i) { continue; }
-			size_t o = i + 1;
-			for (; o < indices.size(); ++o) {
-				if (indices[o] == i) { break; }
-			}
-			std::iter_swap(m_elements.begin() + i, m_elements.begin() + indices[i]);
-			std::iter_swap(indices.begin() + i, indices.begin() + o);
-		}
-	} else {
-		// FIXME: should throw exception when comparing, as returning true is
-		// probably messing up the C++ Compare requirment
-		auto cmp = [&err](const Value &lhs, const Value &rhs) -> bool {
-			if (auto cmp = less_than(lhs, rhs, VirtualMachine::the().interpreter()); cmp.is_ok()) {
-				auto is_true = truthy(cmp.unwrap(), VirtualMachine::the().interpreter());
-				if (is_true.is_err()) {
-					err = Err(is_true.unwrap_err());
-					return true;
-				}
-				return is_true.unwrap();
-			} else {
-				return false;
-			}
-		};
-		if (reverse) {
-			std::stable_sort(m_elements.rbegin(), m_elements.rend(), cmp);
-		} else {
-			std::stable_sort(m_elements.begin(), m_elements.end(), cmp);
-		}
+            auto &ctx = RuntimeContext::current();
+            const auto &lhs = cmp_list->elements()[lhs_index];
+            const auto &rhs = cmp_list->elements()[rhs_index];
 
-		if (err.is_err()) { return err; }
-	}
+            if (auto cmp_result = less_than(lhs, rhs, *ctx.interpreter()); cmp_result.is_ok()) {
+                bool is_true = ctx.is_true(cmp_result.unwrap_err());
+                return is_true;
+            } else {
+                err = Err(cmp_result.unwrap_err());
+                return false;
+            }
+        };
 
-	return err;
+        if (reverse) {
+            std::stable_sort(indices.rbegin(), indices.rend(), cmp);
+        } else {
+            std::stable_sort(indices.begin(), indices.end(), cmp);
+        }
+
+        if (err.is_err()) { return err; }
+
+        for (size_t i = 0; i < indices.size() - 1; ++i) {
+            if (indices[i] == i) { continue; }
+            size_t o = i + 1;
+            for (; o < indices.size(); ++o) {
+                if (indices[o] == i) { break; }
+            }
+            std::iter_swap(m_elements.begin() + i, m_elements.begin() + indices[i]);
+            std::iter_swap(indices.begin() + i, indices.begin() + o);
+        }
+    } else {
+        // 修改：使用 RuntimeContext 替代 VirtualMachine::the()
+        auto cmp = [&err](const Value &lhs, const Value &rhs) -> bool {
+            if (!RuntimeContext::has_current()) { return false; }
+
+            auto &ctx = RuntimeContext::current();
+            if (auto cmp_result = less_than(lhs, rhs, *ctx.interpreter()); cmp_result.is_ok()) {
+                bool is_true = ctx.is_true(cmp_result.unwrap_err());
+                return is_true;
+            } else {
+                err = Err(cmp_result.unwrap_err());
+                return false;
+            }
+        };
+
+        if (reverse) {
+            std::stable_sort(m_elements.rbegin(), m_elements.rend(), cmp);
+        } else {
+            std::stable_sort(m_elements.begin(), m_elements.end(), cmp);
+        }
+
+        if (err.is_err()) { return err; }
+    }
+
+    return err;
 }
 
 void PyList::visit_graph(Visitor &visitor)

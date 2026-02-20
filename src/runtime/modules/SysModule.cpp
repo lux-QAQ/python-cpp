@@ -11,8 +11,8 @@
 #include "runtime/PyTraceback.hpp"
 #include "runtime/PyTuple.hpp"
 #include "runtime/PyType.hpp"
-#include "runtime/types/api.hpp"
 #include "runtime/compat.hpp"
+#include "runtime/types/api.hpp"
 
 #include "config.hpp"
 #include "interpreter/Interpreter.hpp"
@@ -336,11 +336,15 @@ namespace py {
 
 PyModule *sys_module(Interpreter &interpreter)
 {
-	auto &heap = VirtualMachine::the().heap();
+	// 旧代码:
+	// auto &heap = VirtualMachine::the().heap();
+	// if (s_sys_module && heap.slab().has_address(bit_cast<uint8_t *>(s_sys_module))) {
+	//     return s_sys_module;
+	// }
 
-	if (s_sys_module && heap.slab().has_address(bit_cast<uint8_t *>(s_sys_module))) {
-		return s_sys_module;
-	}
+	// 新代码: 模块一旦创建就持续存活（注册在 sys.modules 中），
+	// 不需要通过 Heap 地址验证存活性
+	if (s_sys_module) { return s_sys_module; }
 
 	s_sys_module = PyModule::create(
 		PyDict::create().unwrap(), PyString::create("sys").unwrap(), PyString::create("").unwrap())

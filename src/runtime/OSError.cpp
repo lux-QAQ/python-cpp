@@ -30,7 +30,7 @@ OSError::OSError(PyType *t) : OSError(t, nullptr) {}
 
 PyResult<OSError *> OSError::create(PyType *type, PyTuple *args)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto result = PYLANG_ALLOC(OSError, type, args);
 	if (!result) { return Err(memory_error(sizeof(OSError))); }
 	return Ok(result);

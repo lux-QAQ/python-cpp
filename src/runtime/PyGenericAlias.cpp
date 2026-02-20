@@ -32,7 +32,7 @@ PyGenericAlias::PyGenericAlias(PyObject *origin, PyTuple *args, PyObject *parame
 PyResult<PyGenericAlias *>
 	PyGenericAlias::create(PyObject *origin, PyObject *args, PyObject *parameters)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *args_as_tuple = as<PyTuple>(args);
 	if (!args_as_tuple) {
 		auto args_ = PyTuple::create(args);

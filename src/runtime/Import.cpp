@@ -17,6 +17,7 @@
 #include "runtime/KeyError.hpp"
 #include "runtime/PyObject.hpp"
 #include "runtime/PyString.hpp"
+#include "runtime/RuntimeContext.hpp"
 #include "runtime/Value.hpp"
 #include "runtime/compat.hpp"
 #include "vm/VM.hpp"
@@ -154,9 +155,18 @@ namespace {
 			auto value = spec.unwrap()->get_attribute(PyString::create("_initializing").unwrap());
 			if (value.is_err()) return Ok(std::monostate{});
 
-			auto initializing = truthy(value.unwrap(), VirtualMachine::the().interpreter());
-			if (initializing.is_err()) return Err(initializing.unwrap_err());
-			if (initializing.unwrap()) {
+
+			bool initializing = false;
+			if (RuntimeContext::has_current()) {
+				initializing = RuntimeContext::current().is_true(value.unwrap());
+			} else {
+				// 降级：通过 true_() 方法判断
+				auto result = value.unwrap()->true_();
+				if (result.is_err()) return Err(result.unwrap_err());
+				initializing = result.unwrap();
+			}
+
+			if (initializing) {
 				auto _lock_unlock_module = PyString::create("_lock_unlock_module");
 				if (_lock_unlock_module.is_err()) return Err(_lock_unlock_module.unwrap_err());
 				auto args = PyTuple::create(name);
@@ -247,10 +257,19 @@ PyResult<PyObject *> import_module_level_object(PyString *name,
 
 	if (module.is_err()) { return module; }
 
+
 	const auto has_from = [fromlist]() -> PyResult<bool> {
 		if (!fromlist) { return Ok(false); }
-		return truthy(fromlist, VirtualMachine::the().interpreter());
+
+		// 新路径：使用 RuntimeContext
+		if (RuntimeContext::has_current()) {
+			return Ok(RuntimeContext::current().is_true(fromlist));
+		}
+
+		// 降级：使用 true_() 方法
+		return fromlist->true_();
 	}();
+
 	if (has_from.is_err()) { return Err(has_from.unwrap_err()); }
 
 	if (!has_from.unwrap()) {

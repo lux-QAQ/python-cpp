@@ -57,7 +57,7 @@ PyResult<bool> PyBool::true_()
 
 PyResult<PyBool *> PyBool::create(bool value)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *result = PYLANG_ALLOC(PyBool, value);
 	ASSERT(result);
 	return Ok(result);

@@ -81,42 +81,42 @@ PyTuple::PyTuple(PyType *type, const std::vector<PyObject *> &elements)
 
 PyResult<PyTuple *> PyTuple::create()
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	if (auto *obj = PYLANG_ALLOC(PyTuple, )) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(std::vector<Value> &&elements)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	if (auto *obj = PYLANG_ALLOC(PyTuple, std::move(elements))) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(PyType *type, std::vector<Value> elements)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	if (auto *obj = PYLANG_ALLOC(PyTuple, type, std::move(elements))) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(PyType *type, const std::vector<PyObject *> &elements)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	if (auto *obj = PYLANG_ALLOC(PyTuple, type, elements)) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(const std::vector<PyObject *> &elements)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	if (auto *obj = PYLANG_ALLOC(PyTuple, elements)) { return Ok(obj); }
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
 PyResult<PyTuple *> PyTuple::create(std::vector<PyObject *> &&elements)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	if (auto *obj = PYLANG_ALLOC(PyTuple, make_value_vector(std::move(elements)))) {
 		return Ok(obj);
 	}
@@ -173,7 +173,7 @@ PyResult<PyObject *> PyTuple::__new__(const PyType *type, PyTuple *args, PyDict 
 
 	auto [iterable] = result.unwrap();
 	if (!iterable) {
-		// auto &heap = VirtualMachine::the().heap();
+
 		if (auto *obj = PYLANG_ALLOC(PyTuple, const_cast<PyType *>(type))) { return Ok(obj); }
 		return Err(memory_error(sizeof(PyTuple)));
 	}
@@ -218,25 +218,23 @@ PyResult<PyObject *> PyTuple::__add__(const PyObject *other) const
 
 PyResult<PyObject *> PyTuple::__eq__(const PyObject *other) const
 {
-	if (!as<PyTuple>(other)) { return Ok(py_false()); }
+    if (!as<PyTuple>(other)) { return Ok(py_false()); }
 
-	auto *other_tuple = as<PyTuple>(other);
-	// Value contains PyObject* so we can't just compare vectors with std::vector::operator==
-	// otherwise if we compare PyObject* with PyObject* we compare the pointers, rather
-	// than PyObject::__eq__(const PyObject*)
-	if (m_elements.size() != other_tuple->elements().size()) { return Ok(py_false()); }
-	auto &interpreter = VirtualMachine::the().interpreter();
-	const bool result = std::equal(m_elements.begin(),
-		m_elements.end(),
-		other_tuple->elements().begin(),
-		[&interpreter](const auto &lhs, const auto &rhs) -> bool {
-			const auto &result = equals(lhs, rhs, interpreter);
-			ASSERT(result.is_ok());
-			auto is_true = truthy(result.unwrap(), interpreter);
-			ASSERT(is_true.is_ok());
-			return is_true.unwrap();
-		});
-	return Ok(result ? py_true() : py_false());
+    auto *other_tuple = as<PyTuple>(other);
+    if (m_elements.size() != other_tuple->elements().size()) { return Ok(py_false()); }
+
+    // 修改：使用 RuntimeContext 替代 VirtualMachine::the().interpreter()
+    const bool result = std::equal(m_elements.begin(),
+        m_elements.end(),
+        other_tuple->elements().begin(),
+        [](const auto &lhs, const auto &rhs) -> bool {
+            if (!RuntimeContext::has_current()) { return false; }
+            auto &ctx = RuntimeContext::current();
+            auto *eq_result = ctx.equals(
+                PyObject::from(lhs).unwrap(), PyObject::from(rhs).unwrap());
+            return ctx.is_true(eq_result);
+        });
+    return Ok(result ? py_true() : py_false());
 }
 
 PyResult<PyObject *> PyTuple::__getitem__(int64_t index)
@@ -336,7 +334,7 @@ PyTupleIterator::PyTupleIterator(const PyTuple &pytuple, size_t position) : PyTu
 
 PyResult<PyTupleIterator *> PyTupleIterator::create(const PyTuple &pytuple)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *obj = PYLANG_ALLOC(PyTupleIterator, pytuple);
 	if (!obj) return Err(memory_error(sizeof(PyTupleIterator)));
 	return Ok(obj);

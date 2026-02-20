@@ -179,9 +179,13 @@ struct ScopedNoOp
 #define PYLANG_ALLOC(Type, ...) VirtualMachine::the().heap().allocate<Type>(__VA_ARGS__)
 
 #define PYLANG_ALLOC_WITH_EXTRA(Type, Extra, ...) \
-	VirtualMachine::the().heap().allocate_with_extra_bytes<Type>(Extra, __VA_ARGS__)
+    VirtualMachine::the().heap().allocate_with_extra_bytes<Type>(Extra, __VA_ARGS__)
 
 #define PYLANG_VISIT_GRAPH_BODY(visitor) /* use original implementation */
+
+#define PYLANG_GC_PAUSE_SCOPE() \
+    [[maybe_unused]] auto _pylang_gc_pause_##__LINE__ = \
+        VirtualMachine::the().heap().scoped_gc_pause();
 
 #endif// PYLANG_USE_SHARED_PTR
 
@@ -191,8 +195,8 @@ struct ScopedNoOp
 // =============================================================================
 
 
-#define PYLANG_GC_PAUSE_SCOPE() \
-	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
+// #define PYLANG_GC_PAUSE_SCOPE() \
+// 	[[maybe_unused]] auto scope = VirtualMachine::the().heap().scoped_gc_pause();
 
 // 检查分配结果并返回 MemoryError
 // 用法:

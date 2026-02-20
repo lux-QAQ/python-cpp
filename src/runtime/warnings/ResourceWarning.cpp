@@ -13,7 +13,7 @@ ResourceWarning::ResourceWarning(PyType *, PyTuple *args) : Warning(types::resou
 
 PyResult<ResourceWarning *> ResourceWarning::create(PyType *type, PyTuple *args)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *result = PYLANG_ALLOC(ResourceWarning, type, args);
 	if (!result) { return Err(memory_error(sizeof(Warning))); }
 	return Ok(result);

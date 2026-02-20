@@ -41,7 +41,7 @@ namespace {
 PyResult<PyFrozenSet *> PyFrozenSet::create()
 {
 	if (!s_frozen_set) {
-		// auto &heap = VirtualMachine::the().heap();
+
 		s_frozen_set = PYLANG_ALLOC(PyFrozenSet, );
 		ASSERT(s_frozen_set);
 	}
@@ -140,7 +140,7 @@ PyResult<PyObject *> PyFrozenSet::__repr__() const { return PyString::create(to_
 
 PyResult<PyObject *> PyFrozenSet::__iter__() const
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *it = PYLANG_ALLOC(PySetIterator, *this);
 	if (!it) { return Err(memory_error(sizeof(PySetIterator))); }
 	return Ok(it);

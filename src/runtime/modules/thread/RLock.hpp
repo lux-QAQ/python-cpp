@@ -31,7 +31,7 @@ class RLock : public PyBaseObject
   public:
 	static PyResult<RLock *> create()
 	{
-		// auto *result = VirtualMachine::the().heap().allocate<RLock>();
+		
 		auto *result = PYLANG_ALLOC(RLock);
 		if (!result) { return Err(memory_error(sizeof(RLock))); }
 		return Ok(result);

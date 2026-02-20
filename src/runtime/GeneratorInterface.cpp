@@ -56,22 +56,20 @@ template<typename T> PyResult<PyObject *> GeneratorInterface<T>::__next__()
 template<typename T> PyResult<PyObject *> GeneratorInterface<T>::send(PyObject *value)
 {
 	if (m_is_running) { return Err(value_error("generator already executing")); }
-	if (m_frame == nullptr) {
-		// exhausted generator, or raised an exception
-		return Err(stop_iteration(py_none()));
-	}
+	if (m_frame == nullptr) { return Err(stop_iteration(py_none())); }
 
-	// send the value to the coroutine
 	m_last_sent_value = value;
-
 	m_is_running = true;
 
 	ASSERT(m_code);
 	ASSERT(as<PyCode>(m_code));
 
-	m_frame->m_f_back = VirtualMachine::the().interpreter().execution_frame();
-	auto result = VirtualMachine::the().interpreter().call(
-		as<PyCode>(m_code)->function(), m_frame, *m_stack_frame);
+
+	ASSERT(RuntimeContext::has_current() && RuntimeContext::current().has_interpreter());
+	auto *interpreter = RuntimeContext::current().interpreter();
+
+	m_frame->m_f_back = interpreter->execution_frame();
+	auto result = interpreter->call(as<PyCode>(m_code)->function(), m_frame, *m_stack_frame);
 
 	m_is_running = false;
 	m_frame->m_f_back = nullptr;

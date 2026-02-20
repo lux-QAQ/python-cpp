@@ -150,6 +150,7 @@ set(RUNTIME_SOURCE_FILES
     runtime/warnings/PendingDeprecationWarning.cpp
     runtime/warnings/ResourceWarning.cpp
     runtime/warnings/Warning.cpp
+    runtime/RuntimeContext.cpp
     runtime/AssertionError.cpp
     runtime/AttributeError.cpp
     runtime/BaseException.cpp

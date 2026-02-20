@@ -14,7 +14,7 @@ DeprecationWarning::DeprecationWarning(PyType *, PyTuple *args)
 
 PyResult<DeprecationWarning *> DeprecationWarning::create(PyType *type, PyTuple *args)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *result = PYLANG_ALLOC(DeprecationWarning, type, args);
 	if (!result) { return Err(memory_error(sizeof(Warning))); }
 	return Ok(result);

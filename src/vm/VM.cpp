@@ -100,6 +100,8 @@ VirtualMachine::VirtualMachine()
 	uintptr_t *rbp;
 	asm volatile("movq %%rbp, %0" : "=r"(rbp));
 	m_heap->set_start_stack_pointer(rbp);
+
+	py::RuntimeContext::set_current(&m_runtime_ctx);
 }
 
 std::unique_ptr<StackFrame>
@@ -135,6 +137,13 @@ Interpreter &VirtualMachine::initialize_interpreter(std::shared_ptr<Program> &&p
 {
 	m_interpreter = std::make_unique<Interpreter>();
 	m_interpreter->setup_main_interpreter(std::static_pointer_cast<BytecodeProgram>(program));
+
+	m_runtime_ctx.set_interpreter(m_interpreter.get());
+
+	// 新增：注册栈访问提供者
+	m_runtime_ctx.set_stack_local_provider(
+		[this](size_t index) -> Value & { return this->stack_local(index); });
+
 	return *m_interpreter;
 }
 

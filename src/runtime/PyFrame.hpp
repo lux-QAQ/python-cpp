@@ -2,8 +2,8 @@
 
 #include "forward.hpp"
 #include "runtime/PyObject.hpp"
+#include "runtime/RuntimeContext.hpp"// 新增
 #include "runtime/Value.hpp"
-#include "vm/VM.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -98,5 +98,7 @@ class PyFrame : public PyBaseObject
   private:
 	PyFrame();
 };
+
+
 
 }// namespace py

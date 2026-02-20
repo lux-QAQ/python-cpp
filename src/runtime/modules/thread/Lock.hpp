@@ -31,7 +31,7 @@ class Lock : public PyBaseObject
   public:
 	static PyResult<Lock *> create()
 	{
-		// auto *result = VirtualMachine::the().heap().allocate<Lock>();
+
 		auto *result = PYLANG_ALLOC(Lock);
 		if (!result) { return Err(memory_error(sizeof(Lock))); }
 		return Ok(result);

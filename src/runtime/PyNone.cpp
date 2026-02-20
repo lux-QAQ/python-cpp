@@ -25,11 +25,7 @@ PyResult<bool> PyNone::__bool__() const { return Ok(false); }
 
 PyResult<bool> PyNone::true_() { return Ok(false); }
 
-PyNone *PyNone::create()
-{
-	// auto &heap = VirtualMachine::the().heap();
-	return PYLANG_ALLOC(PyNone, );
-}
+PyNone *PyNone::create() { return PYLANG_ALLOC(PyNone, ); }
 
 PyType *PyNone::static_type() const { return types::none(); }
 

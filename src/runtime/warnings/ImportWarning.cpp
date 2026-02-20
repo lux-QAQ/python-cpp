@@ -12,7 +12,7 @@ ImportWarning::ImportWarning(PyType *type, PyTuple *args) : Warning(type, args) 
 
 PyResult<ImportWarning *> ImportWarning::create(PyType *type, PyTuple *args)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *result = PYLANG_ALLOC(ImportWarning, type, args);
 	if (!result) { return Err(memory_error(sizeof(ImportWarning))); }
 	return Ok(result);

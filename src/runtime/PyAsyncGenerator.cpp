@@ -44,7 +44,7 @@ PyResult<PyAsyncGenerator *> PyAsyncGenerator::create(PyFrame *frame,
 	PyString *name,
 	PyString *qualname)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	if (auto *obj = PYLANG_ALLOC(PyAsyncGenerator,
 			frame,
 			std::move(stack_frame),

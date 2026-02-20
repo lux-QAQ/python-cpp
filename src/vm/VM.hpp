@@ -3,6 +3,7 @@
 #include "executable/FunctionBlock.hpp"
 #include "forward.hpp"
 #include "memory/Heap.hpp"
+#include "runtime/RuntimeContext.hpp"
 #include "runtime/Value.hpp"
 #include "utilities.hpp"
 
@@ -74,6 +75,7 @@ class VirtualMachine
 	std::vector<py::Value>::const_iterator m_base_pointer;
 	std::unique_ptr<Interpreter> m_interpreter;
 	std::unique_ptr<Heap> m_heap;
+	py::RuntimeContext m_runtime_ctx;
 	State *m_state{ nullptr };
 
 	friend StackFrame;

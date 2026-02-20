@@ -180,19 +180,20 @@ std::string PyNativeFunction::to_string() const
 
 PyResult<PyObject *> PyNativeFunction::__call__(PyTuple *args, PyDict *kwargs)
 {
-	// auto result_reg_value = VirtualMachine::the().reg(0);
-	auto result = [this, args, kwargs]() {
+
+	ASSERT(RuntimeContext::has_current() && RuntimeContext::current().has_interpreter());
+	auto *interpreter = RuntimeContext::current().interpreter();
+
+	auto result = [this, args, kwargs, interpreter]() {
 		if (is_method()) {
 			ASSERT(m_self);
-			return VirtualMachine::the().interpreter().call(this, m_self, args, kwargs);
+			return interpreter->call(this, m_self, args, kwargs);
 		} else {
-			return VirtualMachine::the().interpreter().call(this, args, kwargs);
+			return interpreter->call(this, args, kwargs);
 		}
 	}();
-	// VirtualMachine::the().reg(0) = std::move(result_reg_value);
 	return result;
 }
-
 PyResult<PyObject *> PyNativeFunction::__repr__() const { return PyString::create(to_string()); }
 
 void PyNativeFunction::visit_graph(Visitor &visitor)

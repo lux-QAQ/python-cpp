@@ -56,7 +56,7 @@ PyResult<PyObject *> PyFloat::__new__(const PyType *type, PyTuple *args, PyDict 
 
 PyResult<PyFloat *> PyFloat::create(double value)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *obj = PYLANG_ALLOC(PyFloat, value);
 	if (!obj) { return Err(memory_error(sizeof(PyFloat))); }
 	return Ok(obj);

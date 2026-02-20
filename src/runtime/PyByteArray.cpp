@@ -49,7 +49,7 @@ PyByteArray::PyByteArray(const Bytes &value)
 
 PyResult<PyByteArray *> PyByteArray::create(const Bytes &bytes)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *obj = PYLANG_ALLOC(PyByteArray, bytes);
 	if (!obj) { return Err(memory_error(sizeof(PyByteArray))); }
 	return Ok(obj);
@@ -528,7 +528,7 @@ PyByteArrayIterator::PyByteArrayIterator(PyByteArray *bytes, size_t index)
 
 PyResult<PyByteArrayIterator *> PyByteArrayIterator::create(PyByteArray *bytes_array)
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *obj = PYLANG_ALLOC(PyByteArrayIterator, bytes_array, 0);
 	if (!obj) { return Err(memory_error(sizeof(PyByteArrayIterator))); }
 	return Ok(obj);

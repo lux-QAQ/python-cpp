@@ -120,7 +120,7 @@ PyResult<PyObject *> PyRange::__repr__() const { return PyString::create(to_stri
 
 PyResult<PyObject *> PyRange::__iter__() const
 {
-	// auto &heap = VirtualMachine::the().heap();
+
 	auto *obj = PYLANG_ALLOC(PyRangeIterator, *this);
 	if (!obj) { return Err(memory_error(sizeof(PyRangeIterator))); }
 	return Ok(obj);
