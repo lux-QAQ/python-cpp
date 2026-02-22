@@ -3,7 +3,7 @@
 #include "PyString.hpp"
 #include "PyType.hpp"
 #include "TypeError.hpp"
-#include "interpreter/Interpreter.hpp"
+
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
