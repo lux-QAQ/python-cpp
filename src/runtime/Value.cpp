@@ -10,8 +10,7 @@
 #include "PyTuple.hpp"
 #include "PyType.hpp"
 #include "TypeError.hpp"
-#include "interpreter/Interpreter.hpp"
-//// #include "vm/VM.hpp"
+#include "interpreter/InterpreterCore.hpp"
 
 #include <cstdlib>
 #include <iostream>

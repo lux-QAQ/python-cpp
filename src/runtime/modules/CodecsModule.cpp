@@ -1,5 +1,5 @@
 #include "Modules.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "runtime/LookupError.hpp"
 #include "runtime/PyArgParser.hpp"
 #include "runtime/PyDict.hpp"

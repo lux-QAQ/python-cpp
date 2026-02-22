@@ -16,9 +16,9 @@
 #include "runtime/types/api.hpp"
 
 #include "config.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "runtime/modules/paths.hpp"
-// #include "vm/VM.hpp"
+
 
 #include "runtime/compat.hpp"
 #include <bit>

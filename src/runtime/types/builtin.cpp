@@ -131,6 +131,24 @@ BuiltinTypes::BuiltinTypes()
 	  m_unbound_local_error(UnboundLocalError::type_factory())
 {}
 
+
+#ifdef PYLANG_USE_ARENA
+#define INITIALIZE_TYPE(TYPENAME)                                                         \
+    PyType *TYPENAME()                                                                    \
+    {                                                                                     \
+        static PyType *type = nullptr;                                                    \
+        if (!type) {                                                                      \
+            /* 确保 PyType 分配在 program_arena */                                         \
+            Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;             \
+            Arena::set_current(&ArenaManager::program_arena());                            \
+            auto &prototype = BuiltinTypes::the().TYPENAME();                             \
+            type = PyType::initialize(prototype);                                         \
+            spdlog::trace("Initialized builtin type {} @{}", type->name(), (void *)type); \
+            if (saved) Arena::set_current(saved);                                          \
+        }                                                                                 \
+        return type;                                                                      \
+    }
+#else
 #define INITIALIZE_TYPE(TYPENAME)                                                         \
 	PyType *TYPENAME()                                                                    \
 	{                                                                                     \
@@ -142,7 +160,7 @@ BuiltinTypes::BuiltinTypes()
 		}                                                                                 \
 		return type;                                                                      \
 	}
-
+#endif
 INITIALIZE_TYPE(type)
 INITIALIZE_TYPE(super)
 

@@ -9,11 +9,11 @@
 #include "StopIteration.hpp"
 #include "TypeError.hpp"
 #include "ValueError.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-// #include "vm/VM.hpp"
+
 
 namespace py {
 

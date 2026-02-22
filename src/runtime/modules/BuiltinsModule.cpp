@@ -49,7 +49,7 @@
 #include "executable/bytecode/codegen/BytecodeGenerator.hpp"
 #include "executable/bytecode/instructions/FunctionCall.hpp"
 
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 
 #include "lexer/Lexer.hpp"
 
@@ -57,7 +57,6 @@
 
 #include "parser/Parser.hpp"
 
-// #include "vm/VM.hpp"
 
 #include "runtime/compat.hpp"
 #include "utilities.hpp"

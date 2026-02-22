@@ -21,13 +21,13 @@
 #include "StopIteration.hpp"
 #include "TypeError.hpp"
 #include "ValueError.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "runtime/PyTuple.hpp"
 #include "runtime/RuntimeContext.hpp"
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-// #include "vm/VM.hpp"
+
 
 #include <algorithm>
 #include <string_view>

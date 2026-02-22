@@ -10,7 +10,6 @@
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-// #include "vm/VM.hpp"
 
 
 #include <gmpxx.h>

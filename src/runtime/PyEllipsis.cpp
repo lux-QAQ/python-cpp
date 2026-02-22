@@ -4,7 +4,7 @@
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-// // #include "vm/VM.hpp"
+
 
 namespace py {
 PyEllipsis::PyEllipsis(PyType *type) : PyBaseObject(type) {}
@@ -25,17 +25,29 @@ PyResult<PyObject *> PyEllipsis::__repr__() const { return PyString::create("Ell
 
 PyType *PyEllipsis::static_type() const { return types::ellipsis(); }
 
+// PyObject *py_ellipsis()
+// {
+// 	static PyObject *ellipsis = nullptr;
+// 	if (!ellipsis) {
+// 		auto obj = PyEllipsis::create();
+// 		ASSERT(obj.is_ok());
+// 		ellipsis = obj.unwrap();
+// 	}
+// 	return ellipsis;
+// }
 PyObject *py_ellipsis()
 {
-	static PyObject *ellipsis = nullptr;
-	if (!ellipsis) {
-		auto obj = PyEllipsis::create();
-		ASSERT(obj.is_ok());
-		ellipsis = obj.unwrap();
-	}
-	return ellipsis;
+    static PyObject *ellipsis = nullptr;
+    if (!ellipsis) {
+        Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;
+        Arena::set_current(&ArenaManager::program_arena());
+        auto obj = PyEllipsis::create();
+        ASSERT(obj.is_ok());
+        ellipsis = obj.unwrap();
+        if (saved) Arena::set_current(saved);
+    }
+    return ellipsis;
 }
-
 namespace {
 
 	std::once_flag ellipsis_flag;

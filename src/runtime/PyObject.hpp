@@ -8,7 +8,7 @@
 #include "runtime/compat.hpp"
 #include "runtime/forward.hpp"
 #ifndef PYLANG_USE_ARENA
-// #include "vm/VM.hpp"
+
 #endif
 
 #include <bitset>

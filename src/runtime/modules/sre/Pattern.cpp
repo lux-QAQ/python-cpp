@@ -12,7 +12,7 @@
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
 #include "utilities.hpp"
-// #include "vm/VM.hpp"
+
 #include "runtime/compat.hpp"
 #include <cstdint>
 #include <limits>

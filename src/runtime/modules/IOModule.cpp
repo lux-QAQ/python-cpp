@@ -11,14 +11,14 @@
 #include "runtime/PyString.hpp"
 #include "runtime/PyTuple.hpp"
 #include "runtime/PyType.hpp"
+#include "runtime/RuntimeContext.hpp"
 #include "runtime/StopIteration.hpp"
 #include "runtime/Value.hpp"
 #include "runtime/ValueError.hpp"
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
-#include "runtime/RuntimeContext.hpp"
 #include "utilities.hpp"
-// #include "vm/VM.hpp"
+
 #include <optional>
 #include <variant>
 
@@ -81,29 +81,26 @@ class IOBase : public PyBaseObject
 		return Ok(std::get<1>(result) == LookupAttrResult::FOUND);
 	}
 
-    PyResult<std::monostate> check_closed() const
-    {
-        auto closed = lookup_attribute(PyString::create("closed").unwrap());
-        if (std::get<0>(closed).is_err())
-            return Err(std::get<0>(closed).unwrap_err());
-        if (std::get<1>(closed) == LookupAttrResult::FOUND) {
-            // 旧: return truthy(std::get<0>(closed).unwrap(), VirtualMachine::the().interpreter())
-            // 新:
-            auto *closed_obj = std::get<0>(closed).unwrap();
-            bool is_closed = false;
-            if (py::RuntimeContext::has_current()) {
-                is_closed = py::RuntimeContext::current().is_true(closed_obj);
-            } else {
-                auto r = truthy(Value(closed_obj));
-                if (r.is_err()) return Err(r.unwrap_err());
-                is_closed = r.unwrap();
-            }
-            if (is_closed) {
-                return Err(value_error("I/O operation on closed file."));
-            }
-        }
-        return Ok(std::monostate{});
-    }
+	PyResult<std::monostate> check_closed() const
+	{
+		auto closed = lookup_attribute(PyString::create("closed").unwrap());
+		if (std::get<0>(closed).is_err()) return Err(std::get<0>(closed).unwrap_err());
+		if (std::get<1>(closed) == LookupAttrResult::FOUND) {
+			// 旧: return truthy(std::get<0>(closed).unwrap(), VirtualMachine::the().interpreter())
+			// 新:
+			auto *closed_obj = std::get<0>(closed).unwrap();
+			bool is_closed = false;
+			if (py::RuntimeContext::has_current()) {
+				is_closed = py::RuntimeContext::current().is_true(closed_obj);
+			} else {
+				auto r = truthy(Value(closed_obj));
+				if (r.is_err()) return Err(r.unwrap_err());
+				is_closed = r.unwrap();
+			}
+			if (is_closed) { return Err(value_error("I/O operation on closed file.")); }
+		}
+		return Ok(std::monostate{});
+	}
 
   public:
 	static constexpr std::string_view __doc__ =
@@ -858,22 +855,22 @@ struct Buffered
 		});
 	}
 
-    PyResult<bool> closed() const
-    {
-        auto init = check_initialized();
-        if (init.is_err()) return Err(init.unwrap_err());
+	PyResult<bool> closed() const
+	{
+		auto init = check_initialized();
+		if (init.is_err()) return Err(init.unwrap_err());
 
-        if (!raw) return Ok(false);
+		if (!raw) return Ok(false);
 
-        auto closed_attr = raw->get_attribute(PyString::create("closed").unwrap());
-        if (closed_attr.is_err()) return Err(closed_attr.unwrap_err());
+		auto closed_attr = raw->get_attribute(PyString::create("closed").unwrap());
+		if (closed_attr.is_err()) return Err(closed_attr.unwrap_err());
 
-        auto *closed_obj = closed_attr.unwrap();
-        if (py::RuntimeContext::has_current()) {
-            return Ok(py::RuntimeContext::current().is_true(closed_obj));
-        }
-        return truthy(Value(closed_obj));
-    }
+		auto *closed_obj = closed_attr.unwrap();
+		if (py::RuntimeContext::has_current()) {
+			return Ok(py::RuntimeContext::current().is_true(closed_obj));
+		}
+		return truthy(Value(closed_obj));
+	}
 
 	PyResult<PyObject *> close()
 	{

@@ -12,7 +12,7 @@
 #include "executable/bytecode/BytecodeProgram.hpp"
 #include "frozen/importlib.h"
 #include "frozen/importlib_external.h"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "modules/config.hpp"
 #include "runtime/KeyError.hpp"
 #include "runtime/ModuleRegistry.hpp"
@@ -21,7 +21,7 @@
 #include "runtime/RuntimeContext.hpp"
 #include "runtime/Value.hpp"
 #include "runtime/compat.hpp"
-// // #include "vm/VM.hpp"
+
 
 namespace py {
 

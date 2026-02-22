@@ -4,7 +4,7 @@
 #include "PyInteger.hpp"
 #include "PyString.hpp"
 #include "StopIteration.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "runtime/IndexError.hpp"
 #include "runtime/PySlice.hpp"
 #include "runtime/TypeError.hpp"
@@ -13,7 +13,7 @@
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-// #include "vm/VM.hpp"
+
 
 namespace py {
 

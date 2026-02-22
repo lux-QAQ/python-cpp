@@ -6,7 +6,7 @@
 #include "ValueError.hpp"
 #include "executable/Program.hpp"
 #include "executable/bytecode/codegen/BytecodeGenerator.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "modules/Modules.hpp"
 #include "parser/Parser.hpp"
 #include "runtime/AttributeError.hpp"
@@ -18,6 +18,9 @@
 #include <filesystem>
 
 namespace py {
+
+// 全局版本计数器 — 从 1 开始（0 表示"从未初始化"）
+std::atomic<uint64_t> PyModule::s_global_version{ 1 };
 
 PyModule::PyModule(PyType *type) : PyBaseObject(type) {}
 
@@ -69,29 +72,44 @@ PyResult<PyObject *> PyModule::__new__(const PyType *type, PyTuple *args, PyDict
 
 PyResult<int32_t> PyModule::__init__(PyTuple *args, PyDict *kwargs)
 {
-	ASSERT(args);
-	ASSERT(!kwargs || kwargs->map().empty());
+    ASSERT(args);
+    ASSERT(!kwargs || kwargs->map().empty());
 
-	auto *name = args->size() > 0 ? PyObject::from(args->elements()[0]).unwrap() : nullptr;
-	auto *doc = args->size() > 1 ? PyObject::from(args->elements()[1]).unwrap() : py_none();
-	if (!name) { TODO(); }
-	if (!as<PyString>(name)) { TODO(); }
+    auto *name = args->size() > 0 ? PyObject::from(args->elements()[0]).unwrap() : nullptr;
+    auto *doc = args->size() > 1 ? PyObject::from(args->elements()[1]).unwrap() : py_none();
+    if (!name) { TODO(); }
+    if (!as<PyString>(name)) { TODO(); }
 
-	m_module_name = as<PyString>(name);
-	m_doc = doc;
+    m_module_name = as<PyString>(name);
+    m_doc = doc;
 
-	auto attr = PyDict::create();
-	if (attr.is_err()) return Err(attr.unwrap_err());
-	m_attributes = attr.unwrap();
-	m_dict = m_attributes;
+    auto attr = PyDict::create();
+    if (attr.is_err()) return Err(attr.unwrap_err());
+    m_attributes = attr.unwrap();
+    m_dict = m_attributes;
 
-	m_attributes->insert(String{ "__name__" }, m_module_name);
-	m_attributes->insert(String{ "__doc__" }, m_doc);
+    // 使用 String key，与构造函数一致
+    m_attributes->insert(String{ "__name__" }, m_module_name);
+    m_attributes->insert(String{ "__doc__" }, m_doc);
 
-	return Ok(0);
+    return Ok(0);
 }
 
-void PyModule::add_symbol(PyString *key, const Value &value) { m_attributes->insert(key, value); }
+/// 添加符号并递增版本号
+void PyModule::add_symbol(PyString *key, const Value &value)
+{
+    // 必须使用 String key（不是 PyObject* key）！
+    // 原因：PyDict 的 ValueEq 在比较两个 PyObject* key 时会调用
+    // richcompare → py_true() → truthy() → true_()
+    // 如果 py_true() 所在的 Arena block 已被释放，会导致 use-after-free。
+    // 使用 String key 后，比较路径是 String==String → 返回 bool，
+    // 永远不调用 true_()。
+    m_attributes->insert(String{ key->value() }, value);
+    // 粗粒度: 全局 dict version 递增
+    m_dict_version = s_global_version.fetch_add(1, std::memory_order_relaxed);
+    // 细粒度: 该 key 的 version 递增
+    m_key_versions.bump(key->value());
+}
 
 namespace {
 	bool is_initializing(PyObject *spec)

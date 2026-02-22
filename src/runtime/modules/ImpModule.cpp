@@ -1,7 +1,7 @@
 #include "Modules.hpp"
 #include "config.hpp"
 #include "executable/bytecode/BytecodeProgram.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "runtime/Import.hpp"
 #include "runtime/ImportError.hpp"
 #include "runtime/PyBool.hpp"
@@ -12,7 +12,7 @@
 #include "runtime/PyNone.hpp"
 #include "runtime/PyType.hpp"
 #include "runtime/TypeError.hpp"
-// #include "vm/VM.hpp"
+
 
 namespace py {
 namespace {

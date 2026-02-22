@@ -40,11 +40,21 @@ std::function<std::unique_ptr<TypePrototype>()> NotImplemented::type_factory()
 	};
 }
 
+// NotImplemented *not_implemented()
+// {
+// 	static NotImplemented *value = nullptr;
+// 	if (!value) { value = NotImplemented::create().unwrap(); }
+// 	return value;
+// }
 NotImplemented *not_implemented()
 {
 	static NotImplemented *value = nullptr;
-	if (!value) { value = NotImplemented::create().unwrap(); }
+	if (!value) {
+		Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;
+		Arena::set_current(&ArenaManager::program_arena());
+		value = NotImplemented::create().unwrap();
+		if (saved) Arena::set_current(saved);
+	}
 	return value;
 }
-
 }// namespace py

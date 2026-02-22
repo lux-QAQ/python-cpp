@@ -3,7 +3,7 @@
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-// // #include "vm/VM.hpp"
+
 
 namespace py {
 
@@ -65,22 +65,46 @@ PyResult<PyBool *> PyBool::create(bool value)
 
 PyType *PyBool::static_type() const { return types::bool_(); }
 
+// PyObject *py_true()
+// {
+// 	static PyObject *value = nullptr;
+
+// 	if (!value) { value = PyBool::create(true).unwrap(); }
+
+// 	return value;
+// }
+
+// PyObject *py_false()
+// {
+// 	static PyObject *value = nullptr;
+
+// 	if (!value) { value = PyBool::create(false).unwrap(); }
+
+// 	return value;
+// }
 PyObject *py_true()
 {
-	static PyObject *value = nullptr;
-
-	if (!value) { value = PyBool::create(true).unwrap(); }
-
-	return value;
+    static PyObject *value = nullptr;
+    if (!value) {
+        // 纵深防御：确保分配在 program_arena
+        Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;
+        Arena::set_current(&ArenaManager::program_arena());
+        value = PyBool::create(true).unwrap();
+        if (saved) Arena::set_current(saved);
+    }
+    return value;
 }
 
 PyObject *py_false()
 {
-	static PyObject *value = nullptr;
-
-	if (!value) { value = PyBool::create(false).unwrap(); }
-
-	return value;
+    static PyObject *value = nullptr;
+    if (!value) {
+        Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;
+        Arena::set_current(&ArenaManager::program_arena());
+        value = PyBool::create(false).unwrap();
+        if (saved) Arena::set_current(saved);
+    }
+    return value;
 }
 
 namespace {

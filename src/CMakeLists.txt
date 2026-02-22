@@ -249,7 +249,24 @@ set(UNITTEST_SOURCES
     runtime/PyType_tests.cpp
     runtime/compat_tests.cpp
     runtime/PyInteger_refactor_tests.cpp
+    runtime/tests/ArenaObject_tests.cpp
+    runtime/tests/CompileIsolation_tests.cpp
+    runtime/tests/Import_tests.cpp
+    runtime/tests/InterpreterCore_tests.cpp
+    runtime/tests/KeyVersionTracker_tests.cpp
+    runtime/tests/ModuleInit_tests.cpp
+    runtime/tests/ModuleMangler_tests.cpp
+    runtime/tests/ModuleRegistry_tests.cpp
+    runtime/tests/ProviderChain_tests.cpp
+    runtime/tests/PyModule_add_symbol_tests.cpp
+    runtime/tests/PyModule_version_tests.cpp
+    runtime/tests/RuntimeAPI_tests.cpp
+    runtime/tests/RuntimeContext_tests.cpp
+    runtime/tests/RuntimeContext_truthy_tests.cpp
+    runtime/tests/Truthy_fallback_tests.cpp
+    runtime/tests/Value_truthy_tests.cpp
     testing/main.cpp)
+
 
 set(PYTHON_LIB_PATH ${cpython_SOURCE_DIR}/Lib)
 set(PYTHON_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})

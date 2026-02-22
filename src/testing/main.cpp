@@ -1,4 +1,4 @@
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "vm/VM.hpp"
 #ifdef PYLANG_USE_ARENA
 #include "memory/ArenaManager.hpp"
@@ -66,9 +66,6 @@ int main(int argc, char **argv)
 	auto ret =RUN_ALL_TESTS();
 
 
-
-
-	
 
 return ret;
 }

@@ -1,17 +1,38 @@
 #pragma once
 
-// 不包含 vm/VM.hpp！
+// 不包含 vm/VM.hpp!
 #include "forward.hpp"
+#include "memory/GarbageCollector.hpp"
 #include "runtime/forward.hpp"
+#include "utilities.hpp"
+
+#ifdef PYLANG_USE_ARENA
+#include "memory/Arena.hpp"
+#endif
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 class BytecodeProgram;
+struct StackFrame;
 
-/// Interpreter 的"瘦"接口 — runtime 层只需要这些
+// BaseException 前向声明（只用作指针参数，不需要完整定义）
+namespace py {
+class BaseException;
+}
+
+struct ScopedStack
+{
+	std::unique_ptr<StackFrame> top_frame;
+	~ScopedStack();
+	std::unique_ptr<StackFrame> release();
+};
+
 class Interpreter
+	: NonCopyable
+	, NonMoveable
 {
   private:
 	py::PyFrame *m_current_frame{ nullptr };
@@ -35,12 +56,21 @@ class Interpreter
 
 	Interpreter();
 
-	// ---- runtime 层需要的只读访问 ----
+	void raise_exception(py::BaseException *exception);
+
 	py::PyFrame *execution_frame() const { return m_current_frame; }
 	py::PyFrame *global_execution_frame() const { return m_global_frame; }
 	void set_execution_frame(py::PyFrame *frame) { m_current_frame = frame; }
 
+	[[nodiscard]] py::PyResult<std::monostate> store_object(const std::string &name,
+		const py::Value &value);
+	py::PyResult<py::Value> get_object(const std::string &name);
+
+	template<typename PyObjectType, typename... Args>
+	py::PyObject *allocate_object(const std::string &name, Args &&...args);
+
 	py::PyModule *get_imported_module(py::PyString *) const;
+
 	py::PyDict *modules() const { return m_modules; }
 	py::PyModule *importlib() const { return m_importlib; }
 	py::PyObject *importfunc() const { return m_import_func; }
@@ -52,31 +82,23 @@ class Interpreter
 	const std::string &entry_script() const { return m_entry_script; }
 	const std::vector<std::string> &argv() const { return m_argv; }
 
-	void raise_exception(py::BaseException *exception);
-
-	[[nodiscard]] py::PyResult<std::monostate> store_object(const std::string &name,
-		const py::Value &value);
-	py::PyResult<py::Value> get_object(const std::string &name);
-
-	void visit_graph(::Cell::Visitor &);
-
-	// ---- VM 层需要的方法（声明在此，实现在 Interpreter.cpp） ----
-	// 前向声明 StackFrame 即可，不需要完整定义
-	struct ScopedStack setup_call_stack(const std::unique_ptr<Function> &, py::PyFrame *);
-
-	py::PyResult<py::PyObject *> call(const std::unique_ptr<Function> &, py::PyFrame *);
-	py::PyResult<py::PyObject *>
-		call(const std::unique_ptr<Function> &, py::PyFrame *, struct StackFrame &);
-	py::PyResult<py::PyObject *> call(py::PyNativeFunction *, py::PyTuple *, py::PyDict *);
-	py::PyResult<py::PyObject *>
-		call(py::PyNativeFunction *, py::PyObject *, py::PyTuple *, py::PyDict *);
-
 	void setup(std::shared_ptr<BytecodeProgram> &&program);
 	void setup_main_interpreter(std::shared_ptr<BytecodeProgram> &&program);
 
-	// allocate_object 移到 .cpp 或单独头文件
-	template<typename PyObjectType, typename... Args>
-	py::PyObject *allocate_object(const std::string &name, Args &&...args);
+	ScopedStack setup_call_stack(const std::unique_ptr<Function> &, py::PyFrame *function_frame);
+
+	py::PyResult<py::PyObject *> call(const std::unique_ptr<Function> &,
+		py::PyFrame *function_frame);
+	py::PyResult<py::PyObject *>
+		call(const std::unique_ptr<Function> &, py::PyFrame *function_frame, StackFrame &frame);
+	py::PyResult<py::PyObject *>
+		call(py::PyNativeFunction *native_func, py::PyTuple *args, py::PyDict *kwargs);
+	py::PyResult<py::PyObject *> call(py::PyNativeFunction *native_func,
+		py::PyObject *self,
+		py::PyTuple *args,
+		py::PyDict *kwargs);
+
+	void visit_graph(::Cell::Visitor &);
 
   private:
 	void internal_setup(const std::string &name,
@@ -87,14 +109,6 @@ class Interpreter
 		const std::vector<std::string> &names,
 		Config &&,
 		std::shared_ptr<Program> &&);
-};
-
-// ScopedStack 前向声明足够，完整定义在 Interpreter.hpp
-struct ScopedStack
-{
-	std::unique_ptr<struct StackFrame> top_frame;
-	~ScopedStack();
-	std::unique_ptr<struct StackFrame> release();
 };
 
 void initialize_types();

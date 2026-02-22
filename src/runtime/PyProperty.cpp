@@ -5,10 +5,10 @@
 #include "PyNone.hpp"
 #include "PyString.hpp"
 #include "PyType.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-// #include "vm/VM.hpp"
+
 #include "runtime/compat.hpp"
 
 namespace py {

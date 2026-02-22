@@ -47,7 +47,7 @@ add_library(GTest::GMock ALIAS gmock)
 add_library(GTest::Main ALIAS gtest_main)
 
 option(ENABLE_CACHE "Enable build cache" ON)
-option(ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" OFF)
+option(ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" ON)
 option(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" OFF)
 option(ENABLE_LLVM_BACKEND "Enable LLVM as a Python execution backend" OFF)
 

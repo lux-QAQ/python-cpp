@@ -3,7 +3,7 @@
 #include "MemoryError.hpp"
 #include "PyObject.hpp"
 #include "runtime/compat.hpp"
-// #include "vm/VM.hpp"
+
 
 namespace py {
 

@@ -3,7 +3,7 @@
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-// #include "vm/VM.hpp"
+
 
 namespace py {
 
@@ -48,12 +48,24 @@ std::function<std::unique_ptr<TypePrototype>()> PyNone::type_factory()
 	};
 }
 
+// PyObject *py_none()
+// {
+// 	static PyObject *value = nullptr;
+
+// 	if (!value) { value = PyNone::create(); }
+
+// 	return value;
+// }
 PyObject *py_none()
 {
-	static PyObject *value = nullptr;
-
-	if (!value) { value = PyNone::create(); }
-
-	return value;
+    static PyObject *value = nullptr;
+    if (!value) {
+        Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;
+        Arena::set_current(&ArenaManager::program_arena());
+        value = PyNone::create();
+        if (saved) Arena::set_current(saved);
+    }
+    return value;
 }
+
 }// namespace py

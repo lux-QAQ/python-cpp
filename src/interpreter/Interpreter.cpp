@@ -14,6 +14,10 @@
 #include "runtime/PyObject.hpp"
 #include "runtime/PyString.hpp"
 #include "runtime/PyTuple.hpp"
+#include "runtime/PyType.hpp"
+#include "runtime/PyBool.hpp"
+#include "runtime/PyEllipsis.hpp"
+#include "runtime/NotImplemented.hpp"
 #include "runtime/Value.hpp"
 #include "runtime/modules/Modules.hpp"
 #include "runtime/modules/config.hpp"
@@ -33,6 +37,7 @@ void initialize_types()
 #ifndef PYLANG_USE_ARENA
 	[[maybe_unused]] auto scope_static_alloc =
 		VirtualMachine::the().heap().scoped_static_allocation();
+
 #endif
 	types::object();
 	types::type();
@@ -119,6 +124,14 @@ void initialize_types()
 	types::memory_error();
 	types::stop_iteration();
 	types::unbound_local_error();
+
+
+	
+	(void)py_none();
+	(void)py_true();
+	(void)py_false();
+	(void)py_ellipsis();
+	(void)not_implemented();
 }
 
 Interpreter::Interpreter() {}
@@ -180,9 +193,9 @@ void Interpreter::internal_setup(const std::string &name,
 	m_codec_search_path = PyList::create().unwrap();
 	m_codec_search_path_cache = PyDict::create().unwrap();
 
-	for (const auto &[name, module_factory] : builtin_modules) {
-		if (module_factory) { m_modules->insert(String{ std::string{ name } }, module_factory()); }
-	}
+	// for (const auto &[name, module_factory] : builtin_modules) {
+	// 	if (module_factory) { m_modules->insert(String{ std::string{ name } }, module_factory()); }
+	// }
 
 	{
 		auto open = io_module()->symbol_table()->map().at(String{ "open" });

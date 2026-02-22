@@ -3,10 +3,10 @@
 #include "PyString.hpp"
 #include "PyType.hpp"
 #include "TypeError.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
+#include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
-#include "runtime/compat.hpp"
 
 namespace py {
 
@@ -40,8 +40,8 @@ PyResult<PyMethodDescriptor *> PyMethodDescriptor::create(PyString *name,
 	MethodDefinition &method,
 	std::vector<PyObject *> &&captures)
 {
-	auto *obj = PYLANG_ALLOC(PyMethodDescriptor, 
-		name, underlying_type, method, std::move(captures));
+	auto *obj =
+		PYLANG_ALLOC(PyMethodDescriptor, name, underlying_type, method, std::move(captures));
 	if (!obj) { return Err(memory_error(sizeof(PyMethodDescriptor))); }
 	return Ok(obj);
 }

@@ -11,7 +11,7 @@
 #include "PyString.hpp"
 #include "PyTuple.hpp"
 #include "StopIteration.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "interpreter/InterpreterCore.hpp"
 #include "runtime/NotImplementedError.hpp"
 #include "runtime/PyObject.hpp"
 #include "runtime/TypeError.hpp"
@@ -19,7 +19,7 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "utilities.hpp"
-// #include "vm/VM.hpp"
+
 
 #include "runtime/compat.hpp"
 #include <algorithm>

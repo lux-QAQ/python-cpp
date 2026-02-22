@@ -10,8 +10,7 @@
 #include "RuntimeError.hpp"
 #include "StopIteration.hpp"
 #include "ValueError.hpp"
-#include "interpreter/Interpreter.hpp"
-//// #include "vm/VM.hpp"
+#include "interpreter/InterpreterCore.hpp"
 
 namespace py {
 

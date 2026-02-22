@@ -53,7 +53,6 @@
 #else
 // ---- 旧路径: Heap + GC (不变) ----
 
-// #include "vm/VM.hpp"
 
 #define PYLANG_ALLOC(Type, ...) VirtualMachine::the().heap().allocate<Type>(__VA_ARGS__)
 
@@ -88,3 +87,17 @@
 	do {                                                        \
 		if (!(ptr)) { return Err(memory_error(sizeof(Type))); } \
 	} while (0)
+
+#ifdef PYLANG_USE_ARENA
+#include "memory/ArenaManager.hpp"
+
+/// 在 program_arena 中分配——对象生命周期 = 程序生命周期
+/// 用于 py_true(), py_false(), py_none(), PyType 等 immortal 单例
+#define PYLANG_ALLOC_IMMORTAL(Type, ...) \
+	::py::ArenaManager::program_arena().allocate<Type>(__VA_ARGS__)
+
+#else
+
+#define PYLANG_ALLOC_IMMORTAL(Type, ...) VirtualMachine::the().heap().allocate<Type>(__VA_ARGS__)
+
+#endif
