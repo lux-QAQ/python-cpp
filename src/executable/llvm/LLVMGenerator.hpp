@@ -19,6 +19,7 @@ class LLVMGenerator : public ast::CodeGenerator
 	std::unique_ptr<Context> m_ctx;
 
 	LLVMGenerator();
+	~LLVMGenerator() override; // 新增：只声明，不在头文件内联
 
   public:
 	static std::shared_ptr<Program> compile(std::shared_ptr<ast::ASTNode> node,

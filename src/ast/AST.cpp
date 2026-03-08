@@ -36,6 +36,10 @@ void NodeVisitor::dispatch(ASTNode *node)
 AST_NODE_TYPES
 #undef __AST_NODE_TYPE
 
+Constant::~Constant() = default;
+
+//Constant::Constant(double value, SourceLocation source_location);
+
 void NodeVisitor::visit(Constant *) {}
 
 void NodeVisitor::visit(Expression *node) { dispatch(node->value().get()); }

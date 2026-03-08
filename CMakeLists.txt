@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 include(FetchContent)
 include(ExternalProject)
 include(CheckCXXSourceCompiles)
@@ -6,10 +7,22 @@ include(CheckCXXSourceCompiles)
 project(python++)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 include(cmake/CPM.cmake)
 
+
+CPMAddPackage(
+    NAME zstd
+    GITHUB_REPOSITORY facebook/zstd
+    GIT_TAG v1.5.5
+    SOURCE_SUBDIR build/cmake
+    OPTIONS
+        "ZSTD_BUILD_PROGRAMS OFF"  # 不编译命令行工具
+        "ZSTD_BUILD_SHARED OFF"    # 编译静态库，方便分发
+        "ZSTD_BUILD_STATIC ON"
+        "ZSTD_BUILD_CONTRIB OFF"
+)
 CPMAddPackage("gh:gabime/spdlog@1.8.5")
 CPMAddPackage("gh:google/googletest@1.17.0")
 CPMAddPackage("gh:jarro2783/cxxopts@3.3.1")
@@ -17,6 +30,10 @@ CPMAddPackage("gh:Tessil/ordered-map@1.2.0")
 CPMAddPackage("gh:python/cpython@3.9.25")
 CPMAddPackage("gh:antirez/linenoise#2.0")
 CPMAddPackage("gh:aminya/project_options@0.41.0")
+CPMAddPackage("gh:jeremy-rifkin/cpptrace@0.8.3")
+
+
+
 
 if(linenoise_ADDED)
   add_library(linenoise ${linenoise_SOURCE_DIR}/linenoise.c)
@@ -146,6 +163,9 @@ find_library(MATH_LIBRARY m)
 if(NOT MATH_LIBRARY)
 	message(FATAL_ERROR "Could not find math library")
 endif()
+
+# 传递 build 目录给测试
+add_compile_definitions(CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}")
 
 enable_testing()
 add_subdirectory(src)

@@ -205,6 +205,7 @@ class Constant : public ASTNode
 	Constant(std::string value, SourceLocation source_location);
 	Constant(const char *value, SourceLocation source_location);
 	Constant(const py::Value &, SourceLocation source_location);
+	~Constant() override;
 
 	const py::Value *value() const { return m_value.get(); }
 

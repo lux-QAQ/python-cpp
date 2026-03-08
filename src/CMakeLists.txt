@@ -270,7 +270,6 @@ set(UNITTEST_SOURCES
     runtime/tests/Value_truthy_tests.cpp
     testing/main.cpp)
 
-
 set(PYTHON_LIB_PATH ${cpython_SOURCE_DIR}/Lib)
 set(PYTHON_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
 
@@ -289,8 +288,6 @@ add_library(
   ${RUNTIME_EXPORT_FILES}
   ${VM_SOURCE_FILES})
 
-# If the top-level option is set, add compile definition to enable Arena
-# memory management in the runtime (replaces Heap + GC).
 if(ENABLE_RUNTIME_ARENA)
   target_compile_definitions(python-cpp PUBLIC PYLANG_USE_ARENA)
 endif()
@@ -317,7 +314,6 @@ target_include_directories(python-cpp
 target_compile_options(
   python-cpp
   PRIVATE
-  # -fno-omit-frame-pointer is needed, otherwise we cannot access the stack base pointer reliably
   -fno-omit-frame-pointer)
 
 if(STL_SUPPORTS_BIT_CAST)
@@ -327,16 +323,12 @@ endif()
 # MLIR backend
 add_subdirectory(executable/mlir)
 
-# Runtime bitcode generation — 独立于 LLVM JIT backend
-# 只要系统有 clang++ 和 llvm-link 就可以生成
+# Runtime bitcode generation
 add_subdirectory(runtime/export)
 
-target_link_libraries(python-cpp
-  PUBLIC
-  python-mlir
-)
+target_link_libraries(python-cpp PUBLIC python-mlir)
 
-# LLVM backend
+# LLVM backend (JIT execution)
 find_package(LLVM CONFIG 20.1)
 if(ENABLE_LLVM_BACKEND AND NOT LLVM_FOUND)
   message(FATAL_ERROR "Could not find LLVM in the local environment")
@@ -354,23 +346,22 @@ elseif(ENABLE_LLVM_BACKEND AND LLVM_FOUND)
 
   add_library(llvm-interface INTERFACE)
   target_include_directories(llvm-interface INTERFACE . )
-  # include llvm include directories as system paths to silence compiler warnings
   target_include_directories(llvm-interface SYSTEM INTERFACE ${LLVM_INCLUDE_DIRS})
   target_link_libraries(llvm-interface INTERFACE spdlog)
-  separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
-  target_compile_definitions(llvm-interface INTERFACE ${LLVM_DEFINITIONS_LIST})
+  separate_arguments(_llvm_backend_defs NATIVE_COMMAND ${LLVM_DEFINITIONS})
+  target_compile_definitions(llvm-interface INTERFACE ${_llvm_backend_defs})
 
   if(STL_SUPPORTS_BIT_CAST)
     target_compile_definitions(llvm-interface INTERFACE "STL_SUPPORTS_BIT_CAST")
   endif()
+  
   llvm_map_components_to_libnames(
-    llvm_libs
+    _llvm_backend_libs
     core
     orcjit
     x86asmparser
     x86codegen)
-  target_link_libraries(llvm-interface INTERFACE ${llvm_libs} project_options project_warnings)
-  # TODO: not all versions of llvm are ready for C++20, figure out when to use this
+  target_link_libraries(llvm-interface INTERFACE ${_llvm_backend_libs} project_options project_warnings)
   set_property(TARGET python-cpp-llvm PROPERTY CXX_STANDARD 17)
 
   add_library(python-cpp-llvm-tests OBJECT "executable/llvm/LLVMGenerator_tests.cpp")
@@ -396,12 +387,80 @@ target_link_libraries(python PRIVATE linenoise cxxopts python-cpp project_option
 add_executable(freeze utilities/freeze.cpp)
 target_link_libraries(freeze PRIVATE python-cpp cxxopts project_options project_warnings)
 target_include_directories(freeze SYSTEM PRIVATE ${MLIR_INCLUDE_DIRS})
+# =========================================================================
+# Compiler Frontend — header-only support library
+# =========================================================================
+add_library(pylang-support INTERFACE)
+target_include_directories(pylang-support INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Compiler Frontend
-add_library(pylang-compiler OBJECT compiler/Compiler.hpp)
-target_include_directories(pylang-compiler SYSTEM PRIVATE ${LLVM_INCLUDE_DIRS})
-separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
-target_compile_definitions(pylang-compiler PRIVATE ${LLVM_DEFINITIONS_LIST})
+if(LLVM_FOUND)
+  separate_arguments(_pylang_support_llvm_defs NATIVE_COMMAND ${LLVM_DEFINITIONS})
+  target_compile_definitions(pylang-support INTERFACE ${_pylang_support_llvm_defs})
 
-llvm_map_components_to_libnames(llvm_libs core irreader bitwriter support)
-target_link_libraries(pylang-compiler PRIVATE ${llvm_libs})
+  # ✅ 新增 linker 组件（用于 llvm::Linker）
+  llvm_map_components_to_libnames(_pylang_support_llvm_libs
+    core 
+    irreader 
+    bitreader 
+    bitwriter 
+    support 
+    transformutils    # CloneModule
+    linker            # ← 新增：llvm::Linker
+  )
+  target_link_libraries(pylang-support INTERFACE ${_pylang_support_llvm_libs})
+endif()
+
+target_link_libraries(pylang-support INTERFACE cpptrace::cpptrace spdlog)
+
+# =========================================================================
+# Compiler Frontend — RuntimeLinker
+# =========================================================================
+if(LLVM_FOUND)
+  file(GLOB_RECURSE COMPILER_SOURCE_FILES 
+    CONFIGURE_DEPENDS
+    compiler/**/*.cpp
+  )
+
+  list(FILTER COMPILER_SOURCE_FILES EXCLUDE REGEX ".*_test\\.cpp$")
+  list(FILTER COMPILER_SOURCE_FILES EXCLUDE REGEX ".*_tests\\.cpp$")
+
+  if(COMPILER_SOURCE_FILES)
+    add_library(pylang-compiler OBJECT ${COMPILER_SOURCE_FILES})
+    target_link_libraries(pylang-compiler PUBLIC pylang-support)
+    
+    # 因为 llvm 就是以 llvm/ 开头，正常普通 Include 就行。
+    target_include_directories(pylang-compiler PRIVATE ${LLVM_INCLUDE_DIRS})
+    
+  endif()
+
+  # =========================================================================
+  # Compiler Tests — 独立可执行文件
+  # =========================================================================
+  file(GLOB_RECURSE COMPILER_TEST_FILES
+    CONFIGURE_DEPENDS
+    compiler/**/*_test.cpp
+    compiler/**/*_tests.cpp
+  )
+
+if(COMPILER_TEST_FILES)
+    add_executable(compiler_tests ${COMPILER_TEST_FILES})
+    
+    target_include_directories(compiler_tests PRIVATE ${LLVM_INCLUDE_DIRS})
+    
+    target_link_libraries(compiler_tests PRIVATE 
+      pylang-support 
+      gtest
+      gtest_main
+    )
+    
+    target_compile_options(compiler_tests PRIVATE 
+      -Wno-deprecated-declarations
+    )
+    
+    if(TARGET pylang-compiler)
+      target_link_libraries(compiler_tests PRIVATE pylang-compiler)
+    endif()
+
+    gtest_discover_tests(compiler_tests)
+  endif()
+endif()

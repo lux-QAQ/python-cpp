@@ -1,0 +1,54 @@
+[build] FAILED: [code=1] src/CMakeFiles/compiler_tests.dir/compiler/Support/StringUtils_test.cpp.o 
+[build] /usr/bin/ccache /usr/lib/ccache/c++ -DCMAKE_BINARY_DIR=\"/home/lux/code/language/python-cpp/build/debug\" -DCPPTRACE_STATIC_DEFINE -DPYLANG_USE_ARENA -DSPDLOG_COMPILED_LIB -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -I/home/lux/code/language/python-cpp/src -isystem /usr/lib/llvm-20/include -isystem /mnt/e/code/miniconda3/Library/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/cpptrace/2b0e/include -isystem /home/lux/code/language/python-cpp/build/debug/_deps/cpptrace-build/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/spdlog/be97/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/googletest/1ace/googletest/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/googletest/1ace/googletest -g -std=c++23 -fcolor-diagnostics -Wno-deprecated-declarations -MD -MT src/CMakeFiles/compiler_tests.dir/compiler/Support/StringUtils_test.cpp.o -MF src/CMakeFiles/compiler_tests.dir/compiler/Support/StringUtils_test.cpp.o.d -o src/CMakeFiles/compiler_tests.dir/compiler/Support/StringUtils_test.cpp.o -c /home/lux/code/language/python-cpp/src/compiler/Support/StringUtils_test.cpp
+[build] In file included from /home/lux/code/language/python-cpp/src/compiler/Support/StringUtils_test.cpp:5:
+[build] In file included from /home/lux/code/language/python-cpp/src/compiler/Support/gtest_wrapper.hpp:43:
+[build] In file included from /mnt/e/code/miniconda3/Library/include/gtest/gtest.h:62:
+[build] In file included from /mnt/e/code/miniconda3/Library/include/gtest/internal/gtest-internal.h:68:
+[build] In file included from /mnt/e/code/miniconda3/Library/include/gtest/internal/gtest-type-util.h:43:
+[build] /usr/lib/llvm-20/include/cxxabi.h:55:1: error: conflicting types for '__cxa_init_primary_exception'
+[build]    55 | __cxa_init_primary_exception(void* object, std::type_info* tinfo, void(_LIBCXXABI_DTOR_FUNC* dest)(void*)) _LIBCXXABI_NOEXCEPT;
+[build]       | ^
+[build] /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/cxxabi_init_exception.h:70:7: note: previous declaration is here
+[build]    69 |       __cxa_refcounted_exception*
+[build]       |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[build]    70 |       __cxa_init_primary_exception(void *__object, std::type_info *__tinfo,
+[build]       |       ^
+[build] 1 error generated.
+[build] [2/5] Building CXX object src/CMakeFiles/compiler_tests.dir/compiler/Support/LLVMUtils_test.cpp.o
+[build] FAILED: [code=1] src/CMakeFiles/compiler_tests.dir/compiler/Support/LLVMUtils_test.cpp.o 
+[build] /usr/bin/ccache /usr/lib/ccache/c++ -DCMAKE_BINARY_DIR=\"/home/lux/code/language/python-cpp/build/debug\" -DCPPTRACE_STATIC_DEFINE -DPYLANG_USE_ARENA -DSPDLOG_COMPILED_LIB -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -I/home/lux/code/language/python-cpp/src -isystem /usr/lib/llvm-20/include -isystem /mnt/e/code/miniconda3/Library/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/cpptrace/2b0e/include -isystem /home/lux/code/language/python-cpp/build/debug/_deps/cpptrace-build/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/spdlog/be97/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/googletest/1ace/googletest/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/googletest/1ace/googletest -g -std=c++23 -fcolor-diagnostics -Wno-deprecated-declarations -MD -MT src/CMakeFiles/compiler_tests.dir/compiler/Support/LLVMUtils_test.cpp.o -MF src/CMakeFiles/compiler_tests.dir/compiler/Support/LLVMUtils_test.cpp.o.d -o src/CMakeFiles/compiler_tests.dir/compiler/Support/LLVMUtils_test.cpp.o -c /home/lux/code/language/python-cpp/src/compiler/Support/LLVMUtils_test.cpp
+[build] In file included from /home/lux/code/language/python-cpp/src/compiler/Support/LLVMUtils_test.cpp:4:
+[build] In file included from /home/lux/code/language/python-cpp/src/compiler/Support/gtest_wrapper.hpp:43:
+[build] In file included from /mnt/e/code/miniconda3/Library/include/gtest/gtest.h:62:
+[build] In file included from /mnt/e/code/miniconda3/Library/include/gtest/internal/gtest-internal.h:68:
+[build] In file included from /mnt/e/code/miniconda3/Library/include/gtest/internal/gtest-type-util.h:43:
+[build] /usr/lib/llvm-20/include/cxxabi.h:55:1: error: conflicting types for '__cxa_init_primary_exception'
+[build]    55 | __cxa_init_primary_exception(void* object, std::type_info* tinfo, void(_LIBCXXABI_DTOR_FUNC* dest)(void*)) _LIBCXXABI_NOEXCEPT;
+[build]       | ^
+[build] /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/cxxabi_init_exception.h:70:7: note: previous declaration is here
+[build]    69 |       __cxa_refcounted_exception*
+[build]       |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[build]    70 |       __cxa_init_primary_exception(void *__object, std::type_info *__tinfo,
+[build]       |       ^
+[build] 1 error generated.
+[build] [3/5] Building CXX object src/CMakeFiles/compiler_tests.dir/compiler/RuntimeLinker/RuntimeLinker_test.cpp.o
+[build] FAILED: [code=1] src/CMakeFiles/compiler_tests.dir/compiler/RuntimeLinker/RuntimeLinker_test.cpp.o 
+[build] /usr/bin/ccache /usr/lib/ccache/c++ -DCMAKE_BINARY_DIR=\"/home/lux/code/language/python-cpp/build/debug\" -DCPPTRACE_STATIC_DEFINE -DPYLANG_USE_ARENA -DSPDLOG_COMPILED_LIB -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -I/home/lux/code/language/python-cpp/src -isystem /usr/lib/llvm-20/include -isystem /mnt/e/code/miniconda3/Library/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/cpptrace/2b0e/include -isystem /home/lux/code/language/python-cpp/build/debug/_deps/cpptrace-build/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/spdlog/be97/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/googletest/1ace/googletest/include -isystem /home/lux/code/language/python-cpp/build/debug/.cache/CPM/googletest/1ace/googletest -g -std=c++23 -fcolor-diagnostics -Wno-deprecated-declarations -MD -MT src/CMakeFiles/compiler_tests.dir/compiler/RuntimeLinker/RuntimeLinker_test.cpp.o -MF src/CMakeFiles/compiler_tests.dir/compiler/RuntimeLinker/RuntimeLinker_test.cpp.o.d -o src/CMakeFiles/compiler_tests.dir/compiler/RuntimeLinker/RuntimeLinker_test.cpp.o -c /home/lux/code/language/python-cpp/src/compiler/RuntimeLinker/RuntimeLinker_test.cpp
+[build] In file included from /home/lux/code/language/python-cpp/src/compiler/RuntimeLinker/RuntimeLinker_test.cpp:4:
+[build] In file included from /home/lux/code/language/python-cpp/src/compiler/Support/gtest_wrapper.hpp:43:
+[build] In file included from /mnt/e/code/miniconda3/Library/include/gtest/gtest.h:62:
+[build] In file included from /mnt/e/code/miniconda3/Library/include/gtest/internal/gtest-internal.h:68:
+[build] In file included from /mnt/e/code/miniconda3/Library/include/gtest/internal/gtest-type-util.h:43:
+[build] /usr/lib/llvm-20/include/cxxabi.h:55:1: error: conflicting types for '__cxa_init_primary_exception'
+[build]    55 | __cxa_init_primary_exception(void* object, std::type_info* tinfo, void(_LIBCXXABI_DTOR_FUNC* dest)(void*)) _LIBCXXABI_NOEXCEPT;
+[build]       | ^
+[build] /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/cxxabi_init_exception.h:70:7: note: previous declaration is here
+[build]    69 |       __cxa_refcounted_exception*
+[build]       |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[build]    70 |       __cxa_init_primary_exception(void *__object, std::type_info *__tinfo,
+[build]       |       ^
+[build] 1 error generated.
+[build] ninja: build stopped: subcommand failed.
+[proc] 命令“/home/lux/soft/cmake/bin/cmake --build /home/lux/code/language/python-cpp/build/debug --config Debug --target all --”已退出，代码为 1
+[driver] 生成完毕: 00:00:02.595
+[build] 生成已完成，退出代码为 1

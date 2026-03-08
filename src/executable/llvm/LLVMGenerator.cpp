@@ -83,6 +83,8 @@ struct LLVMGenerator::Context
 
 LLVMGenerator::LLVMGenerator() : m_ctx(std::make_unique<Context>("test")) {}
 
+LLVMGenerator::~LLVMGenerator() = default;
+
 std::shared_ptr<Program> LLVMGenerator::compile(std::shared_ptr<ast::ASTNode> node,
 	std::vector<std::string> argv,
 	compiler::OptimizationLevel lvl)
