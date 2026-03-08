@@ -11,7 +11,8 @@ class Interpreter;
 
 namespace py {
 
-class RuntimeContext
+class 
+RuntimeContext
 {
 	::Interpreter *m_interpreter{ nullptr };
 	std::function<PyDict *()> m_globals_provider{ nullptr };

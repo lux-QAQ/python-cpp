@@ -1,22 +1,36 @@
 #include "rt_common.hpp"
-
-#include "runtime/ImportError.hpp"
+#include "runtime/Import.hpp"
 #include "runtime/PyString.hpp"
-#include "utilities.hpp"
-
-#include <cstdio>
-#include <cstdlib>
+#include "runtime/PyTuple.hpp"
+#include "runtime/PyDict.hpp"
 
 // =============================================================================
 // Tier 0: 模块操作
+// 修改签名：增加了 globals 和 locals (与 Python __import__ 规范对齐)
 // =============================================================================
 
-PYLANG_EXPORT_MODULE("import", "obj", "str,str,i32")
-py::PyObject *rt_import(const char *module_name, const char * /*from_list*/, int32_t /*level*/)
+PYLANG_EXPORT_MODULE("import", "obj", "str,obj,obj,obj,i32")
+py::PyObject *rt_import(
+    const char *module_name, 
+    py::PyObject *globals, 
+    py::PyObject *locals, 
+    py::PyObject *from_list, 
+    int32_t level)
 {
-	// Phase 2: 简化实现 —— 打印错误后 abort
-	// 完整的 import 机制需要 ModuleRegistry 实例，
-	// 在 Phase 2.5 中通过 rt_init 注册全局实例后再完善
-	std::fprintf(stderr, "rt_import: import not yet implemented (module: %s)\n", module_name);
-	TODO()  ;
+    auto *name_str = rt_unwrap(py::PyString::create(std::string(module_name)));
+    
+    // 如果 from_list 没有提供，使用空 tuple 默认值
+    if (!from_list) {
+        from_list = rt_unwrap(py::PyTuple::create()); 
+    }
+
+    // 严谨语义：委托给运行时的默认 import 实现。
+    // globals 参数不能丟，它是确定相对导入基础包路径（__package__）的核心。
+    return rt_unwrap(py::import_module_level_object(
+        name_str,
+        globals ? py::as<py::PyDict>(globals) : nullptr,
+        locals,
+        from_list,
+        static_cast<uint32_t>(level)
+    ));
 }

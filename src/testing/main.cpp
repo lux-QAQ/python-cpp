@@ -2,6 +2,7 @@
 #include "vm/VM.hpp"
 #ifdef PYLANG_USE_ARENA
 #include "memory/ArenaManager.hpp"
+#include "runtime/builtinTypeInit.hpp"
 #endif
 
 #include "gtest/gtest.h"
@@ -24,7 +25,7 @@ class PythonVMEnvironment : public ::testing::Environment
 		[[maybe_unused]] auto &vm = VirtualMachine::the();
 		vm.heap().set_start_stack_pointer(bit_cast<uintptr_t *>(m_argv));
 #endif
-		initialize_types();
+		py::initialize_types();
 	}
 
 	void TearDown() override

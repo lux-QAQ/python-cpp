@@ -96,7 +96,8 @@ void StackFrame::leave()
 VirtualMachine::VirtualMachine()
 	: m_stack(10'000, nullptr), m_stack_pointer(m_stack.begin()), m_base_pointer(m_stack_pointer)
 #ifndef PYLANG_USE_ARENA
-	  , m_heap(Heap::create())
+	  ,
+	  m_heap(Heap::create())
 #endif
 {
 #ifndef PYLANG_USE_ARENA
@@ -144,7 +145,7 @@ Interpreter &VirtualMachine::initialize_interpreter(std::shared_ptr<Program> &&p
 
 	m_runtime_ctx.set_interpreter(m_interpreter.get());
 
-	// 新增：注册栈访问提供者
+	// 注册栈访问提供者
 	m_runtime_ctx.set_stack_local_provider(
 		[this](size_t index) -> Value & { return this->stack_local(index); });
 

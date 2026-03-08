@@ -21,6 +21,7 @@
 #include "runtime/modules/Modules.hpp"
 #include "runtime/modules/config.hpp"
 #include "runtime/types/builtin.hpp"
+#include "runtime/builtinTypeInit.hpp"
 
 #include <gtest/gtest.h>
 

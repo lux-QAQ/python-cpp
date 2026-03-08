@@ -6,6 +6,7 @@
 #include "runtime/PyString.hpp"
 #include "runtime/modules/Modules.hpp"
 #include "runtime/modules/config.hpp"
+#include "runtime/builtinTypeInit.hpp"
 
 #include <gtest/gtest.h>
 #include <string>

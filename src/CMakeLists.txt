@@ -156,6 +156,7 @@ set(RUNTIME_SOURCE_FILES
     runtime/RuntimeContext.cpp
     runtime/AssertionError.cpp
     runtime/AttributeError.cpp
+    runtime/builtinTypeInit.cpp
     runtime/BaseException.cpp
     runtime/Exception.cpp
     runtime/GeneratorInterface.cpp

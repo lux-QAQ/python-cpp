@@ -13,7 +13,9 @@
 #include "executable/llvm/LLVMGenerator.hpp"
 #include "interpreter/Interpreter.hpp"
 #include "parser/Parser.hpp"
+#include "runtime/builtinTypeInit.hpp"
 #include "runtime/modules/Modules.hpp"
+
 #include "vm/VM.hpp"
 
 using namespace py;
@@ -67,7 +69,7 @@ int run_and_execute_script(size_t argc,
 	bool print_tokens,
 	bool use_llvm,
 	bool print_ast,
-	[[maybe_unused]]uint64_t gc_frequency)
+	[[maybe_unused]] uint64_t gc_frequency)
 {
 	size_t arg_idx{ 1 };
 	const char *filename = argv[arg_idx];
@@ -79,7 +81,7 @@ int run_and_execute_script(size_t argc,
 #ifndef PYLANG_USE_ARENA
 	vm.heap().garbage_collector().set_frequency(gc_frequency);
 #endif
-	initialize_types();
+	py::initialize_types();
 	auto lexer = Lexer::create(std::filesystem::absolute(filename));
 	if (print_tokens) {
 		auto l = Lexer::create(std::filesystem::absolute(filename));

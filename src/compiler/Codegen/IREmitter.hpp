@@ -1,0 +1,157 @@
+#pragma once
+
+#include "compiler/RuntimeLinker/RuntimeLinker.hpp"
+#include "compiler/Support/Error.hpp"
+
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
+
+#include <string_view>
+#include <unordered_map>
+
+namespace pylang {
+
+// =============================================================================
+// IREmitter — Runtime 函数调用生成器
+//
+// 职责:
+//   - 封装 RuntimeLinker，提供高层 API
+//   - 生成对 runtime 函数的 LLVM IR 调用
+//   - 管理常量字符串的全局变量
+//
+// 设计原则:
+//   - 方法返回 llvm::Value*（可能为 nullptr），不使用 Result<T>
+//   - 调用者（PylangCodegen）负责检查 nullptr 并转换为 Result<T>
+//   - 所有错误通过 log::codegen() 记录
+//
+// 用法:
+//   IREmitter emitter(builder, linker, module);
+//   auto *result = emitter.call_binary_add(lhs, rhs);
+//   if (!result) { return MAKE_ERROR(...); }
+// =============================================================================
+class IREmitter
+{
+  public:
+	IREmitter(llvm::IRBuilder<> &builder, RuntimeLinker &linker, llvm::Module *module)
+		: m_builder(builder), m_linker(linker), m_module(module)
+	{}
+
+	// ========== Tier 0: 单例 ==========
+	llvm::Value *get_none();
+	llvm::Value *get_true();
+	llvm::Value *get_false();
+	llvm::Value *get_ellipsis();
+	llvm::Value *get_not_implemented();
+
+	// ========== Tier 0: 对象创建 ==========
+	llvm::Value *create_string(std::string_view str);
+	llvm::Value *create_tuple(llvm::ArrayRef<llvm::Value *> elements);
+
+	// ========== Tier 1: 更多对象创建 ==========
+	llvm::Value *create_integer(int64_t value);
+	llvm::Value *create_float(double value);
+	llvm::Value *create_list(llvm::ArrayRef<llvm::Value *> elements);
+    llvm::Value *create_dict(llvm::ArrayRef<llvm::Value *> keys,
+                         llvm::ArrayRef<llvm::Value *> values);
+    llvm::Value *create_set(llvm::ArrayRef<llvm::Value *> elements);
+    llvm::Value *create_slice(llvm::Value *start, llvm::Value *stop, llvm::Value *step);
+    
+	// ========== Tier 1: 二元运算 ==========
+	llvm::Value *call_binary_add(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_sub(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_mul(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_truediv(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_floordiv(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_mod(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_pow(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_lshift(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_rshift(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_and(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_or(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_binary_xor(llvm::Value *lhs, llvm::Value *rhs);
+
+	// ========== Tier 1: 一元运算 ==========
+	llvm::Value *call_unary_neg(llvm::Value *obj);
+	llvm::Value *call_unary_pos(llvm::Value *obj);
+	llvm::Value *call_unary_invert(llvm::Value *obj);
+	llvm::Value *call_unary_not(llvm::Value *obj);
+
+	// ========== Tier 1: 类型转换 ==========
+	llvm::Value *call_is_true(llvm::Value *obj);
+
+	// ========== Tier 2: 比较操作 ==========
+	llvm::Value *call_compare_eq(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_compare_ne(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_compare_lt(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_compare_le(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_compare_gt(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_compare_ge(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_compare_is(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_compare_is_not(llvm::Value *lhs, llvm::Value *rhs);
+	llvm::Value *call_compare_in(llvm::Value *value, llvm::Value *container);
+	llvm::Value *call_compare_not_in(llvm::Value *value, llvm::Value *container);
+
+	// ========== Tier 2: 迭代器 ==========
+	llvm::Value *call_get_iter(llvm::Value *obj);
+
+	/// iter_next 返回下一个元素，has_value 是输出参数（i1*）
+	/// 如果迭代结束，has_value 设为 false，返回值为 nullptr
+	llvm::Value *call_iter_next(llvm::Value *iter, llvm::Value *has_value_out);
+
+	// ========== Tier 3: 下标访问 ==========
+	llvm::Value *call_getitem(llvm::Value *obj, llvm::Value *key);
+	void call_setitem(llvm::Value *obj, llvm::Value *key, llvm::Value *value);
+	void call_delitem(llvm::Value *obj, llvm::Value *key);
+
+	// ========== Tier 3: 容器方法 ==========
+	void call_list_append(llvm::Value *list, llvm::Value *value);
+	void call_set_add(llvm::Value *set, llvm::Value *value);
+    void call_list_extend(llvm::Value *list, llvm::Value *iterable);
+    void call_dict_merge(llvm::Value *dict, llvm::Value *other);
+    void call_dict_update(llvm::Value *dict, llvm::Value *other);
+    void call_set_update(llvm::Value *set, llvm::Value *iterable);
+	// ========== Tier 0: 属性访问 ==========
+	llvm::Value *call_getattr(llvm::Value *obj, std::string_view name);
+	llvm::Value *call_load_global(llvm::Value *module, std::string_view name);
+	void call_store_global(llvm::Value *module, std::string_view name, llvm::Value *value);
+	void call_setattr(llvm::Value *obj, std::string_view name, llvm::Value *value);
+	void call_delattr(llvm::Value *obj, std::string_view name);
+
+	// ========== Tier 0: 函数调用 ==========
+	llvm::Value *
+		call_function(llvm::Value *callable, llvm::Value *args, llvm::Value *kwargs = nullptr);
+
+	// ========== Tier 4: 方法调用 ==========
+	llvm::Value *call_load_method(llvm::Value *obj, std::string_view method_name);
+
+	// ========== Tier 0: 模块导入 ==========
+	llvm::Value *call_import(std::string_view module_name);
+
+	// ========== Tier 0: 异常处理 ==========
+	void call_raise(llvm::Value *exception);
+	llvm::Value *call_load_assertion_error();
+
+	// ========== 辅助方法 ==========
+	llvm::Type *pyobject_ptr_type() const { return m_linker.pyobject_ptr_type(); }
+	llvm::LLVMContext &context() const { return m_builder.getContext(); }
+
+  private:
+	/// 通用调用生成器（核心方法）
+	llvm::Value *emit_runtime_call(std::string_view func_name, llvm::ArrayRef<llvm::Value *> args);
+
+	/// 创建全局字符串常量（带缓存）
+	llvm::Constant *create_global_string(std::string_view str);
+
+	/// 创建 null PyObject* 常量
+	llvm::Constant *null_pyobject() const;
+
+	llvm::IRBuilder<> &m_builder;
+	RuntimeLinker &m_linker;
+	llvm::Module *m_module;
+
+	// 字符串常量缓存
+	std::unordered_map<std::string, llvm::Constant *> m_string_cache;
+};
+
+}// namespace pylang

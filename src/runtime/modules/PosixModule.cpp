@@ -1,4 +1,5 @@
 #include "Modules.hpp"
+#include "runtime/ModuleRegistry.hpp"
 #include "runtime/PyBytes.hpp"
 #include "runtime/PyDict.hpp"
 #include "runtime/PyFunction.hpp"
@@ -15,8 +16,8 @@
 #include <filesystem>
 #include <string_view>
 
-#include <sys/stat.h>
 #include "runtime/compat.hpp"
+#include <sys/stat.h>
 
 namespace fs = std::filesystem;
 
@@ -157,6 +158,18 @@ namespace {
 
 PyModule *posix_module()
 {
+
+
+	auto &reg = ModuleRegistry::instance();
+	auto [existing_mod, is_owner] = reg.get_or_register("posix");
+
+	// 如果其他线程正在初始化，或者同线程循环依赖，直接返回占位符/已有模块
+	if (!is_owner) { return existing_mod; }
+
+	// 阶段 2：异常回滚守卫
+	InitGuard guard("posix");
+
+
 	auto *s_posix_module = PyModule::create(PyDict::create().unwrap(),
 		PyString::create("posix").unwrap(),
 		PyString::create("The posix module!").unwrap())
@@ -289,6 +302,9 @@ PyModule *posix_module()
 		PyString::create("_have_functions").unwrap(), PyList::create().unwrap());
 
 	s_posix_module->add_symbol(PyString::create("environ").unwrap(), convertenviron().unwrap());
+
+	reg.register_module("posix", s_posix_module);// 将实指针存入
+	guard.commit();// 唤醒所有等待的并发线程
 
 	return s_posix_module;
 }

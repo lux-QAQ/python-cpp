@@ -10,7 +10,7 @@
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/SourceMgr.h>
 #include <llvm/Support/raw_ostream.h>
-#include <llvm/Transforms/Utils/Cloning.h>// ← 新增：CloneModule
+#include <llvm/Transforms/Utils/Cloning.h>// ← CloneModule
 
 #include <filesystem>
 #include <memory>

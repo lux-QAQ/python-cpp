@@ -1,5 +1,7 @@
 #include "Interpreter.hpp"
 
+
+
 #include "runtime/BaseException.hpp"
 #include "runtime/Import.hpp"
 #include "runtime/KeyError.hpp"
@@ -22,6 +24,7 @@
 #include "runtime/modules/Modules.hpp"
 #include "runtime/modules/config.hpp"
 #include "runtime/types/builtin.hpp"
+#include "runtime/builtinTypeInit.hpp"
 
 #include "executable/Program.hpp"
 #include "executable/bytecode/Bytecode.hpp"
@@ -32,107 +35,7 @@
 namespace fs = std::filesystem;
 using namespace py;
 
-void initialize_types()
-{
-#ifndef PYLANG_USE_ARENA
-	[[maybe_unused]] auto scope_static_alloc =
-		VirtualMachine::the().heap().scoped_static_allocation();
 
-#endif
-	types::object();
-	types::type();
-	types::super();
-	types::bool_();
-	types::bytes();
-	types::bytes_iterator();
-	types::bytearray();
-	types::bytearray_iterator();
-	types::ellipsis();
-	types::str();
-	types::str_iterator();
-	types::float_();
-	types::integer();
-	types::none();
-	types::module();
-	types::memoryview();
-	types::dict();
-	types::dict_items();
-	types::dict_items_iterator();
-	types::dict_keys();
-	types::dict_key_iterator();
-	types::dict_values();
-	types::dict_value_iterator();
-	types::mappingproxy();
-	types::list();
-	types::list_iterator();
-	types::list_reverseiterator();
-	types::tuple();
-	types::tuple_iterator();
-	types::set();
-	types::frozenset();
-	types::set_iterator();
-	types::range();
-	types::range_iterator();
-	types::reversed();
-	types::zip();
-	types::map();
-	types::enumerate();
-	types::slice();
-	types::iterator();
-	types::function();
-	types::native_function();
-	types::llvm_function();
-	types::code();
-	types::cell();
-	types::builtin_method();
-	types::slot_wrapper();
-	types::bound_method();
-	types::method_wrapper();
-	types::classmethod_descriptor();
-	types::getset_descriptor();
-	types::static_method();
-	types::property();
-	types::classmethod();
-	types::member_descriptor();
-	types::traceback();
-	types::not_implemented();
-	types::frame();
-	types::namespace_();
-	types::generator();
-	types::coroutine();
-	types::async_generator();
-	types::generic_alias();
-
-	types::base_exception();
-	types::exception();
-	types::type_error();
-	types::assertion_error();
-	types::attribute_error();
-	types::value_error();
-	types::name_error();
-	types::runtime_error();
-	types::import_error();
-	types::key_error();
-	types::not_implemented_error();
-	types::module_not_found_error();
-	types::os_error();
-	types::lookup_error();
-	types::index_error();
-	types::warning();
-	types::import_warning();
-	types::syntax_error();
-	types::memory_error();
-	types::stop_iteration();
-	types::unbound_local_error();
-
-
-	
-	(void)py_none();
-	(void)py_true();
-	(void)py_false();
-	(void)py_ellipsis();
-	(void)not_implemented();
-}
 
 Interpreter::Interpreter() {}
 
@@ -149,7 +52,7 @@ void Interpreter::internal_setup(const std::string &name,
 	{
 		PYLANG_GC_PAUSE_SCOPE();
 
-		initialize_types();
+		py::initialize_types();
 		m_modules = PyDict::create().unwrap();
 		m_entry_script = std::move(entry_script);
 		m_argv = std::move(argv);
