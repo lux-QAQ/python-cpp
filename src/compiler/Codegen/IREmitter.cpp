@@ -287,7 +287,7 @@ llvm::Value *IREmitter::call_function(llvm::Value *callable, llvm::Value *args, 
 	if (!kwargs) { kwargs = null_pyobject(); }
 	return emit_runtime_call("call", { callable, args, kwargs });
 }
-  
+
 llvm::Value *IREmitter::call_function_fast(llvm::Value *callable,
 	llvm::ArrayRef<llvm::Value *> args)
 {
@@ -529,27 +529,26 @@ void IREmitter::call_reraise(llvm::Value *exc)
 // Tier 4: 函数创建 (Phase 3.2)
 // =============================================================================
 
-llvm::Value *IREmitter::call_make_function(
-    std::string_view name,
-    llvm::Value *code_ptr,
-    llvm::Value *module,
-    llvm::Value *defaults,
-    llvm::Value *kwdefaults,
-    llvm::Value *closure)
+llvm::Value *IREmitter::call_make_function(std::string_view name,
+	llvm::Value *code_ptr,
+	llvm::Value *module,
+	llvm::Value *defaults,
+	llvm::Value *kwdefaults,
+	llvm::Value *closure)
 {
-    auto *name_str = create_global_string(name);
-    if (!module) { module = null_pyobject(); }
-    if (!defaults) { defaults = null_pyobject(); }
-    if (!kwdefaults) { kwdefaults = null_pyobject(); }
-    if (!closure) { closure = null_pyobject(); }
+	auto *name_str = create_global_string(name);
+	if (!module) { module = null_pyobject(); }
+	if (!defaults) { defaults = null_pyobject(); }
+	if (!kwdefaults) { kwdefaults = null_pyobject(); }
+	if (!closure) { closure = null_pyobject(); }
 
-    return emit_runtime_call(
-        "make_function", { name_str, code_ptr, module, defaults, kwdefaults, closure });
+	return emit_runtime_call(
+		"make_function", { name_str, code_ptr, module, defaults, kwdefaults, closure });
 }
 
 llvm::Value *IREmitter::call_get_closure(llvm::Value *func)
 {
-    return emit_runtime_call("get_closure", { func });
+	return emit_runtime_call("get_closure", { func });
 }
 
 // =============================================================================
@@ -558,7 +557,15 @@ llvm::Value *IREmitter::call_get_closure(llvm::Value *func)
 
 llvm::Value *IREmitter::call_load_build_class()
 {
-    return emit_runtime_call("load_build_class", {});
+	return emit_runtime_call("load_build_class", {});
 }
+
+// =============================================================================
+// 生命周期
+// =============================================================================
+
+void IREmitter::emit_init() { emit_runtime_call("init", {}); }
+
+void IREmitter::emit_shutdown() { emit_runtime_call("shutdown", {}); }
 
 }// namespace pylang

@@ -212,11 +212,71 @@ std::vector<const RuntimeFunction *> RuntimeLinker::list_by_category(
 // =============================================================================
 // RuntimeLinker::declare_in
 // =============================================================================
+// llvm::Function *RuntimeLinker::declare_in(llvm::Module *user_module, std::string_view name)
+// {
+//     std::string name_str(name);
+
+//     auto it = m_declared.find(name_str);
+//     if (it != m_declared.end()) { return it->second; }
+
+//     auto result = get_function(name);
+//     if (!result) {
+//         log::linker()->error("Cannot declare unknown function: {}", name);
+//         return nullptr;
+//     }
+
+//     const auto *rt_func = *result;
+
+//     auto *decl = llvm::Function::Create(rt_func->llvm_func_type,
+//         llvm::Function::ExternalLinkage,
+//         rt_func->llvm_func->getName(),
+//         user_module);
+
+//     decl->copyAttributesFrom(rt_func->llvm_func);
+
+//     m_declared[name_str] = decl;
+//     log::linker()->debug("Declared {} in user module", name);
+//     return decl;
+// }
+// llvm::Function *RuntimeLinker::declare_in(llvm::Module *user_module, std::string_view name)
+// {
+//     std::string name_str(name);
+
+//     auto it = m_declared.find(name_str);
+//     if (it != m_declared.end()) { return it->second; }
+
+//     auto result = get_function(name);
+//     if (!result) {
+//         log::linker()->error("Cannot declare unknown function: {}", name);
+//         return nullptr;
+//     }
+
+//     const auto *rt_func = *result;
+
+//     auto *decl = llvm::Function::Create(rt_func->llvm_func_type,
+//         llvm::Function::ExternalLinkage,
+//         rt_func->llvm_func->getName(),
+//         user_module);
+
+//     decl->copyAttributesFrom(rt_func->llvm_func);
+
+//     // runtime.bc 中的函数用 C++ 异常（invoke/landingpad），
+//     // 带有 personality function（__gxx_personality_v0）。
+//     // extern 声明不包含函数体，不需要也不能跨模块引用 personality。
+//     if (decl->hasPersonalityFn()) { decl->setPersonalityFn(nullptr); }
+
+//     m_declared[name_str] = decl;
+//     log::linker()->debug("Declared {} in user module", name);
+//     return decl;
+// }
+
 llvm::Function *RuntimeLinker::declare_in(llvm::Module *user_module, std::string_view name)
 {
-    std::string name_str(name);
+    // 缓存 key 包含 module 地址，防止跨 Module 复用声明
+    std::string cache_key =
+        std::to_string(reinterpret_cast<uintptr_t>(user_module)) + ":" + std::string(name);
 
-    auto it = m_declared.find(name_str);
+    auto it = m_declared.find(cache_key);
     if (it != m_declared.end()) { return it->second; }
 
     auto result = get_function(name);
@@ -234,11 +294,13 @@ llvm::Function *RuntimeLinker::declare_in(llvm::Module *user_module, std::string
 
     decl->copyAttributesFrom(rt_func->llvm_func);
 
-    m_declared[name_str] = decl;
-    log::linker()->debug("Declared {} in user module", name);
+    // extern 声明不能跨模块引用 personality function
+    if (decl->hasPersonalityFn()) { decl->setPersonalityFn(nullptr); }
+
+    m_declared[cache_key] = decl;
+    log::linker()->debug("Declared {} in module {}", name, user_module->getName().str());
     return decl;
 }
-
 // =============================================================================
 // RuntimeLinker::pyobject_ptr_type
 // =============================================================================

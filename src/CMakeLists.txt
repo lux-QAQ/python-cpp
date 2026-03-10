@@ -467,6 +467,7 @@ if(LLVM_FOUND)
 
     target_link_libraries(compiler_tests PRIVATE
       pylang-support
+      python-cpp
       gtest
       gtest_main
     )
@@ -485,7 +486,7 @@ if(LLVM_FOUND)
     if(TARGET runtime_bc)
       add_dependencies(compiler_tests runtime_bc)
     endif()
-    
+
     if(TARGET pylang-compiler)
       target_link_libraries(compiler_tests PRIVATE pylang-compiler)
     endif()

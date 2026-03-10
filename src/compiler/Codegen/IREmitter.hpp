@@ -180,6 +180,10 @@ class IREmitter
 	llvm::Value *call_check_exception_match(llvm::Value *exc, llvm::Value *exc_type);
 	void call_reraise(llvm::Value *exc);
 
+	// ========== 生命周期 ==========
+	void emit_init();
+	void emit_shutdown();
+
 	// ========== 辅助方法 ==========
 	llvm::Type *pyobject_ptr_type() const { return m_linker.pyobject_ptr_type(); }
 	llvm::LLVMContext &context() const { return m_builder.getContext(); }
