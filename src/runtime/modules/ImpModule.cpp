@@ -1,6 +1,8 @@
 #include "Modules.hpp"
 #include "config.hpp"
+#ifndef PYLANG_AOT_MODE
 #include "executable/bytecode/BytecodeProgram.hpp"
+#endif
 #include "interpreter/InterpreterCore.hpp"
 #include "runtime/Import.hpp"
 #include "runtime/ImportError.hpp"
@@ -85,14 +87,21 @@ PyModule *imp_module()
 						arg0.unwrap()->type()->to_string()));
 				}
 
-				if (auto frozen_module = find_frozen(as<PyString>(arg0.unwrap()))) {
-					std::shared_ptr<Program> program =
-						BytecodeProgram::deserialize(frozen_module->get().code);
-					return PyCode::create(program);
-				} else {
-					return Err(import_error(
-						"No such frozen object named {}", as<PyString>(arg0.unwrap())->value()));
-				}
+#ifndef PYLANG_AOT_MODE
+                if (auto frozen_module = find_frozen(as<PyString>(arg0.unwrap()))) {
+                    std::shared_ptr<Program> program =
+                        BytecodeProgram::deserialize(frozen_module->get().code);
+                    return PyCode::create(program);
+                } else {
+                    return Err(import_error(
+                        "No such frozen object named {}", as<PyString>(arg0.unwrap())->value()));
+                }
+#else
+                return Err(import_error(
+                    "get_frozen_object() not available in AOT mode"));
+#endif
+
+
 			})
 			.unwrap());
 

@@ -9,11 +9,16 @@
 #include "PyList.hpp"
 #include "PyTuple.hpp"
 #include "RuntimeContext.hpp"
+
 #include "executable/Function.hpp"
+
+#ifndef PYLANG_AOT_MODE
 #include "executable/bytecode/Bytecode.hpp"
 #include "executable/bytecode/instructions/Instructions.hpp"
 #include "executable/bytecode/serialization/deserialize.hpp"
 #include "executable/bytecode/serialization/serialize.hpp"
+#endif
+
 #include "interpreter/InterpreterCore.hpp"
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
@@ -461,7 +466,7 @@ PyResult<PyObject *> PyCode::eval(PyObject *globals,
 		return interpreter->call(m_function, function_frame);
 	}
 }
-
+#ifndef PYLANG_AOT_MODE
 std::vector<uint8_t> PyCode::serialize() const
 {
 	std::vector<uint8_t> result;
@@ -486,8 +491,17 @@ std::vector<uint8_t> PyCode::serialize() const
 	py::serialize(m_varnames, result);
 
 	return result;
-}
 
+}
+#else
+std::vector<uint8_t> PyCode::serialize() const
+{
+    spdlog::error("PyCode::serialize() not available in AOT mode");
+    std::abort();
+}
+#endif
+
+#ifndef PYLANG_AOT_MODE
 std::pair<PyResult<PyCode *>, size_t> PyCode::deserialize(std::span<const uint8_t> &buffer,
 	std::shared_ptr<Program> program)
 {
@@ -527,6 +541,15 @@ std::pair<PyResult<PyCode *>, size_t> PyCode::deserialize(std::span<const uint8_
 				 varnames),
 		0 };
 }
+#else
+std::pair<PyResult<PyCode *>, size_t> PyCode::deserialize(
+    std::span<const uint8_t> &buffer, std::shared_ptr<Program> program)
+{
+    (void)buffer; (void)program;
+    spdlog::error("PyCode::deserialize() not available in AOT mode");
+    std::abort();
+}
+#endif
 
 
 namespace {

@@ -88,6 +88,8 @@ endif()
 # Compile definitions
 # ---------------------------------------------------------------------------
 set(BC_DEFS "-DSPDLOG_COMPILED_LIB")
+# AOT 模式：排除解释器专用代码路径（Parser, BytecodeProgram, VM 等）
+list(APPEND BC_DEFS "-DPYLANG_AOT_MODE")
 if(ENABLE_RUNTIME_ARENA)
   list(APPEND BC_DEFS "-DPYLANG_USE_ARENA")
 endif()
@@ -115,7 +117,8 @@ foreach(src ${ALL_SOURCES})
       LLVM_COMPILER=clang
       LLVM_COMPILER_PATH=/usr/bin
       ${WLLVM_CXX}
-        -std=c++20 -O2 -c
+        -std=c++20 -O1 -g -c
+        -fno-discard-value-names
         ${BC_DEFS}
         ${BC_INC}
         -Wno-everything

@@ -5,7 +5,7 @@
 #include "PyString.hpp"
 #include "PyType.hpp"
 #include "TypeError.hpp"
-// #include "interpreter/InterpreterCore.hpp"
+
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 

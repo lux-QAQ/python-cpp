@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "CodeLLDB: /tmp/__hello__",
+            "type": "lldb",
+            "request": "launch",
+            "program": "/tmp/__hello__",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
             "name": "CodeLLDB: CMake Launch",
             "type": "lldb",
             "request": "launch",

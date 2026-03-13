@@ -9,7 +9,11 @@
 #include "PyType.hpp"
 #include "TypeError.hpp"
 #include "ValueError.hpp"
+
+#ifndef PYLANG_AOT_MODE
 #include "executable/bytecode/BytecodeProgram.hpp"
+#endif
+
 #include "frozen/importlib.h"
 #include "frozen/importlib_external.h"
 #include "interpreter/InterpreterCore.hpp"
@@ -329,6 +333,10 @@ PyResult<PyObject *> import_module_level_object(PyString *name,
 // adapted from CPython import.c PyImport_ImportFrozenModuleObject
 PyResult<PyModule *> import_frozen_module(PyString *name)
 {
+#ifdef PYLANG_AOT_MODE
+	(void)name;
+	return Err(import_error("frozen module import not available in AOT mode"));
+#else
 	const auto frozen_module = find_frozen(name);
 	if (!frozen_module.has_value()) { return Err(import_error("")); }
 
@@ -376,6 +384,7 @@ PyResult<PyModule *> import_frozen_module(PyString *name)
 	module.unwrap()->set_program(std::move(program));
 
 	return module;
+#endif
 }
 
 // ========================================================================

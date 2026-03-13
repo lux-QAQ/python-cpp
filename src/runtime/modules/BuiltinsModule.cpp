@@ -42,26 +42,32 @@
 #include "runtime/types/builtin.hpp"
 #include "runtime/warnings/ImportWarning.hpp"
 #include "runtime/warnings/Warning.hpp"
+#include "runtime/compat.hpp"
 
+#ifndef PYLANG_AOT_MODE
 #include "executable/Mangler.hpp"
 #include "executable/Program.hpp"
 #include "executable/bytecode/Bytecode.hpp"
 #include "executable/bytecode/codegen/BytecodeGenerator.hpp"
 #include "executable/bytecode/instructions/FunctionCall.hpp"
+#include "lexer/Lexer.hpp"
+#include "parser/Parser.hpp"
+#endif
 
 #include "interpreter/InterpreterCore.hpp"
 
-#include "lexer/Lexer.hpp"
+
 
 #include "memory/GarbageCollector.hpp"
 
-#include "parser/Parser.hpp"
 
 
-#include "runtime/compat.hpp"
 #include "utilities.hpp"
 #include <algorithm>
 #include <variant>
+#include <iostream>
+#include <numeric>
+
 
 using namespace py;
 
@@ -175,7 +181,7 @@ PyResult<PyObject *> next(const PyTuple *args, const PyDict *kwargs)
 // ============================================================
 // 依赖 Interpreter 的函数 — 改用 current_interpreter()
 // ============================================================
-
+#ifndef PYLANG_AOT_MODE
 PyResult<PyObject *> build_class(const PyTuple *args, const PyDict *kwargs)
 {
 	if (args->size() < 2) {
@@ -326,7 +332,17 @@ PyResult<PyObject *> build_class(const PyTuple *args, const PyDict *kwargs)
 		return Ok(cls);
 	});
 }
-
+#else
+PyResult<PyObject *> build_class(const PyTuple *, const PyDict *)
+{
+    // AOT 模式：类定义由编译器直接生成 rt_build_class_aot() 调用，
+    // 不经过 builtins["__build_class__"]。
+    // 此 stub 仅为满足 builtins 表注册的编译需求。
+    return Err(runtime_error(
+        "__build_class__() is not available in AOT mode. "
+        "Use the compiler-generated rt_build_class_aot() path instead."));
+}
+#endif
 PyResult<PyObject *> globals(const PyTuple *, const PyDict *)
 {
 	if (RuntimeContext::has_current()) {
@@ -869,7 +885,7 @@ PyResult<PyObject *> any(const PyTuple *args, const PyDict *kwargs)
 		return next_value;
 	}
 }
-
+#ifndef PYLANG_AOT_MODE
 PyResult<PyObject *> exec(const PyTuple *args, const PyDict *)
 {
 	ASSERT(args);
@@ -932,7 +948,13 @@ PyResult<PyObject *> exec(const PyTuple *args, const PyDict *)
 		TODO();
 	}
 }
-
+#else
+PyResult<PyObject *> exec(const PyTuple *, const PyDict *)
+{
+    return Err(runtime_error("exec() is not available in AOT-compiled binaries"));
+}
+#endif
+#ifndef PYLANG_AOT_MODE
 PyResult<PyObject *> eval(PyTuple *args, PyDict *kwargs)
 {
 	auto result = PyArgsParser<PyObject *, PyObject *, PyObject *>::unpack_tuple(args,
@@ -1002,7 +1024,14 @@ PyResult<PyObject *> eval(PyTuple *args, PyDict *kwargs)
 
 	TODO();
 }
+#else
+PyResult<PyObject *> eval(PyTuple *, PyDict *)
+{
+    return Err(runtime_error("eval() is not available in AOT-compiled binaries"));
+}
+#endif
 
+#ifndef PYLANG_AOT_MODE
 PyResult<PyObject *> compile(const PyTuple *args, const PyDict *)
 {
 	ASSERT(args);
@@ -1090,6 +1119,13 @@ PyResult<PyObject *> compile(const PyTuple *args, const PyDict *)
 		return Err(value_error("compile() mode must be 'exec', 'eval' or 'single'"));
 	}
 }
+#else
+PyResult<PyObject *> compile(const PyTuple *, const PyDict *)
+{
+    return Err(runtime_error("compile() is not available in AOT-compiled binaries"));
+}
+#endif
+
 
 PyResult<PyObject *> callable(const PyTuple *args, const PyDict *kwargs)
 {

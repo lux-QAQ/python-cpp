@@ -54,6 +54,10 @@ template<typename T> PyResult<PyObject *> GeneratorInterface<T>::__next__()
 
 template<typename T> PyResult<PyObject *> GeneratorInterface<T>::send(PyObject *value)
 {
+	#ifdef PYLANG_AOT_MODE
+    (void)value;
+    return Err(runtime_error("Generator.send() not available in AOT mode (use compiler coroutines)"));
+#else
 	if (m_is_running) { return Err(value_error("generator already executing")); }
 	if (m_frame == nullptr) { return Err(stop_iteration(py_none())); }
 
@@ -87,6 +91,7 @@ template<typename T> PyResult<PyObject *> GeneratorInterface<T>::send(PyObject *
 
 	m_invalid_return = false;
 	return result;
+	#endif
 }
 
 template<typename T> PyResult<PyObject *> GeneratorInterface<T>::close()

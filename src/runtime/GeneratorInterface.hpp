@@ -1,8 +1,23 @@
 #pragma once
 
 #include "runtime/PyFrame.hpp"
-#include "vm/StackFrame.hpp"
 
+#ifdef PYLANG_AOT_MODE
+// AOT 模式：StackFrame 只需要完整类型让 unique_ptr 编译通过
+// Generator 在 AOT 中由编译器用 coroutine 实现，不走此路径
+#include "runtime/Value.hpp"
+struct StackFrame
+{
+	std::vector<py::Value> registers;
+	std::vector<py::Value> locals_storage;
+	size_t return_address{ 0 };
+	void restore() {}
+	static std::unique_ptr<StackFrame> create(StackFrame &&) { return nullptr; }
+	StackFrame clone() const { return {}; }
+};
+#else
+#include "vm/StackFrame.hpp"
+#endif
 
 namespace py {
 

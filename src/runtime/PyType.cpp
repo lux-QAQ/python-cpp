@@ -895,6 +895,7 @@ namespace {
 PyResult<std::monostate> PyType::add_operators()
 {
 	for (auto &&slot : slotdefs) {
+		if (!slot.has_member) { continue; }// ?
 		if (slot.name == "__new__") { continue; }
 		if (auto it = m_attributes->map().find(String{ std::string{ slot.name } });
 			it != m_attributes->map().end()) {
@@ -1323,6 +1324,12 @@ namespace {
 
 	void update_slot(PyType *type, Slot &slot)
 	{
+
+		// 防御性检查：wllvm/clang 编译到 bitcode 时，
+		// MappingTypePrototype/SequenceTypePrototype 成员的 Slot 的
+		// has_member (std::function) 可能未被正确初始化。?
+		if (!slot.has_member) { return; }
+
 		// First of all, if the slot in question does not exist, return immediately.
 		if (!slot.has_member(type->underlying_type())) { return; }
 		ASSERT(type->__mro__);
