@@ -99,7 +99,18 @@ class PylangCodegen : public ast::CodeGenerator
 	void emit_finally_dispatch(const TryContext &try_ctx,
 		llvm::BasicBlock *merge_bb,
 		llvm::BasicBlock *reraise_bb);
+	void emit_comprehension_loops(
+		const std::vector<std::shared_ptr<ast::Comprehension>> &generators,
+		size_t gen_idx,
+		llvm::Value *iterator,
+		std::function<void()> body_emitter);
 
+    llvm::Value *compile_comprehension_impl(
+        const std::string &name,
+        const ast::ASTNode *node,
+        llvm::Value *iterator,                         
+        std::function<llvm::Value *()> container_factory,
+        std::function<void(llvm::Value *)> loop_body_gen);
 	llvm::Value *emit_not_implemented(const char *feature);
 	//  核心生成方法
 

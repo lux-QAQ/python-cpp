@@ -209,6 +209,13 @@ llvm::Value *IREmitter::create_integer(int64_t value)
 	return emit_runtime_call("integer_from_i64", { val });
 }
 
+llvm::Value *IREmitter::create_integer_big(std::string_view decimal_str)
+{
+    // decimal_str 是编译期常量，嵌入 .rodata，运行时只调用一次
+    auto *str_ptr = create_global_string(decimal_str);
+    return emit_runtime_call("integer_from_string", { str_ptr });
+}
+
 llvm::Value *IREmitter::create_float(double value)
 {
 	auto *val = llvm::ConstantFP::get(m_builder.getDoubleTy(), value);

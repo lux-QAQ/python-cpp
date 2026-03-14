@@ -461,47 +461,44 @@ ast::Value *PylangCodegen::visit(const ast::Constant *node)
 	auto *val = node->value();
 	llvm::Value *result = nullptr;
 
-	std::visit(overloaded{
-				   [&](const py::Number &num) {
-					   std::visit(overloaded{
-									  [&](double d) { result = m_emitter.create_float(d); },
-									  [&](const py::BigIntType &big) {
-										  if (big.fits_slong_p()) {
-											  result = m_emitter.create_integer(big.get_si());
-										  } else {
-											  // 大整数: 通过字符串创建
-											  auto s = big.get_str();
-											  auto *str = m_emitter.create_string(s);
-											  // TODO: Phase 3+ 处理大整数
-											  result = str;
-										  }
-									  },
-								  },
-						   num.value);
-				   },
-				   [&](const py::String &str) { result = m_emitter.create_string(str.s); },
-				   [&](const py::Bytes &bytes) {
-					   std::string_view data(
-						   reinterpret_cast<const char *>(bytes.b.data()), bytes.b.size());
-					   result = m_emitter.create_bytes(data);
-				   },
-				   [&](const py::Ellipsis &) { result = m_emitter.get_ellipsis(); },
-				   [&](const py::NoneType &) { result = m_emitter.get_none(); },
-				   [&](const py::NameConstant &nc) {
-					   std::visit(overloaded{
-									  [&](bool b) {
-										  result = b ? m_emitter.get_true() : m_emitter.get_false();
-									  },
-									  [&](const py::NoneType &) { result = m_emitter.get_none(); },
-								  },
-						   nc.value);
-				   },
-				   [&](const py::Tuple &) {
-					   // 常量 tuple: Phase 3+
-					   result = m_emitter.get_none();
-				   },
-				   [&](const py::PyObject *) { result = m_emitter.get_none(); },
-			   },
+	std::visit(
+		overloaded{
+			[&](const py::Number &num) {
+				std::visit(overloaded{
+							   [&](double d) { result = m_emitter.create_float(d); },
+							   [&](const py::BigIntType &big) {
+								   if (big.fits_slong_p()) {
+									   result = m_emitter.create_integer(big.get_si());
+								   } else {
+									   result = m_emitter.create_integer_big(big.get_str());
+								   }
+							   },
+						   },
+					num.value);
+			},
+			//[&](const py::Complex &c) { result = m_emitter.create_complex(c.real, c.imag); },
+			[&](const py::String &str) { result = m_emitter.create_string(str.s); },
+			[&](const py::Bytes &bytes) {
+				std::string_view data(
+					reinterpret_cast<const char *>(bytes.b.data()), bytes.b.size());
+				result = m_emitter.create_bytes(data);
+			},
+			[&](const py::Ellipsis &) { result = m_emitter.get_ellipsis(); },
+			[&](const py::NoneType &) { result = m_emitter.get_none(); },
+			[&](const py::NameConstant &nc) {
+				std::visit(
+					overloaded{
+						[&](bool b) { result = b ? m_emitter.get_true() : m_emitter.get_false(); },
+						[&](const py::NoneType &) { result = m_emitter.get_none(); },
+					},
+					nc.value);
+			},
+			[&](const py::Tuple &) {
+				// 常量 tuple: Phase 3+
+				result = m_emitter.get_none();
+			},
+			[&](const py::PyObject *) { result = m_emitter.get_none(); },
+		},
 		*val);
 
 	return make_value(result);
@@ -1381,27 +1378,27 @@ ast::Value *PylangCodegen::visit(const ast::Pass *node)
 // 共享的函数编译逻辑（FunctionDefinition 和 Lambda 复用）
 // =============================================================================
 llvm::Value *PylangCodegen::compile_function_body(const std::string &func_name,
-    const ast::Arguments *args_node,
-    const std::vector<std::shared_ptr<ast::ASTNode>> &body,
-    const std::vector<std::shared_ptr<ast::ASTNode>> &decorators,
-    SourceLocation source_loc)
+	const ast::Arguments *args_node,
+	const std::vector<std::shared_ptr<ast::ASTNode>> &body,
+	const std::vector<std::shared_ptr<ast::ASTNode>> &decorators,
+	SourceLocation source_loc)
 {
-    // === Step 1: Mangle 名字 ===
-    auto &enclosing = m_codegen_ctx.current_scope();
-    auto mangled = m_mangler.function_mangle(enclosing.mangled_name, func_name, source_loc);
+	// === Step 1: Mangle 名字 ===
+	auto &enclosing = m_codegen_ctx.current_scope();
+	auto mangled = m_mangler.function_mangle(enclosing.mangled_name, func_name, source_loc);
 
-    // 记录第一个参数名（用于 super() 支持）
-    std::string first_arg_name;
-    if (args_node) {
-        if (!args_node->posonlyargs().empty()) {
-            first_arg_name = args_node->posonlyargs().front()->name();
-        } else if (!args_node->args().empty()) {
-            first_arg_name = args_node->args().front()->name();
-        }
-    }
-    m_func_first_args.push_back(first_arg_name);
+	// 记录第一个参数名（用于 super() 支持）
+	std::string first_arg_name;
+	if (args_node) {
+		if (!args_node->posonlyargs().empty()) {
+			first_arg_name = args_node->posonlyargs().front()->name();
+		} else if (!args_node->args().empty()) {
+			first_arg_name = args_node->args().front()->name();
+		}
+	}
+	m_func_first_args.push_back(first_arg_name);
 
-    // Scope 查找
+	// Scope 查找
 	VariablesResolver::Scope *var_scope = nullptr;
 	auto *parent_var_scope = enclosing.var_scope;
 	if (parent_var_scope) {
@@ -1417,302 +1414,288 @@ llvm::Value *PylangCodegen::compile_function_body(const std::string &func_name,
 			}
 		}
 	}
-    if (!var_scope) {
-        auto vis_it = m_codegen_ctx.visibility_map().find(mangled);
-        if (vis_it != m_codegen_ctx.visibility_map().end()) {
-            var_scope = vis_it->second.get();
-        }
-    }
-    if (!var_scope) {
-        log::codegen()->warn(
-            "compile_function_body: no var_scope found for '{}' (mangled: {})", func_name, mangled);
-    }
+	if (!var_scope) {
+		auto vis_it = m_codegen_ctx.visibility_map().find(mangled);
+		if (vis_it != m_codegen_ctx.visibility_map().end()) { var_scope = vis_it->second.get(); }
+	}
+	if (!var_scope) {
+		log::codegen()->warn(
+			"compile_function_body: no var_scope found for '{}' (mangled: {})", func_name, mangled);
+	}
 
-    // === Step 2: 收集 CELL 和 FREE 变量 ===
-    std::vector<std::string> cell_vars;
-    std::vector<std::string> free_vars;
-    m_codegen_ctx.collect_cell_and_free_vars(var_scope, cell_vars, free_vars);
+	// === Step 2: 收集 CELL 和 FREE 变量 ===
+	std::vector<std::string> cell_vars;
+	std::vector<std::string> free_vars;
+	m_codegen_ctx.collect_cell_and_free_vars(var_scope, cell_vars, free_vars);
 
-    // === Step 2.5: 在外围作用域中编译默认参数值 ===
-    // Python 3.9 语义：默认值在函数*定义*时求值，不是调用时。
-    // 所以在外围作用域生成 IR，然后通过 closure 传给函数体。
-    llvm::Value *defaults_tuple = nullptr;
-    size_t defaults_count = 0;
-    if (args_node && !args_node->defaults().empty()) {
-        std::vector<llvm::Value *> default_vals;
-        default_vals.reserve(args_node->defaults().size());
-        for (const auto &def : args_node->defaults()) {
-            auto *val = generate(def.get());
-            if (val) { default_vals.push_back(val); }
-        }
-        if (!default_vals.empty()) {
-            defaults_tuple = m_emitter.create_tuple(default_vals);
-            defaults_count = default_vals.size();
-        }
-    }
+	// === Step 2.5: 在外围作用域中编译默认参数值 ===
+	// Python 3.9 语义：默认值在函数*定义*时求值，不是调用时。
+	// 所以在外围作用域生成 IR，然后通过 closure 传给函数体。
+	llvm::Value *defaults_tuple = nullptr;
+	size_t defaults_count = 0;
+	if (args_node && !args_node->defaults().empty()) {
+		std::vector<llvm::Value *> default_vals;
+		default_vals.reserve(args_node->defaults().size());
+		for (const auto &def : args_node->defaults()) {
+			auto *val = generate(def.get());
+			if (val) { default_vals.push_back(val); }
+		}
+		if (!default_vals.empty()) {
+			defaults_tuple = m_emitter.create_tuple(default_vals);
+			defaults_count = default_vals.size();
+		}
+	}
 
-    // 如果有默认值或有 free vars，需要 closure
-    bool has_closure = !free_vars.empty() || (defaults_tuple != nullptr);
+	// 如果有默认值或有 free vars，需要 closure
+	bool has_closure = !free_vars.empty() || (defaults_tuple != nullptr);
 
-    // === Step 3: 创建 LLVM 函数 ===
-    auto *ptr_ty = m_emitter.pyobject_ptr_type();
-    std::vector<llvm::Type *> param_types;
-    param_types.push_back(ptr_ty);// %module
-    if (has_closure) {
-        param_types.push_back(ptr_ty);// %closure
-    }
-    param_types.push_back(ptr_ty);// %args
-    param_types.push_back(ptr_ty);// %kwargs
+	// === Step 3: 创建 LLVM 函数 ===
+	auto *ptr_ty = m_emitter.pyobject_ptr_type();
+	std::vector<llvm::Type *> param_types;
+	param_types.push_back(ptr_ty);// %module
+	if (has_closure) {
+		param_types.push_back(ptr_ty);// %closure
+	}
+	param_types.push_back(ptr_ty);// %args
+	param_types.push_back(ptr_ty);// %kwargs
 
-    auto *func_ty = llvm::FunctionType::get(ptr_ty, param_types, false);
-    auto *func =
-        llvm::Function::Create(func_ty, llvm::Function::InternalLinkage, mangled, m_module.get());
+	auto *func_ty = llvm::FunctionType::get(ptr_ty, param_types, false);
+	auto *func =
+		llvm::Function::Create(func_ty, llvm::Function::InternalLinkage, mangled, m_module.get());
 
-    ensure_personality(func);
+	ensure_personality(func);
 
-    auto arg_it = func->arg_begin();
-    arg_it->setName("module");
-    auto *module_arg = &*arg_it++;
+	auto arg_it = func->arg_begin();
+	arg_it->setName("module");
+	auto *module_arg = &*arg_it++;
 
-    llvm::Value *closure_arg = nullptr;
-    if (has_closure) {
-        arg_it->setName("closure");
-        closure_arg = &*arg_it++;
-    }
+	llvm::Value *closure_arg = nullptr;
+	if (has_closure) {
+		arg_it->setName("closure");
+		closure_arg = &*arg_it++;
+	}
 
-    arg_it->setName("args");
-    auto *args_arg = &*arg_it++;
-    arg_it->setName("kwargs");
-    auto *kwargs_arg = &*arg_it++;  // ← 关键修复：捕获 kwargs 参数
+	arg_it->setName("args");
+	auto *args_arg = &*arg_it++;
+	arg_it->setName("kwargs");
+	auto *kwargs_arg = &*arg_it++;// ← 关键修复：捕获 kwargs 参数
 
-    // === Step 4: 保存当前插入点 ===
-    auto saved_ip = m_builder.saveIP();
+	// === Step 4: 保存当前插入点 ===
+	auto saved_ip = m_builder.saveIP();
 
-    auto *entry_bb = llvm::BasicBlock::Create(m_ctx, "entry", func);
-    m_builder.SetInsertPoint(entry_bb);
+	auto *entry_bb = llvm::BasicBlock::Create(m_ctx, "entry", func);
+	m_builder.SetInsertPoint(entry_bb);
 
-    // === Step 5: 进入新作用域 ===
-    ScopeContext func_scope{};
-    func_scope.type = ScopeContext::Type::FUNCTION;
-    func_scope.name = func_name;
-    func_scope.mangled_name = mangled;
-    func_scope.llvm_func = func;
-    func_scope.module_obj = module_arg;
-    func_scope.var_scope = var_scope;
-    m_codegen_ctx.push_scope(std::move(func_scope));
+	// === Step 5: 进入新作用域 ===
+	ScopeContext func_scope{};
+	func_scope.type = ScopeContext::Type::FUNCTION;
+	func_scope.name = func_name;
+	func_scope.mangled_name = mangled;
+	func_scope.llvm_func = func;
+	func_scope.module_obj = module_arg;
+	func_scope.var_scope = var_scope;
+	m_codegen_ctx.push_scope(std::move(func_scope));
 
-    // === Step 6: 为 CELL 变量创建 cell 对象 ===
-    for (const auto &cv : cell_vars) {
-        auto *cell = m_emitter.call_create_cell(nullptr);
-        auto *cell_alloca = m_codegen_ctx.create_local(cv + ".cell", ptr_ty);
-        m_builder.CreateStore(cell, cell_alloca);
-        m_codegen_ctx.register_cell(cv, cell_alloca);
-    }
+	// === Step 6: 为 CELL 变量创建 cell 对象 ===
+	for (const auto &cv : cell_vars) {
+		auto *cell = m_emitter.call_create_cell(nullptr);
+		auto *cell_alloca = m_codegen_ctx.create_local(cv + ".cell", ptr_ty);
+		m_builder.CreateStore(cell, cell_alloca);
+		m_codegen_ctx.register_cell(cv, cell_alloca);
+	}
 
-    // === Step 7: 从 closure tuple 提取 FREE 变量的 cell ===
-    for (size_t i = 0; i < free_vars.size(); ++i) {
-        auto *cell =
-            m_emitter.call_tuple_getitem(closure_arg, m_builder.getInt32(static_cast<int32_t>(i)));
-        auto *free_alloca = m_codegen_ctx.create_local(free_vars[i] + ".free", ptr_ty);
-        m_builder.CreateStore(cell, free_alloca);
-        m_codegen_ctx.register_free_var(free_vars[i], free_alloca);
-    }
+	// === Step 7: 从 closure tuple 提取 FREE 变量的 cell ===
+	for (size_t i = 0; i < free_vars.size(); ++i) {
+		auto *cell =
+			m_emitter.call_tuple_getitem(closure_arg, m_builder.getInt32(static_cast<int32_t>(i)));
+		auto *free_alloca = m_codegen_ctx.create_local(free_vars[i] + ".free", ptr_ty);
+		m_builder.CreateStore(cell, free_alloca);
+		m_codegen_ctx.register_free_var(free_vars[i], free_alloca);
+	}
 
-    // === Step 7.5: 从 closure 提取 defaults tuple ===
-    // defaults 放在 free vars 之后的位置
-    llvm::Value *defaults_in_body = nullptr;
-    if (defaults_tuple) {
-        int32_t defaults_idx = static_cast<int32_t>(free_vars.size());
-        defaults_in_body =
-            m_emitter.call_tuple_getitem(closure_arg, m_builder.getInt32(defaults_idx));
-    }
+	// === Step 7.5: 从 closure 提取 defaults tuple ===
+	// defaults 放在 free vars 之后的位置
+	llvm::Value *defaults_in_body = nullptr;
+	if (defaults_tuple) {
+		int32_t defaults_idx = static_cast<int32_t>(free_vars.size());
+		defaults_in_body =
+			m_emitter.call_tuple_getitem(closure_arg, m_builder.getInt32(defaults_idx));
+	}
 
-    // === Step 8: 提取函数参数 — Python 3.9 参数绑定语义 ===
-    //
-    // Python 3.9 参数解析优先级:
-    //   1. 位置参数 args[index]
-    //   2. 关键字参数 kwargs[name]  (暂不支持，Phase 3+)
-    //   3. 默认值 defaults[index - defaults_start]
-    //   4. TypeError: missing required argument
-    //
-    // 默认值对齐规则 (Python 3.9):
-    //   def f(a, b, c=1, d=2):  # 4 params, 2 defaults
-    //   defaults 对齐到最后 N 个参数:
-    //     a → 无默认值 (index 0)
-    //     b → 无默认值 (index 1)
-    //     c → defaults[0] (index 2, defaults_start=2)
-    //     d → defaults[1] (index 3, defaults_start=2)
-    if (args_node) {
-        int32_t param_idx = 0;
-        int32_t total_params = static_cast<int32_t>(args_node->args().size());
-        int32_t n_defaults = static_cast<int32_t>(defaults_count);
-        int32_t defaults_start = total_params - n_defaults;
+	// === Step 8: 提取函数参数 — Python 3.9 参数绑定语义 ===
+	//
+	// Python 3.9 参数解析优先级:
+	//   1. 位置参数 args[index]
+	//   2. 关键字参数 kwargs[name]  (暂不支持，Phase 3+)
+	//   3. 默认值 defaults[index - defaults_start]
+	//   4. TypeError: missing required argument
+	//
+	// 默认值对齐规则 (Python 3.9):
+	//   def f(a, b, c=1, d=2):  # 4 params, 2 defaults
+	//   defaults 对齐到最后 N 个参数:
+	//     a → 无默认值 (index 0)
+	//     b → 无默认值 (index 1)
+	//     c → defaults[0] (index 2, defaults_start=2)
+	//     d → defaults[1] (index 3, defaults_start=2)
+	if (args_node) {
+		int32_t param_idx = 0;
+		int32_t total_params = static_cast<int32_t>(args_node->args().size());
+		int32_t n_defaults = static_cast<int32_t>(defaults_count);
+		int32_t defaults_start = total_params - n_defaults;
 
-        // 获取 args tuple 的 size (一次求值，供所有有默认值的参数复用)
-        llvm::Value *args_size = nullptr;
-        if (n_defaults > 0) {
-            args_size = m_emitter.call_tuple_len(args_arg);
-        }
+		// 获取 args tuple 的 size (一次求值，供所有有默认值的参数复用)
+		llvm::Value *args_size = nullptr;
+		if (n_defaults > 0) { args_size = m_emitter.call_tuple_len(args_arg); }
 
-        for (const auto &arg : args_node->args()) {
-            const auto &arg_name = arg->name();
-            llvm::Value *val = nullptr;
+		for (const auto &arg : args_node->args()) {
+			const auto &arg_name = arg->name();
+			llvm::Value *val = nullptr;
 
-            if (param_idx >= defaults_start && defaults_in_body) {
-                // === 有默认值的参数：生成 bounds-check 分支 ===
-                //
-                //   if (param_idx < len(args)):
-                //       val = args[param_idx]
-                //   else:
-                //       val = defaults[param_idx - defaults_start]
-                //
-                auto *idx_val = m_builder.getInt32(param_idx);
-                auto *has_arg = m_builder.CreateICmpSGT(
-                    args_size, idx_val, arg_name + ".has_arg");
+			if (param_idx >= defaults_start && defaults_in_body) {
+				// === 有默认值的参数：生成 bounds-check 分支 ===
+				//
+				//   if (param_idx < len(args)):
+				//       val = args[param_idx]
+				//   else:
+				//       val = defaults[param_idx - defaults_start]
+				//
+				auto *idx_val = m_builder.getInt32(param_idx);
+				auto *has_arg = m_builder.CreateICmpSGT(args_size, idx_val, arg_name + ".has_arg");
 
-                auto *from_args_bb = llvm::BasicBlock::Create(
-                    m_ctx, arg_name + ".from_args", func);
-                auto *from_default_bb = llvm::BasicBlock::Create(
-                    m_ctx, arg_name + ".from_default", func);
-                auto *bind_done_bb = llvm::BasicBlock::Create(
-                    m_ctx, arg_name + ".done", func);
+				auto *from_args_bb = llvm::BasicBlock::Create(m_ctx, arg_name + ".from_args", func);
+				auto *from_default_bb =
+					llvm::BasicBlock::Create(m_ctx, arg_name + ".from_default", func);
+				auto *bind_done_bb = llvm::BasicBlock::Create(m_ctx, arg_name + ".done", func);
 
-                m_builder.CreateCondBr(has_arg, from_args_bb, from_default_bb);
+				m_builder.CreateCondBr(has_arg, from_args_bb, from_default_bb);
 
-                // --- 从 args 取值 ---
-                m_builder.SetInsertPoint(from_args_bb);
-                auto *val_from_args =
-                    m_emitter.call_tuple_getitem(args_arg, idx_val);
-                m_builder.CreateBr(bind_done_bb);
-                auto *from_args_exit = m_builder.GetInsertBlock();
+				// --- 从 args 取值 ---
+				m_builder.SetInsertPoint(from_args_bb);
+				auto *val_from_args = m_emitter.call_tuple_getitem(args_arg, idx_val);
+				m_builder.CreateBr(bind_done_bb);
+				auto *from_args_exit = m_builder.GetInsertBlock();
 
-                // --- 使用默认值 ---
-                m_builder.SetInsertPoint(from_default_bb);
-                int32_t def_idx = param_idx - defaults_start;
-                auto *val_from_default = m_emitter.call_tuple_getitem(
-                    defaults_in_body, m_builder.getInt32(def_idx));
-                m_builder.CreateBr(bind_done_bb);
-                auto *from_default_exit = m_builder.GetInsertBlock();
+				// --- 使用默认值 ---
+				m_builder.SetInsertPoint(from_default_bb);
+				int32_t def_idx = param_idx - defaults_start;
+				auto *val_from_default =
+					m_emitter.call_tuple_getitem(defaults_in_body, m_builder.getInt32(def_idx));
+				m_builder.CreateBr(bind_done_bb);
+				auto *from_default_exit = m_builder.GetInsertBlock();
 
-                // --- PHI 合并 ---
-                m_builder.SetInsertPoint(bind_done_bb);
-                auto *phi = m_builder.CreatePHI(ptr_ty, 2, arg_name + ".val");
-                phi->addIncoming(val_from_args, from_args_exit);
-                phi->addIncoming(val_from_default, from_default_exit);
-                val = phi;
-            } else {
-                // === 无默认值的参数：直接按索引取 ===
-                // 如果参数不足，tuple_getitem 会在运行时抛 IndexError
-                val = m_emitter.call_tuple_getitem(
-                    args_arg, m_builder.getInt32(param_idx));
-            }
+				// --- PHI 合并 ---
+				m_builder.SetInsertPoint(bind_done_bb);
+				auto *phi = m_builder.CreatePHI(ptr_ty, 2, arg_name + ".val");
+				phi->addIncoming(val_from_args, from_args_exit);
+				phi->addIncoming(val_from_default, from_default_exit);
+				val = phi;
+			} else {
+				// === 无默认值的参数：直接按索引取 ===
+				// 如果参数不足，tuple_getitem 会在运行时抛 IndexError
+				val = m_emitter.call_tuple_getitem(args_arg, m_builder.getInt32(param_idx));
+			}
 
-            // 存储到局部变量或 cell
-            auto vis = m_codegen_ctx.get_visibility(arg_name);
-            if (vis && *vis == Visibility::CELL) {
-                auto *cell_alloca = m_codegen_ctx.find_cell(arg_name);
-                if (cell_alloca) {
-                    auto *cell = m_builder.CreateLoad(ptr_ty, cell_alloca);
-                    m_emitter.call_cell_set(cell, val);
-                }
-            } else {
-                auto *alloca = m_codegen_ctx.create_local(arg_name, ptr_ty);
-                m_builder.CreateStore(val, alloca);
-            }
+			// 存储到局部变量或 cell
+			auto vis = m_codegen_ctx.get_visibility(arg_name);
+			if (vis && *vis == Visibility::CELL) {
+				auto *cell_alloca = m_codegen_ctx.find_cell(arg_name);
+				if (cell_alloca) {
+					auto *cell = m_builder.CreateLoad(ptr_ty, cell_alloca);
+					m_emitter.call_cell_set(cell, val);
+				}
+			} else {
+				auto *alloca = m_codegen_ctx.create_local(arg_name, ptr_ty);
+				m_builder.CreateStore(val, alloca);
+			}
 
-            param_idx++;
-        }
-    }
+			param_idx++;
+		}
+	}
 
-       // === Step 9: 生成函数体 ===
-    generate_body(body);
+	// === Step 9: 生成函数体 ===
+	generate_body(body);
 
-    // === Step 10: 确保有终结器 ===
-    auto *current_bb = m_builder.GetInsertBlock();
-    if (!current_bb->getTerminator()) { m_builder.CreateRet(m_emitter.get_none()); }
+	// === Step 10: 确保有终结器 ===
+	auto *current_bb = m_builder.GetInsertBlock();
+	if (!current_bb->getTerminator()) { m_builder.CreateRet(m_emitter.get_none()); }
 
-    // === Step 11: 离开作用域 ===
-    m_codegen_ctx.pop_scope();
+	// === Step 11: 离开作用域 ===
+	m_codegen_ctx.pop_scope();
 
-    // === Step 12: 恢复插入点 ===
-    m_builder.restoreIP(saved_ip);
-    m_func_first_args.pop_back();
+	// === Step 12: 恢复插入点 ===
+	m_builder.restoreIP(saved_ip);
+	m_func_first_args.pop_back();
 
-    // === Step 13: 构建 closure tuple ===
-    // 布局: [ cell_for_free_var_0, ..., cell_for_free_var_N-1, defaults_tuple? ]
-    // defaults_tuple 紧跟在所有 free var cell 之后
-    llvm::Value *closure_val = m_emitter.null_pyobject();
-    if (has_closure) {
-        std::vector<llvm::Value *> closure_elems;
+	// === Step 13: 构建 closure tuple ===
+	// 布局: [ cell_for_free_var_0, ..., cell_for_free_var_N-1, defaults_tuple? ]
+	// defaults_tuple 紧跟在所有 free var cell 之后
+	llvm::Value *closure_val = m_emitter.null_pyobject();
+	if (has_closure) {
+		std::vector<llvm::Value *> closure_elems;
 
-        // 13a. free vars — 从外围作用域取 cell
-        for (const auto &fv : free_vars) {
-            llvm::Value *cell = nullptr;
-            if (auto *cell_alloca = m_codegen_ctx.find_cell(fv)) {
-                cell = m_builder.CreateLoad(ptr_ty, cell_alloca);
-            } else if (auto *free_alloca = m_codegen_ctx.find_free_var(fv)) {
-                cell = m_builder.CreateLoad(ptr_ty, free_alloca);
-            } else {
-                log::codegen()->error("Cannot find cell/free for '{}'", fv);
-                cell = m_emitter.get_none();
-            }
-            closure_elems.push_back(cell);
-        }
+		// 13a. free vars — 从外围作用域取 cell
+		for (const auto &fv : free_vars) {
+			llvm::Value *cell = nullptr;
+			if (auto *cell_alloca = m_codegen_ctx.find_cell(fv)) {
+				cell = m_builder.CreateLoad(ptr_ty, cell_alloca);
+			} else if (auto *free_alloca = m_codegen_ctx.find_free_var(fv)) {
+				cell = m_builder.CreateLoad(ptr_ty, free_alloca);
+			} else {
+				log::codegen()->error("Cannot find cell/free for '{}'", fv);
+				cell = m_emitter.get_none();
+			}
+			closure_elems.push_back(cell);
+		}
 
-        // 13b. defaults tuple（如果有）
-        if (defaults_tuple) {
-            closure_elems.push_back(defaults_tuple);
-        }
+		// 13b. defaults tuple（如果有）
+		if (defaults_tuple) { closure_elems.push_back(defaults_tuple); }
 
-        closure_val = m_emitter.create_tuple(closure_elems);
-    }
+		closure_val = m_emitter.create_tuple(closure_elems);
+	}
 
-    // === Step 14: 编译 kwdefaults ===
-    // Python 3.9: keyword-only 参数的默认值存储为 dict
-    // def f(*, key=val):  →  kwdefaults = {"key": val}
-    llvm::Value *kwdefaults_val = nullptr;
-    if (args_node && !args_node->kw_defaults().empty()) {
-        std::vector<llvm::Value *> keys;
-        std::vector<llvm::Value *> vals;
-        for (size_t i = 0; i < args_node->kw_defaults().size(); ++i) {
-            auto &kw_def = args_node->kw_defaults()[i];
-            if (kw_def) {
-                auto *val = generate(kw_def.get());
-                if (val) {
-                    auto &kw_arg = args_node->kwonlyargs()[i];
-                    keys.push_back(m_emitter.create_string(kw_arg->name()));
-                    vals.push_back(val);
-                }
-            }
-        }
-        if (!keys.empty()) {
-            kwdefaults_val = m_emitter.create_dict(keys, vals);
-        }
-    }
+	// === Step 14: 编译 kwdefaults ===
+	// Python 3.9: keyword-only 参数的默认值存储为 dict
+	// def f(*, key=val):  →  kwdefaults = {"key": val}
+	llvm::Value *kwdefaults_val = nullptr;
+	if (args_node && !args_node->kw_defaults().empty()) {
+		std::vector<llvm::Value *> keys;
+		std::vector<llvm::Value *> vals;
+		for (size_t i = 0; i < args_node->kw_defaults().size(); ++i) {
+			auto &kw_def = args_node->kw_defaults()[i];
+			if (kw_def) {
+				auto *val = generate(kw_def.get());
+				if (val) {
+					auto &kw_arg = args_node->kwonlyargs()[i];
+					keys.push_back(m_emitter.create_string(kw_arg->name()));
+					vals.push_back(val);
+				}
+			}
+		}
+		if (!keys.empty()) { kwdefaults_val = m_emitter.create_dict(keys, vals); }
+	}
 
-    // === Step 15: rt_make_function ===
-    // defaults_tuple 同时传给 make_function 用于内省（inspect.signature 等）
-    auto *mod = m_codegen_ctx.module_object();
-    auto *func_val = m_emitter.call_make_function(
-        func_name,
-        func,
-        mod,
-        defaults_tuple ? defaults_tuple : m_emitter.null_pyobject(),
-        kwdefaults_val ? kwdefaults_val : m_emitter.null_pyobject(),
-        closure_val);
+	// === Step 15: rt_make_function ===
+	// defaults_tuple 同时传给 make_function 用于内省（inspect.signature 等）
+	auto *mod = m_codegen_ctx.module_object();
+	auto *func_val = m_emitter.call_make_function(func_name,
+		func,
+		mod,
+		defaults_tuple ? defaults_tuple : m_emitter.null_pyobject(),
+		kwdefaults_val ? kwdefaults_val : m_emitter.null_pyobject(),
+		closure_val);
 
-    // === Step 16: 装饰器 ===
-    // Python 3.9: 装饰器从内到外（逆序）应用
-    //   @d1 @d2 def f: ...  →  f = d1(d2(f))
-    llvm::Value *decorated = func_val;
-    for (auto it = decorators.rbegin(); it != decorators.rend(); ++it) {
-        auto *dec = generate(it->get());
-        if (!dec) { continue; }
-        auto *dec_args = m_emitter.create_tuple({ decorated });
-        decorated = m_emitter.call_function(dec, dec_args, nullptr);
-    }
+	// === Step 16: 装饰器 ===
+	// Python 3.9: 装饰器从内到外（逆序）应用
+	//   @d1 @d2 def f: ...  →  f = d1(d2(f))
+	llvm::Value *decorated = func_val;
+	for (auto it = decorators.rbegin(); it != decorators.rend(); ++it) {
+		auto *dec = generate(it->get());
+		if (!dec) { continue; }
+		auto *dec_args = m_emitter.create_tuple({ decorated });
+		decorated = m_emitter.call_function(dec, dec_args, nullptr);
+	}
 
-    return decorated;
+	return decorated;
 }
 
 ast::Value *PylangCodegen::visit(const ast::FunctionDefinition *node)
@@ -2814,6 +2797,321 @@ ast::Value *PylangCodegen::visit(const ast::Lambda *node)
 	return make_value(func_result);
 }
 
+
+// =============================================================================
+// 推导式的通用编译框架
+//
+// 所有推导式 (ListComp, DictComp, SetComp, GeneratorExp) 共享相同结构:
+//   1. 编译推导式体为匿名函数
+//   2. 函数接收迭代器参数，内部创建容器并填充
+//   3. 调用该函数并返回结果
+//
+// 等价 Python:
+//   [expr for x in iter if cond]
+//   →
+//   def <listcomp>(.0):
+//       result = []
+//       for x in .0:
+//           if cond:
+//               result.append(expr)
+//       return result
+//   <listcomp>(iter(iterable))
+// =============================================================================
+
+ast::Value *PylangCodegen::visit(const ast::ListComp *node)
+{
+	// ... 计算 iterator ...
+	auto *iterable = generate(node->generators()[0]->iter().get());
+	auto *iterator = m_emitter.call_get_iter(iterable);
+
+	auto *res = compile_comprehension_impl(
+		"<listcomp>",
+		node,
+		iterator,
+		[&]() { return m_emitter.create_list({}); },
+		[&](llvm::Value *container) {
+			auto *elt = generate(node->elt().get());
+			if (elt) m_emitter.call_list_append(container, elt);
+		});
+	return make_value(res);
+}
+
+// =============================================================================
+// 通用推导式循环生成器
+//
+// 递归处理嵌套的 for/if 子句:
+//   for x in iter1:
+//       for y in iter2:
+//           if cond:
+//               <body_emitter>()
+// =============================================================================
+void PylangCodegen::emit_comprehension_loops(
+	const std::vector<std::shared_ptr<ast::Comprehension>> &generators,
+	size_t gen_idx,
+	llvm::Value *iterator,
+	std::function<void()> body_emitter)
+{
+	auto *func = m_codegen_ctx.current_function();
+	auto *gen = generators[gen_idx].get();
+
+	// for 循环: while (has_value) { x = next(iter); ... }
+	auto *loop_header = llvm::BasicBlock::Create(m_ctx, "comp.header", func);
+	auto *loop_body = llvm::BasicBlock::Create(m_ctx, "comp.body", func);
+	auto *loop_end = llvm::BasicBlock::Create(m_ctx, "comp.end", func);
+
+	// has_value 标志
+	auto *has_value_alloca = m_builder.CreateAlloca(m_builder.getInt1Ty(), nullptr, "has_value");
+
+	m_builder.CreateBr(loop_header);
+	m_builder.SetInsertPoint(loop_header);
+
+	// next_val = iter_next(iterator, &has_value)
+	auto *next_val = m_emitter.call_iter_next(iterator, has_value_alloca);
+	auto *has_value = m_builder.CreateLoad(m_builder.getInt1Ty(), has_value_alloca);
+	m_builder.CreateCondBr(has_value, loop_body, loop_end);
+
+	m_builder.SetInsertPoint(loop_body);
+
+	// 赋值给循环变量: x = next_val
+	store_to_target(gen->target().get(), next_val);
+
+	// 处理 if 过滤条件
+	llvm::BasicBlock *innermost_bb = loop_body;
+	for (const auto &if_clause : gen->ifs()) {
+		auto *cond = generate(if_clause.get());
+		auto *is_true = m_emitter.call_is_true(cond);
+
+		auto *if_true_bb = llvm::BasicBlock::Create(m_ctx, "comp.if_true", func);
+		auto *if_skip_bb = llvm::BasicBlock::Create(m_ctx, "comp.if_skip", func);
+
+		m_builder.CreateCondBr(is_true, if_true_bb, if_skip_bb);
+
+		// skip → 回到循环头
+		m_builder.SetInsertPoint(if_skip_bb);
+		m_builder.CreateBr(loop_header);
+
+		m_builder.SetInsertPoint(if_true_bb);
+		innermost_bb = if_true_bb;
+	}
+
+	// 嵌套 generator 或执行 body
+	if (gen_idx + 1 < generators.size()) {
+		// 嵌套: for y in iter2
+		auto *inner_iterable = generate(generators[gen_idx + 1]->iter().get());
+		auto *inner_iter = m_emitter.call_get_iter(inner_iterable);
+		emit_comprehension_loops(generators, gen_idx + 1, inner_iter, body_emitter);
+	} else {
+		// 最内层: 执行 body（append/add/setitem）
+		body_emitter();
+	}
+
+	// 回到循环头
+	if (!m_builder.GetInsertBlock()->getTerminator()) { m_builder.CreateBr(loop_header); }
+
+	m_builder.SetInsertPoint(loop_end);
+}
+
+llvm::Value *PylangCodegen::compile_comprehension_impl(const std::string &name,
+	const ast::ASTNode *node,
+	llvm::Value *iterator,
+	std::function<llvm::Value *()> container_factory,// 创建容器
+	std::function<void(llvm::Value *)> loop_body_gen// 填充逻辑 (参数是容器)
+)
+{
+	auto *obj_ptr_ty = m_emitter.pyobject_ptr_type();
+
+	// === Step 1: Mangle 名字 & 分析作用域 ===
+	auto mangled = m_mangler.function_mangle(
+		m_codegen_ctx.current_scope().mangled_name, name, node->source_location());
+
+	// 查找 VariablesResolver 分析出的 Scope
+	VariablesResolver::Scope *var_scope = nullptr;
+	auto vis_it = m_codegen_ctx.visibility_map().find(mangled);
+	if (vis_it != m_codegen_ctx.visibility_map().end()) { var_scope = vis_it->second.get(); }
+
+	// 收集需要捕获的变量（Cell 和 Free）
+	std::vector<std::string> cell_vars;
+	std::vector<std::string> free_vars;
+	m_codegen_ctx.collect_cell_and_free_vars(var_scope, cell_vars, free_vars);
+	bool has_closure = !free_vars.empty();
+
+	// === Step 2: 创建 LLVM 函数 ===
+	// 签名: (module, [closure], args, kwargs)
+	std::vector<llvm::Type *> param_types;
+	param_types.push_back(obj_ptr_ty);// module
+	if (has_closure) {
+		param_types.push_back(obj_ptr_ty);// closure
+	}
+	param_types.push_back(obj_ptr_ty);// args
+	param_types.push_back(obj_ptr_ty);// kwargs
+
+	auto *func_ty = llvm::FunctionType::get(obj_ptr_ty, param_types, false);
+	auto *comp_func =
+		llvm::Function::Create(func_ty, llvm::Function::InternalLinkage, mangled, m_module.get());
+
+	ensure_personality(comp_func);
+
+	// 设置参数名
+	auto arg_it = comp_func->arg_begin();
+	arg_it->setName("module");
+	auto *module_arg = &*arg_it++;
+
+	llvm::Value *closure_arg = nullptr;
+	if (has_closure) {
+		arg_it->setName("closure");
+		closure_arg = &*arg_it++;
+	}
+
+	arg_it->setName("args");
+	auto *args_arg = &*arg_it++;
+	arg_it->setName("kwargs");
+	auto *kwargs_arg = &*arg_it++;
+	(void)kwargs_arg;// 推导式暂不使用 kwargs
+
+	// === Step 3: 进入函数体 ===
+	auto *saved_bb = m_builder.GetInsertBlock();
+	auto *saved_unwind = m_emitter.unwind_dest();
+
+	auto *entry_bb = llvm::BasicBlock::Create(m_ctx, "entry", comp_func);
+	m_builder.SetInsertPoint(entry_bb);
+	m_emitter.set_unwind_dest(nullptr);// 重置 unwind 目标（新函数还没有 try 块）
+
+	ScopeContext comp_scope{};
+	comp_scope.type = ScopeContext::Type::FUNCTION;
+	comp_scope.name = name;
+	comp_scope.mangled_name = mangled;
+	comp_scope.llvm_func = comp_func;
+	comp_scope.module_obj = module_arg;// 使用当前函数的 module 参数
+	comp_scope.var_scope = var_scope;
+	m_codegen_ctx.push_scope(std::move(comp_scope));
+
+	// === Step 4: 初始化闭包变量 ===
+
+	// A. 为自己的 Cell 变量创建存储
+	for (const auto &cv : cell_vars) {
+		auto *cell = m_emitter.call_create_cell(nullptr);
+		auto *alloca = m_codegen_ctx.create_local(cv + ".cell", obj_ptr_ty);
+		m_builder.CreateStore(cell, alloca);
+		m_codegen_ctx.register_cell(cv, alloca);
+	}
+
+	// B. 从 closure tuple 恢复 Free 变量
+	for (size_t i = 0; i < free_vars.size(); ++i) {
+		// closure[i]
+		auto *cell =
+			m_emitter.call_tuple_getitem(closure_arg, m_builder.getInt32(static_cast<int32_t>(i)));
+		auto *alloca = m_codegen_ctx.create_local(free_vars[i] + ".free", obj_ptr_ty);
+		m_builder.CreateStore(cell, alloca);
+		m_codegen_ctx.register_free_var(free_vars[i], alloca);
+	}
+
+	// === Step 5: 生成推导式逻辑 ===
+
+	// 从 args[0] 获取迭代器 (传入的是 tuple(iterator))
+	auto *iter_val = m_emitter.call_tuple_getitem(args_arg, m_builder.getInt32(0));
+
+	// 创建容器 (List/Set/Dict)
+	auto *container = container_factory();
+
+	// 生成多层循环结构
+	const std::vector<std::shared_ptr<ast::Comprehension>> *generators = nullptr;
+	if (auto *l = dynamic_cast<const ast::ListComp *>(node))
+		generators = &l->generators();
+	else if (auto *s = dynamic_cast<const ast::SetComp *>(node))
+		generators = &s->generators();
+	else if (auto *d = dynamic_cast<const ast::DictComp *>(node))
+		generators = &d->generators();
+
+	// 这里的闭包捕获了 container，供最内层循环使用
+	emit_comprehension_loops(*generators, 0, iter_val, [&]() { loop_body_gen(container); });
+
+	// 返回容器
+	m_builder.CreateRet(container);
+
+	// === Step 6: 恢复编译环境 ===
+	m_codegen_ctx.pop_scope();
+	m_builder.SetInsertPoint(saved_bb);
+	m_emitter.set_unwind_dest(saved_unwind);
+
+	// === Step 7: (在父作用域) 构建调用代码 ===
+
+	// 构建 closure tuple (捕获父作用域的 cell)
+	llvm::Value *closure_tuple = m_emitter.null_pyobject();
+	if (has_closure) {
+		std::vector<llvm::Value *> closure_elems;
+		for (const auto &fv : free_vars) {
+			llvm::Value *cell = nullptr;
+			// 在父作用域查找对应的 cell/free
+			if (auto *ca = m_codegen_ctx.find_cell(fv))
+				cell = m_builder.CreateLoad(obj_ptr_ty, ca);
+			else if (auto *fa = m_codegen_ctx.find_free_var(fv))
+				cell = m_builder.CreateLoad(obj_ptr_ty, fa);
+			else {
+				// Bugfix: 编译器内部错误防御
+				log::codegen()->error("Closure capture failed: '{}' not found in parent scope", fv);
+				cell = m_emitter.get_none();
+			}
+			closure_elems.push_back(cell);
+		}
+		closure_tuple = m_emitter.create_tuple(closure_elems);
+	}
+
+	// rt_make_function
+	auto *py_func = m_emitter.call_make_function(name,
+		comp_func,
+		m_codegen_ctx.module_object(),
+		m_emitter.null_pyobject(),// defaults
+		m_emitter.null_pyobject(),// kwdefaults
+		closure_tuple// closure
+	);
+
+	// 调用推导式函数: func((iterator,))
+	auto *call_args = m_emitter.create_tuple({ iterator });
+	return m_emitter.call_function(py_func, call_args, nullptr);
+}
+
+// =============================================================================
+// DictComp: {k: v for ...}
+// =============================================================================
+ast::Value *PylangCodegen::visit(const ast::DictComp *node)
+{
+	auto *iterable = generate(node->generators()[0]->iter().get());
+	auto *iterator = m_emitter.call_get_iter(iterable);
+
+	auto *res = compile_comprehension_impl(
+		"<dictcomp>",
+		node,
+		iterator,
+		[&]() { return m_emitter.create_dict({}, {}); },
+		[&](llvm::Value *container) {
+			auto *key = generate(node->key().get());
+			auto *val = generate(node->value().get());
+			if (key && val) m_emitter.call_setitem(container, key, val);
+		});
+	return make_value(res);
+}
+
+// =============================================================================
+// SetComp: {x for ...}
+// =============================================================================
+ast::Value *PylangCodegen::visit(const ast::SetComp *node)
+{
+	auto *iterable = generate(node->generators()[0]->iter().get());
+	auto *iterator = m_emitter.call_get_iter(iterable);
+
+	auto *res = compile_comprehension_impl(
+		"<setcomp>",
+		node,
+		iterator,
+		[&]() { return m_emitter.create_set({}); },
+		[&](llvm::Value *container) {
+			auto *elt = generate(node->elt().get());
+			if (elt) m_emitter.call_set_add(container, elt);
+		});
+	return make_value(res);
+}
+
+
 ast::Value *PylangCodegen::visit(const ast::AsyncFunctionDefinition *node)
 {
 	log::codegen()->warn("AsyncFunctionDefinition not implemented");
@@ -2842,26 +3140,6 @@ ast::Value *PylangCodegen::visit(const ast::YieldFrom *node)
 	return make_value(m_emitter.get_none());
 }
 
-ast::Value *PylangCodegen::visit(const ast::ListComp *node)
-{
-	log::codegen()->warn("ListComp not implemented in Phase 2");
-	(void)node;
-	return make_value(m_emitter.get_none());
-}
-
-ast::Value *PylangCodegen::visit(const ast::DictComp *node)
-{
-	log::codegen()->warn("DictComp not implemented in Phase 2");
-	(void)node;
-	return make_value(m_emitter.get_none());
-}
-
-ast::Value *PylangCodegen::visit(const ast::SetComp *node)
-{
-	log::codegen()->warn("SetComp not implemented in Phase 2");
-	(void)node;
-	return make_value(m_emitter.get_none());
-}
 
 ast::Value *PylangCodegen::visit(const ast::GeneratorExp *node)
 {

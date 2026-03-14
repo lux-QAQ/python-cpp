@@ -212,7 +212,7 @@ namespace {
 				if (!as<PyInteger>(result.unwrap())) {
 					return Err(type_error(std::string(conversion_error_message)));
 				}
-				//return Ok(as<PyInteger>(result.unwrap())->as_i64());
+				// return Ok(as<PyInteger>(result.unwrap())->as_i64());
 				return Ok(static_cast<int32_t>(as<PyInteger>(result.unwrap())->as_i64()));
 			} else if constexpr (std::is_same_v<typename ResultType::OkType, std::monostate>) {
 				auto result = callable->call(args.unwrap(), kwargs);
@@ -1176,8 +1176,8 @@ PyResult<PyObject *> PyObject::new_(PyTuple *args, PyDict *kwargs) const
 
 	// pop out type from args
 	std::vector<Value> new_args;
-	new_args.reserve(args->size() - 1); 
-	//new_args.resize(args->size() - 1);
+	new_args.reserve(args->size() - 1);
+	// new_args.resize(args->size() - 1);
 	new_args.insert(new_args.end(), args->elements().begin() + 1, args->elements().end());
 	auto args_ = PyTuple::create(new_args);
 	if (args_.is_err()) return args_;
@@ -1191,41 +1191,38 @@ PyResult<PyObject *> PyObject::new_(PyTuple *args, PyDict *kwargs) const
 
 PyResult<int32_t> PyObject::init(PyTuple *args, PyDict *kwargs)
 {
-    auto init_str_ = PyString::create("__init__");
-    if (init_str_.is_err()) { return Err(init_str_.unwrap_err()); }
-    auto *init_str = init_str_.unwrap();
+	auto init_str_ = PyString::create("__init__");
+	if (init_str_.is_err()) { return Err(init_str_.unwrap_err()); }
+	auto *init_str = init_str_.unwrap();
 
-    // type()->lookup() 返回的是原始描述符（PyFunction），不是 bound method
-    // 因为 lookup 不触发 __get__
-    // 所以我们需要手动 prepend self
-    auto descriptor_ = type()->lookup(init_str);
-    if (descriptor_.has_value() && descriptor_->is_ok()) {
-        auto *init_fn = descriptor_->unwrap();
+	// type()->lookup() 返回的是原始描述符（PyFunction），不是 bound method
+	// 因为 lookup 不触发 __get__
+	// 所以我们需要手动 prepend self
+	auto descriptor_ = type()->lookup(init_str);
+	if (descriptor_.has_value() && descriptor_->is_ok()) {
+		auto *init_fn = descriptor_->unwrap();
 
-        // [Fix] 构造 init_args = (self, *args)
-        // lookup() 返回的是未绑定的函数，需要手动传 self
-        std::vector<Value> init_elements;
-        init_elements.reserve(1 + args->size());
-        init_elements.push_back(this);
-        init_elements.insert(init_elements.end(),
-                             args->elements().begin(),
-                             args->elements().end());
-        auto init_args = PyTuple::create(init_elements);
-        if (init_args.is_err()) { return Err(init_args.unwrap_err()); }
+		// [Fix] 构造 init_args = (self, *args)
+		// lookup() 返回的是未绑定的函数，需要手动传 self
+		std::vector<Value> init_elements;
+		init_elements.reserve(1 + args->size());
+		init_elements.push_back(this);
+		init_elements.insert(init_elements.end(), args->elements().begin(), args->elements().end());
+		auto init_args = PyTuple::create(init_elements);
+		if (init_args.is_err()) { return Err(init_args.unwrap_err()); }
 
-        auto result = init_fn->call(init_args.unwrap(), kwargs);
-        if (result.is_err()) { return Err(result.unwrap_err()); }
-        return Ok(0);
-    }
+		auto result = init_fn->call(init_args.unwrap(), kwargs);
+		if (result.is_err()) { return Err(result.unwrap_err()); }
+		return Ok(0);
+	}
 
-    // 回退到 C++ slot
-    if (type_prototype().__init__.has_value()) {
-        return call_slot(*type_prototype().__init__,
-            "__init__() should return None",
-            this, args, kwargs);
-    }
+	// 回退到 C++ slot
+	if (type_prototype().__init__.has_value()) {
+		return call_slot(
+			*type_prototype().__init__, "__init__() should return None", this, args, kwargs);
+	}
 
-    return Ok(0);
+	return Ok(0);
 }
 
 PyResult<PyObject *> PyObject::getitem(PyObject *key)

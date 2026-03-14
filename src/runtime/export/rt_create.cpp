@@ -54,6 +54,13 @@ py::PyObject *rt_build_list(int32_t count, py::PyObject **items)
 	return rt_unwrap(py::PyList::create(elements));
 }
 
+PYLANG_EXPORT_CREATE("integer_from_string", "obj", "str")
+py::PyObject *rt_integer_from_string(const char *str)
+{
+	mpz_class value(str, 10);
+	return rt_unwrap(py::PyInteger::create(std::move(value)));
+}
+
 // =============================================================================
 // Tier 3: 更多容器创建
 // =============================================================================

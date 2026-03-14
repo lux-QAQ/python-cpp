@@ -50,6 +50,7 @@ class IREmitter
 
 	// ========== Tier 1: 更多对象创建 ==========
 	llvm::Value *create_integer(int64_t value);
+	llvm::Value *create_integer_big(std::string_view decimal_str);
 	llvm::Value *create_float(double value);
 	llvm::Value *create_list(llvm::ArrayRef<llvm::Value *> elements);
 	llvm::Value *create_dict(llvm::ArrayRef<llvm::Value *> keys,

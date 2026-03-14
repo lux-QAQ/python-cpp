@@ -1,0 +1,64 @@
+[main] 正在生成文件夹: /home/lux/code/language/python-cpp/build/debug 
+[build] 正在启动生成
+[proc] 正在执行命令: /home/lux/soft/cmake/bin/cmake --build /home/lux/code/language/python-cpp/build/debug --config Debug --target all --
+[build] [0/2] Re-checking globbed directories...
+[build] ninja: no work to do.
+[driver] 生成完毕: 00:00:00.039
+[build] 生成已完成，退出代码为 0
+[proc] 正在执行命令: /home/lux/soft/cmake/bin/ctest -T test --output-on-failure -R ^SimpleDriverTest\.Feature_LiteralsAndComplex$
+[ctest] Cannot find file: /home/lux/code/language/python-cpp/build/debug/DartConfiguration.tcl
+[ctest] Cannot find file: /home/lux/code/language/python-cpp/build/debug/DartConfiguration.tcl
+[ctest] Test project /home/lux/code/language/python-cpp/build/debug
+[ctest]     Start 536: SimpleDriverTest.Feature_LiteralsAndComplex
+[ctest] 1/1 Test #536: SimpleDriverTest.Feature_LiteralsAndComplex ...***Failed    5.78 sec
+[ctest] Running main() from /home/lux/code/language/python-cpp/build/debug/.cache/CPM/googletest/1ace/googletest/src/gtest_main.cc
+[ctest] Note: Google Test filter = SimpleDriverTest.Feature_LiteralsAndComplex
+[ctest] [==========] Running 1 test from 1 test suite.
+[ctest] [----------] Global test environment set-up.
+[ctest] [----------] 1 test from SimpleDriverTest
+[ctest] [18:22:27.104] [compiler] [info] TargetMachine: x86_64-pc-linux-gnu (opt=O0)
+[ctest] [18:22:27.104] [compiler] [info] Using separated runtime compilation (cached object: /tmp/pylang_runtime_cache.o)
+[ctest] [18:22:27.104] [linker] [info] Loading runtime bitcode: /home/lux/code/language/python-cpp/build/debug/runtime.bc
+[ctest] [18:22:31.752] [linker] [info] Parsed 107 annotations, skipped 0
+[ctest] [18:22:31.752] [linker] [info] Loaded 107 runtime functions
+[ctest] [18:22:31.752] [compiler] [info] SimpleDriver created (opt: O0, separate_link: true)
+[ctest] [2026-03-14 18:22:31.752] [info] [timer] SimpleDriver::create: 4648.68ms
+[ctest] [2026-03-14 18:22:31.752] [info] [timer] SetUpTestSuite::create_shared_driver: 4648.74ms
+[ctest] [ RUN      ] SimpleDriverTest.Feature_LiteralsAndComplex
+[ctest] [18:22:31.766] [compiler] [info] Stage 1: Codegen for '__test_literals_complex__'
+[ctest] [2026-03-14 18:22:31.767] [info] [timer] stage_codegen: 1.01ms
+[ctest] [18:22:31.767] [compiler] [info] Stage 1: Codegen for '__test_literals_complex__'
+[ctest] [2026-03-14 18:22:31.768] [info] [timer] stage_codegen: 0.70ms
+[ctest] /home/lux/code/language/python-cpp/src/compiler/Driver/_SimpleDriver_test.cpp:116: Failure
+[ctest] Value of: result.has_value()
+[ctest]   Actual: false
+[ctest] Expected: true
+[ctest] [CodegenInternalError] LLVM Module verification failed: Referring to an instruction in another function!
+[ctest]   call void @_Z15rt_store_globalPN2py8PyObjectEPKcS1_(ptr %0, ptr @.str.10, ptr %4)
+[ctest] Referring to an instruction in another function!
+[ctest]   %6 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %0, ptr @.str.10)
+[ctest] Referring to an instruction in another function!
+[ctest]   %7 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %0, ptr @.str.10)
+[ctest]  (at /home/lux/code/language/python-cpp/src/compiler/Codegen/PylangCodegen.cpp:99:86)
+[ctest] 
+[ctest] [2026-03-14 18:22:31.768] [info] [timer] run_aot_test:literals_complex: 16.03ms
+[ctest] [  FAILED  ] SimpleDriverTest.Feature_LiteralsAndComplex (16 ms)
+[ctest] [----------] 1 test from SimpleDriverTest (16 ms total)
+[ctest] 
+[ctest] [----------] Global test environment tear-down
+[ctest] [==========] 1 test from 1 test suite ran. (5143 ms total)
+[ctest] [  PASSED  ] 0 tests.
+[ctest] [  FAILED  ] 1 test, listed below:
+[ctest] [  FAILED  ] SimpleDriverTest.Feature_LiteralsAndComplex
+[ctest] 
+[ctest]  1 FAILED TEST
+[ctest] 
+[ctest] 
+[ctest] 0% tests passed, 1 tests failed out of 1
+[ctest] 
+[ctest] Total Test time (real) =   5.78 sec
+[ctest] 
+[ctest] The following tests FAILED:
+[ctest] 	536 - SimpleDriverTest.Feature_LiteralsAndComplex (Failed)
+[proc] 命令“/home/lux/soft/cmake/bin/ctest -T test --output-on-failure -R ^SimpleDriverTest\.Feature_LiteralsAndComplex$”已退出，代码为 8
+[ctest] CTest 已完成，返回代码 8
