@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PyObject.hpp"
+#include "memory/GCTracingAllocator.hpp"
 
 namespace py {
 
@@ -13,7 +14,7 @@ class PyList
 #endif
 	friend class ::py::Arena;
 
-	std::vector<Value> m_elements;
+	py::GCVector<Value> m_elements;
 
 	PyList(PyType *);
 
@@ -40,8 +41,8 @@ class PyList
 	PyResult<PyObject *> __mul__(size_t count) const;
 	PyResult<PyObject *> __eq__(const PyObject *other) const;
 
-	const std::vector<Value> &elements() const { return m_elements; }
-	std::vector<Value> &elements() { return m_elements; }
+	const py::GCVector<Value> &elements() const { return m_elements; }
+	py::GCVector<Value> &elements() { return m_elements; }
 
 	void visit_graph(Visitor &) override;
 

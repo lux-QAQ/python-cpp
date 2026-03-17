@@ -55,12 +55,14 @@ py::PyObject *rt_load_build_class()
 
 PYLANG_EXPORT_CLASS("build_class_aot", "obj", "obj,str,obj,obj")
 py::PyObject *rt_build_class_aot(py::PyObject *body_fn,
-	const char *name,
-	py::PyObject *bases,
-	py::PyObject *kwargs)
+    const char *name,
+    py::PyObject *bases,
+    py::PyObject *kwargs)
 {
-	return rt_unwrap(py::build_class_aot(body_fn,
-		 std::string(name),
-		static_cast<py::PyTuple *>(bases),
-		kwargs ? static_cast<py::PyDict *>(kwargs) : nullptr));
+    // name 字符串来自 LLVM IR 常量，可安全 intern
+    auto *interned = py::PyString::intern(name);
+    return rt_unwrap(py::build_class_aot(body_fn,
+         interned->value(),
+        static_cast<py::PyTuple *>(bases),
+        kwargs ? static_cast<py::PyDict *>(kwargs) : nullptr));
 }

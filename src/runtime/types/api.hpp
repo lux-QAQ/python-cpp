@@ -28,6 +28,7 @@ template<typename T> struct klass
 	klass(PyModule *module, std::string_view name, BaseType &&...bases)
 		: type(TypePrototype::create<T>(name)), m_module(module)
 	{
+	
 		type->__bases__ = std::vector<PyType *>{ bases... };
 	}
 
@@ -37,6 +38,7 @@ template<typename T> struct klass
 		requires(std::is_same_v<std::remove_reference_t<BaseType>, PyType *> && ...)
 	klass(std::string_view name, BaseType &&...bases) : type(TypePrototype::create<T>(name))
 	{
+		
 		type->__bases__ = std::vector<PyType *>{ bases... };
 	}
 
@@ -296,8 +298,8 @@ template<typename T> struct klass
 		//        klass isn't visited by the GC visitors so `type` is not visited, and
 		//        and the allocated `__bases__` tuple can be GC'ed before PyType takes
 		//        ownership
-		
-			PYLANG_GC_PAUSE_SCOPE();
+
+		PYLANG_GC_PAUSE_SCOPE();
 		auto *type_ = PyType::initialize(std::move(type));
 		spdlog::trace("Added type@{} with name {}", (void *)type_, type_->name());
 		auto name = PyString::create(type_->name());

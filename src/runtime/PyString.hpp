@@ -52,7 +52,14 @@ class PyString
 	};
 
   public:
+	// 已有的工厂方法
 	static PyResult<PyString *> create(const std::string &value);
+
+	// ✅ 新增：字符串驻留 (String Interning)
+	// 对同一个字符串内容，永远返回同一个 PyString 对象
+	// 驻留的字符串不会被 GC 回收
+	static PyString *intern(const char *cstr);
+	static PyString *intern(const std::string &str);
 
 	static PyResult<PyString *> create(PyObject *);
 

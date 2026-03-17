@@ -299,6 +299,9 @@ if(ENABLE_RUNTIME_ARENA)
     # [关键修复]: 手动将 bdwgc 的头文件目录暴露给 python-cpp 及下游目标
     target_include_directories(python-cpp PUBLIC ${bdwgc_SOURCE_DIR}/include)
 
+    # ✅ [全局暴露]: 让 MLIR 等未继承 python-cpp public 依赖的目录也能找到 gc.h
+    include_directories(${bdwgc_SOURCE_DIR}/include)
+
     # ✅ [修复]: 增加 GC_THREADS 宏，让 C++ 代码能看到多线程 API
     target_compile_definitions(python-cpp PUBLIC PYLANG_USE_Boehm_GC GC_THREADS)
   endif()

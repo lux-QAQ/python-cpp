@@ -62,7 +62,12 @@ PyList::PyList() : PyBaseObject(types::BuiltinTypes::the().list()) {}
 
 PyList::PyList(PyType *type) : PyBaseObject(type) {}
 
-PyList::PyList(std::vector<Value> elements) : PyList() { m_elements = std::move(elements); }
+PyList::PyList(std::vector<Value> elements) : PyList()
+{
+	// 修复：将外部原生的 vector 通过按范围移动拷贝进入被 GC 保护的缓冲内
+	m_elements.assign(
+		std::make_move_iterator(elements.begin()), std::make_move_iterator(elements.end()));
+}
 
 PyResult<PyList *> PyList::create(std::vector<Value> elements)
 {
@@ -625,33 +630,33 @@ PyResult<PyObject *> PyList::sort(PyTuple *args, PyDict *kwargs)
 		std::vector<size_t> indices(cmp_list->elements().size());
 		std::iota(indices.begin(), indices.end(), 0);
 
-        // 【最正确的写法版本 1：带 key 排序】
-        auto cmp = [&err, cmp_list](size_t lhs_index, size_t rhs_index) -> bool {
-            // 短路：如果之前的比较已经抛出了异常，直接返回 false 终止排序算法的实际换位
-            if (err.is_err()) { return false; }
-            if (!RuntimeContext::has_current()) { return false; }
+		// 【最正确的写法版本 1：带 key 排序】
+		auto cmp = [&err, cmp_list](size_t lhs_index, size_t rhs_index) -> bool {
+			// 短路：如果之前的比较已经抛出了异常，直接返回 false 终止排序算法的实际换位
+			if (err.is_err()) { return false; }
+			if (!RuntimeContext::has_current()) { return false; }
 
-            auto &ctx = RuntimeContext::current();
-            const auto &lhs = cmp_list->elements()[lhs_index];
-            const auto &rhs = cmp_list->elements()[rhs_index];
+			auto &ctx = RuntimeContext::current();
+			const auto &lhs = cmp_list->elements()[lhs_index];
+			const auto &rhs = cmp_list->elements()[rhs_index];
 
-            auto cmp_result = less_than(lhs, rhs, *ctx.interpreter());
-            if (cmp_result.is_err()) {
-                err = Err(cmp_result.unwrap_err());
-                return false;
-            }
+			auto cmp_result = less_than(lhs, rhs, *ctx.interpreter());
+			if (cmp_result.is_err()) {
+				err = Err(cmp_result.unwrap_err());
+				return false;
+			}
 
-            // 使用引擎自带的 truthy 处理 Value 联合体
-            auto is_true_res = truthy(cmp_result.unwrap(), *ctx.interpreter());
-            if (is_true_res.is_err()) {
-                err = Err(is_true_res.unwrap_err());
-                return false;
-            }
+			// 使用引擎自带的 truthy 处理 Value 联合体
+			auto is_true_res = truthy(cmp_result.unwrap(), *ctx.interpreter());
+			if (is_true_res.is_err()) {
+				err = Err(is_true_res.unwrap_err());
+				return false;
+			}
 
-            return is_true_res.unwrap();
-        };
+			return is_true_res.unwrap();
+		};
 
-        if (reverse) {
+		if (reverse) {
 			std::stable_sort(indices.rbegin(), indices.rend(), cmp);
 		} else {
 			std::stable_sort(indices.begin(), indices.end(), cmp);
@@ -669,31 +674,31 @@ PyResult<PyObject *> PyList::sort(PyTuple *args, PyDict *kwargs)
 			std::iter_swap(indices.begin() + i, indices.begin() + o);
 		}
 	} else {
-        // 【最正确的写法版本 2：无 key 排序】
-        auto cmp = [&err](const Value &lhs, const Value &rhs) -> bool {
-            // 短路：如果之前的比较已经抛出了异常，直接返回 false
-            if (err.is_err()) { return false; }
-            if (!RuntimeContext::has_current()) { return false; }
+		// 【最正确的写法版本 2：无 key 排序】
+		auto cmp = [&err](const Value &lhs, const Value &rhs) -> bool {
+			// 短路：如果之前的比较已经抛出了异常，直接返回 false
+			if (err.is_err()) { return false; }
+			if (!RuntimeContext::has_current()) { return false; }
 
-            auto &ctx = RuntimeContext::current();
+			auto &ctx = RuntimeContext::current();
 
-            auto cmp_result = less_than(lhs, rhs, *ctx.interpreter());
-            if (cmp_result.is_err()) {
-                err = Err(cmp_result.unwrap_err());
-                return false;
-            }
+			auto cmp_result = less_than(lhs, rhs, *ctx.interpreter());
+			if (cmp_result.is_err()) {
+				err = Err(cmp_result.unwrap_err());
+				return false;
+			}
 
-            // 使用引擎自带的 truthy 处理 Value 联合体
-            auto is_true_res = truthy(cmp_result.unwrap(), *ctx.interpreter());
-            if (is_true_res.is_err()) {
-                err = Err(is_true_res.unwrap_err());
-                return false;
-            }
+			// 使用引擎自带的 truthy 处理 Value 联合体
+			auto is_true_res = truthy(cmp_result.unwrap(), *ctx.interpreter());
+			if (is_true_res.is_err()) {
+				err = Err(is_true_res.unwrap_err());
+				return false;
+			}
 
-            return is_true_res.unwrap();
-        };
+			return is_true_res.unwrap();
+		};
 
-        if (reverse) {
+		if (reverse) {
 			std::stable_sort(m_elements.rbegin(), m_elements.rend(), cmp);
 		} else {
 			std::stable_sort(m_elements.begin(), m_elements.end(), cmp);

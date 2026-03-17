@@ -113,7 +113,10 @@ inline auto deserialize(std::span<const uint8_t> &buffer)
 			TODO();
 		} break;
 		case ValueType::TUPLE: {
-			return Tuple{ .elements = deserialize<std::vector<Value>>(buffer) };
+			auto deserialized_elements = deserialize<std::vector<Value>>(buffer);
+			return Tuple{ .elements = py::GCVector<Value>(
+							  std::make_move_iterator(deserialized_elements.begin()),
+							  std::make_move_iterator(deserialized_elements.end())) };
 		}
 		}
 	} else {

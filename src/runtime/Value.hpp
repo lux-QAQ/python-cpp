@@ -3,6 +3,7 @@
 #include "../forward.hpp"
 #include "../utilities.hpp"
 #include "forward.hpp"
+#include "memory/GCTracingAllocator.hpp"
 
 #include <gmpxx.h>
 #include <spdlog/fmt/bundled/format.h>
@@ -175,7 +176,7 @@ struct NameConstant
 
 struct Tuple
 {
-	std::vector<Value> elements;
+	py::GCVector<Value> elements;
 
 	friend std::ostream &operator<<(std::ostream &os, const Tuple &tuple);
 

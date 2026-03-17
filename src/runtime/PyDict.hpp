@@ -4,8 +4,9 @@
 #include "runtime/Value.hpp"
 
 #include <tsl/ordered_map.h>
-
 #include <variant>
+
+#include "memory/GCTracingAllocator.hpp"// ✅ 新增：引入 GC 分配器
 
 namespace py {
 
@@ -21,7 +22,12 @@ class PyDictValueIterator;
 class PyDict : public PyBaseObject
 {
   public:
-	using MapType = tsl::ordered_map<Value, Value, ValueHash, ValueEq>;
+	// ✅ 核心修改：在 5 号模板参数注入 GCTracingAllocator
+	using MapType = tsl::ordered_map<Value,
+		Value,
+		ValueHash,
+		ValueEq,
+		py::GCTracingAllocator<std::pair<Value, Value>>>;
 
   private:
 #ifndef PYLANG_USE_ARENA

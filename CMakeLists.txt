@@ -9,8 +9,17 @@ project(python++)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
 
-include(cmake/CPM.cmake)
+# 移除旧的 add_compile_definitions，改用更强力的全局 Flags 注入
+# add_compile_definitions(ALWAYS_SMALL_CLEAR_STACK)
 
+# [强制全局定义]
+# 直接修改 C_FLAGS 是 100% 确保宏传递给 bdwgc (包括其内部 misc.c) 的方法
+# 这将强制 GC_clear_stack 使用 memset (BZERO) 而非递归清除，彻底根除 Stack Overflow
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DALWAYS_SMALL_CLEAR_STACK -DSMALL_CLEAR_SIZE=4")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DALWAYS_SMALL_CLEAR_STACK -DSMALL_CLEAR_SIZE=4")
+
+
+include(cmake/CPM.cmake)
 
 CPMAddPackage(
     NAME zstd
@@ -44,10 +53,24 @@ CPMAddPackage(
     GIT_TAG v8.2.6
     OPTIONS
     "enable_threads ON" # 允许无 GIL 的多线程分配
-    "enable_cplusplus ON" # 启用兼容性
+    "enable_parallel_mark ON" # 强制开启并行标记（如果系统支持）
+    "enable_handle_fork ON" # 确保多线程环境下的进程安全
+    "enable_mmap ON" # 【关键】增量 GC 使用的 OS 页写保护需要依赖 mmap
+    "enable_cplusplus OFF" # 启用兼容性
     "build_tests OFF" # 不要编译它的测试
     "build_docs OFF"
+    # [删除] 之前建议的 target 补丁代码现在是多余的了，因为全局 Flag 已经覆盖了
 )
+
+# 将 ALWAYS_SMALL_CLEAR_STACK 强制注入到 bdwgc 的编译目标
+# add_compile_definitions 只影响当前项目的 target，不影响 CPM 子项目
+if(TARGET gc)
+    target_compile_definitions(gc PRIVATE ALWAYS_SMALL_CLEAR_STACK)
+endif()
+# 同时处理可能的静态库目标名
+if(TARGET gc-lib)
+    target_compile_definitions(gc-lib PRIVATE ALWAYS_SMALL_CLEAR_STACK)
+endif()
 
 if(linenoise_ADDED)
     add_library(linenoise ${linenoise_SOURCE_DIR}/linenoise.c)

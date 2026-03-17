@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PyObject.hpp"
+#include "memory/GCTracingAllocator.hpp"// ✅ 新增
 
 namespace py {
 
@@ -14,7 +15,7 @@ class PyTuple
 	friend class ::py::Arena;
 	friend class PyTupleIterator;
 
-	const std::vector<Value> m_elements;
+	const py::GCVector<Value> m_elements;// ✅ 修改为 GCVector
 
   protected:
 	PyTuple(PyType *);
@@ -34,6 +35,26 @@ class PyTuple
 	static PyResult<PyTuple *> create(std::vector<PyObject *> &&elements);
 	static PyResult<PyTuple *> create(const std::vector<PyObject *> &elements);
 	static PyResult<PyTuple *> create(PyType *type, const std::vector<PyObject *> &elements);
+
+	// ✅ 新增：接受 initializer_list，避免对 create({ ... }) 的二义性
+	static PyResult<PyTuple *> create(std::initializer_list<Value> il)
+	{
+		return PyTuple::create(std::vector<Value>(il));
+	}
+
+	// ✅ 新增：显式拦截 const GCVector
+	static PyResult<PyTuple *> create(const py::GCVector<Value> &elements)
+	{
+		std::vector<Value> tmp(elements.begin(), elements.end());
+		return PyTuple::create(std::move(tmp));
+	}
+
+	// ✅ 新增：显式拦截非 const 的 GCVector (防御贪婪变长模板，提供左值的完美匹配)
+	static PyResult<PyTuple *> create(py::GCVector<Value> &elements)
+	{
+		std::vector<Value> tmp(elements.begin(), elements.end());
+		return PyTuple::create(std::move(tmp));
+	}
 
 	template<typename... Args> static PyResult<PyTuple *> create(Args &&...args)
 	{
@@ -56,10 +77,8 @@ class PyTuple
 	PyTupleIterator begin() const;
 	PyTupleIterator end() const;
 
-	// std::shared_ptr<PyTupleIterator> cbegin() const;
-	// std::shared_ptr<PyTupleIterator> cend() const;
-
-	const std::vector<Value> &elements() const { return m_elements; }
+	// ✅ 修改：将返回类型与底层对齐
+	const py::GCVector<Value> &elements() const { return m_elements; }
 	size_t size() const { return m_elements.size(); }
 	PyResult<PyObject *> operator[](size_t idx) const;
 

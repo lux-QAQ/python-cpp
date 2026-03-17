@@ -4,9 +4,11 @@
 #include "Value.hpp"
 #include "concepts.hpp"
 #include "forward.hpp"
+#include "memory/GCTracingAllocator.hpp"
 #include "memory/GarbageCollector.hpp"
 #include "runtime/compat.hpp"
 #include "runtime/forward.hpp"
+
 #ifndef PYLANG_USE_ARENA
 
 #endif
@@ -283,7 +285,9 @@ struct TypePrototype
 	size_t basicsize;
 
 	PyType *__base__{ nullptr };
-	std::vector<PyType *> __bases__{ nullptr };
+	std::vector<PyType *> __bases__{
+		nullptr
+	};
 
 	std::function<PyResult<PyObject *>(PyType *)> __alloc__;
 	std::optional<std::variant<NewSlotFunctionType, PyObject *>> __new__;

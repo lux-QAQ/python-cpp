@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PyObject.hpp"
+#include "memory/GCTracingAllocator.hpp"
 
 namespace py {
 
@@ -20,7 +21,7 @@ class PyType : public PyBaseObject
   public:
 	PyString *__name__{ nullptr };
 	PyString *__qualname__{ nullptr };
-	std::vector<PyObject *> __slots__;
+	py::GCVector<PyObject *> __slots__;
 	PyString *__module__{ nullptr };
 	mutable PyTuple *__mro__{ nullptr };
 	std::variant<std::monostate, std::reference_wrapper<TypePrototype>, PyType *> m_metaclass;

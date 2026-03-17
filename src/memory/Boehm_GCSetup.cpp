@@ -1,36 +1,21 @@
-#include <cstdlib>
-#include <gc.h>
-#include <new>
-
-// =============================================================================
-// 全局 new / delete 接管 (专门面向 Boehm GC)
-// =============================================================================
+#include <cstdio>
+#include <cstring>
 
 #ifdef PYLANG_USE_Boehm_GC
+#include <gc.h>
 
-void *operator new(std::size_t size)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#pragma GCC diagnostic ignored "-Wformat-security"
+
+void pylang_gc_warn_proc(char *msg, GC_word arg)
 {
-    void *ptr = GC_MALLOC(size);
-    if (!ptr) throw std::bad_alloc();
-    return ptr;
+    // _no_order 不再产生 Finalization cycle 警告
+    // 但保留过滤以防万一
+    if (msg && strstr(msg, "Finalization cycle") != nullptr) { return; }
+    fprintf(stderr, msg, static_cast<unsigned long>(arg));
 }
 
-void *operator new[](std::size_t size)
-{
-    void *ptr = GC_MALLOC(size);
-    if (!ptr) throw std::bad_alloc();
-    return ptr;
-}
+#pragma GCC diagnostic pop
 
-void operator delete(void *ptr) noexcept
-{
-    GC_FREE(ptr);
-}
-
-void operator delete[](void *ptr) noexcept { GC_FREE(ptr); }
-
-void operator delete(void *ptr, std::size_t) noexcept { GC_FREE(ptr); }
-
-void operator delete[](void *ptr, std::size_t) noexcept { GC_FREE(ptr); }
-
-#endif // PYLANG_USE_Boehm_GC
+#endif

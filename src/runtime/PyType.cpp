@@ -21,6 +21,7 @@
 #include "StopIteration.hpp"
 #include "TypeError.hpp"
 #include "ValueError.hpp"
+#include "memory/GCVectorUtils.hpp"
 #include "interpreter/InterpreterCore.hpp"
 #include "runtime/PyTuple.hpp"
 #include "runtime/RuntimeContext.hpp"

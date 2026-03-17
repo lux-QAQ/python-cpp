@@ -21,7 +21,7 @@ template<typename... ArgTypes> struct PyArgsParser
 		size_t MaxSize,
 		typename ResultType,
 		typename... DefaultArgs>
-	static constexpr PyResult<std::monostate> unpack_tuple_helper(const std::vector<Value> &args,
+	static constexpr PyResult<std::monostate> unpack_tuple_helper(const py::GCVector<Value> &args,
 		std::string_view function_name,
 		std::integral_constant<size_t, MinSize> min_size,
 		std::integral_constant<size_t, MaxSize> max_size,

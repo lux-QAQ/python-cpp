@@ -93,6 +93,7 @@
 #include "mlir/Target/LLVMIR/ModuleTranslation.h"
 #include "runtime/Value.hpp"
 #include "utilities.hpp"
+#include "memory/GCVectorUtils.hpp"
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/SCCIterator.h"
 #include "llvm/ADT/TypeSwitch.h"
@@ -937,8 +938,9 @@ struct PythonBytecodeEmitter
 				.Case<ArrayAttr>([this](ArrayAttr arr) {
 					std::vector<::py::Value> elements;
 					elements.reserve(arr.size());
-					for (const auto &el : arr) { elements.push_back(get_value(el)); }
-					return ::py::Tuple{ std::move(elements) };
+                    for (const auto &el : arr) { elements.push_back(get_value(el)); }
+                    // ✅ 使用 ::py::to_gc_vector 避免 mlir::py 冲突，并且显式构造 py::Value
+                    return ::py::Value{ ::py::Tuple{ ::py::to_gc_vector(std::move(elements)) } };
 				})
 				.Default([](auto) {
 					TODO();

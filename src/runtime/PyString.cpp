@@ -13,6 +13,7 @@
 #include "StopIteration.hpp"
 #include "TypeError.hpp"
 #include "ValueError.hpp"
+#include "memory/GCTracingAllocator.hpp"
 #include "runtime/PyBytes.hpp"
 #include "runtime/PyObject.hpp"
 #include "runtime/Value.hpp"
@@ -20,6 +21,8 @@
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "utilities.hpp"
+#include <string_view>
+#include <unordered_map>
 
 #include <algorithm>
 #include <cstddef>
@@ -34,6 +37,49 @@
 #include <unicode/unistr.h>
 
 namespace py {
+
+namespace {
+
+	// 驻留池：string_view → PyString*
+	//
+	// 为什么用 std::string 做 key 而不是 string_view？
+	//   因为 string_view 不拥有数据，如果原始 const char* 来自动态内存，
+	//   可能在 key 存活期间被释放。用 std::string 做 key 保证生命周期安全。
+	//
+	// 为什么用 GCVector 做 roots？
+	//   驻留的 PyString* 必须对 GC 可达，否则会被回收。
+	//   GCVector 的 buffer 在 GC 堆上，GC 扫描时能看到里面的指针。
+	std::unordered_map<std::string, PyString *> &intern_table()
+	{
+		static std::unordered_map<std::string, PyString *> table;
+		return table;
+	}
+
+	GCVector<PyString *> &intern_roots()
+	{
+		static GCVector<PyString *> roots;
+		return roots;
+	}
+
+}// namespace
+
+PyString *PyString::intern(const char *cstr)
+{
+	auto &table = intern_table();
+	auto it = table.find(cstr);
+	if (it != table.end()) return it->second;
+
+	// 首次见到：创建并驻留
+	auto result = PyString::create(std::string(cstr));
+	ASSERT(result.is_ok());
+	auto *str = result.unwrap();
+
+	table[str->value()] = str;
+	intern_roots().push_back(str);// GC root，永不回收
+	return str;
+}
+
+PyString *PyString::intern(const std::string &s) { return intern(s.c_str()); }
 
 template<> PyString *as(PyObject *obj)
 {

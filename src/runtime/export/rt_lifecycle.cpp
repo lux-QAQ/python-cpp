@@ -33,6 +33,21 @@
 
 #ifdef PYLANG_USE_Boehm_GC
 #include <gc.h>
+#include <gmp.h>
+// 声明在 Boehm_GCSetup.cpp 中定义的警告过滤函数
+extern void pylang_gc_warn_proc(char *msg, GC_word arg);
+
+extern "C" {
+static void *pylang_gmp_alloc(size_t alloc_size) { return GC_MALLOC_ATOMIC(alloc_size); }
+static void *pylang_gmp_realloc([[maybe_unused]] void *ptr,
+	[[maybe_unused]] size_t old_size,
+	[[maybe_unused]] size_t new_size)
+{
+	return GC_REALLOC(ptr, new_size);
+}
+static void pylang_gmp_free([[maybe_unused]] void *ptr, [[maybe_unused]] size_t size)
+{ /* no-op, let GC handle it */ }
+}
 #endif
 
 // =============================================================================
@@ -44,7 +59,13 @@ void rt_init()
 {
 #ifdef PYLANG_USE_Boehm_GC
 	GC_INIT();
+	//GC_enable_incremental();
 	GC_allow_register_threads();
+	GC_set_warn_proc(pylang_gc_warn_proc);
+	GC_set_finalize_on_demand(0);
+
+
+	mp_set_memory_functions(pylang_gmp_alloc, pylang_gmp_realloc, pylang_gmp_free);
 #endif
 
 #ifdef PYLANG_USE_ARENA
@@ -63,10 +84,7 @@ void rt_init()
 		py::RuntimeContext::set_current(&s_compiler_ctx);
 	}
 
-	// 2. 调用统一的 Runtime 层初始化
 	py::initialize_types();
-
-	// 3. 注册所有内置 C++ 模块 (builtins, sys, os 等)
 	py::register_all_builtins();
 }
 

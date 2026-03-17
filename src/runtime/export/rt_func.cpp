@@ -29,9 +29,10 @@ py::PyObject *rt_call(py::PyObject *callable, py::PyObject *args, py::PyObject *
 PYLANG_EXPORT_FUNC("load_method", "obj", "obj,str")
 py::PyObject *rt_load_method(py::PyObject *obj, const char *name)
 {
-	auto *method_name = rt_unwrap(py::PyString::create(std::string(name)));
-	return rt_unwrap(obj->get_method(method_name));
+    // ✅ 修复：使用 intern 替代 PyString::create
+    return rt_unwrap(obj->get_method(py::PyString::intern(name)));
 }
+
 
 // =============================================================================
 // Tier 4: tuple 特化访问（闭包实现需要）
