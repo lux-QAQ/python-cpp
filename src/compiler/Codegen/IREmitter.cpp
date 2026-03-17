@@ -122,7 +122,14 @@ llvm::Constant *IREmitter::create_global_string(std::string_view str)
 
 llvm::Constant *IREmitter::null_pyobject() const
 {
-	return llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+    return llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+}
+
+llvm::AllocaInst *IREmitter::create_entry_block_alloca(llvm::Type *type, const std::string &name)
+{
+    llvm::Function *func = m_builder.GetInsertBlock()->getParent();
+    llvm::IRBuilder<> tmp_builder(&func->getEntryBlock(), func->getEntryBlock().begin());
+    return tmp_builder.CreateAlloca(type, nullptr, name);
 }
 
 // =============================================================================
@@ -186,7 +193,7 @@ llvm::Value *IREmitter::create_tuple(llvm::ArrayRef<llvm::Value *> elements)
     }
 
     auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
-    auto *arr = m_builder.CreateAlloca(arr_type, nullptr, "tuple_elems");
+    auto *arr = create_entry_block_alloca(arr_type, "tuple_elems");
 
     for (size_t i = 0; i < elements.size(); ++i) {
         auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
@@ -224,17 +231,17 @@ llvm::Value *IREmitter::create_float(double value)
 
 llvm::Value *IREmitter::create_list(llvm::ArrayRef<llvm::Value *> elements)
 {
-	if (elements.empty()) {
-		auto *null_ptr =
-			llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
-		return emit_runtime_call("build_list", { m_builder.getInt32(0), null_ptr });
-	}
+    if (elements.empty()) {
+        auto *null_ptr =
+            llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+        return emit_runtime_call("build_list", { m_builder.getInt32(0), null_ptr });
+    }
 
-	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
-	auto *arr = m_builder.CreateAlloca(arr_type, nullptr, "list_elems");
+    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
+    auto *arr = create_entry_block_alloca(arr_type, "list_elems");
 
-	for (size_t i = 0; i < elements.size(); ++i) {
-		auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
+    for (size_t i = 0; i < elements.size(); ++i) {
+        auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
 		m_builder.CreateStore(elements[i], gep);
 	}
 
@@ -433,19 +440,19 @@ llvm::Value *IREmitter::call_function(llvm::Value *callable, llvm::Value *args, 
 }
 
 llvm::Value *IREmitter::call_function_fast(llvm::Value *callable,
-	llvm::ArrayRef<llvm::Value *> args)
+    llvm::ArrayRef<llvm::Value *> args)
 {
-	if (args.empty()) {
-		auto *null_ptr =
-			llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
-		return emit_runtime_call("call_fast", { callable, m_builder.getInt32(0), null_ptr });
-	}
+    if (args.empty()) {
+        auto *null_ptr =
+            llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+        return emit_runtime_call("call_fast", { callable, m_builder.getInt32(0), null_ptr });
+    }
 
-	// 栈上分配参数数组（不需要堆分配 PyTuple）
-	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), args.size());
-	auto *arr = m_builder.CreateAlloca(arr_type, nullptr, "call_args");
+    // 栈上分配参数数组（不需要堆分配 PyTuple）
+    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), args.size());
+    auto *arr = create_entry_block_alloca(arr_type, "call_args");
 
-	for (size_t i = 0; i < args.size(); ++i) {
+    for (size_t i = 0; i < args.size(); ++i) {
 		auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
 		m_builder.CreateStore(args[i], gep);
 	}
@@ -526,28 +533,28 @@ llvm::Value *IREmitter::call_get_traceback(llvm::Value *exc)
 // =============================================================================
 
 llvm::Value *IREmitter::create_dict(llvm::ArrayRef<llvm::Value *> keys,
-	llvm::ArrayRef<llvm::Value *> values)
+    llvm::ArrayRef<llvm::Value *> values)
 {
-	PYLANG_ASSERT(keys.size() == values.size(), "keys and values size mismatch");
+    PYLANG_ASSERT(keys.size() == values.size(), "keys and values size mismatch");
 
-	if (keys.empty()) {
-		auto *null_ptr =
-			llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
-		return emit_runtime_call("build_dict", { m_builder.getInt32(0), null_ptr, null_ptr });
-	}
+    if (keys.empty()) {
+        auto *null_ptr =
+            llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+        return emit_runtime_call("build_dict", { m_builder.getInt32(0), null_ptr, null_ptr });
+    }
 
-	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), keys.size());
+    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), keys.size());
 
-	// 创建 keys 数组
-	auto *keys_arr = m_builder.CreateAlloca(arr_type, nullptr, "dict_keys");
-	for (size_t i = 0; i < keys.size(); ++i) {
-		auto *gep = m_builder.CreateConstGEP2_32(arr_type, keys_arr, 0, static_cast<unsigned>(i));
-		m_builder.CreateStore(keys[i], gep);
-	}
+    // 创建 keys 数组
+    auto *keys_arr = create_entry_block_alloca(arr_type, "dict_keys");
+    for (size_t i = 0; i < keys.size(); ++i) {
+        auto *gep = m_builder.CreateConstGEP2_32(arr_type, keys_arr, 0, static_cast<unsigned>(i));
+        m_builder.CreateStore(keys[i], gep);
+    }
 
-	// 创建 values 数组
-	auto *values_arr = m_builder.CreateAlloca(arr_type, nullptr, "dict_values");
-	for (size_t i = 0; i < values.size(); ++i) {
+    // 创建 values 数组
+    auto *values_arr = create_entry_block_alloca(arr_type, "dict_values");
+    for (size_t i = 0; i < values.size(); ++i) {
 		auto *gep = m_builder.CreateConstGEP2_32(arr_type, values_arr, 0, static_cast<unsigned>(i));
 		m_builder.CreateStore(values[i], gep);
 	}
@@ -563,16 +570,16 @@ llvm::Value *IREmitter::create_dict(llvm::ArrayRef<llvm::Value *> keys,
 
 llvm::Value *IREmitter::create_set(llvm::ArrayRef<llvm::Value *> elements)
 {
-	if (elements.empty()) {
-		auto *null_ptr =
-			llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
-		return emit_runtime_call("build_set", { m_builder.getInt32(0), null_ptr });
-	}
+    if (elements.empty()) {
+        auto *null_ptr =
+            llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+        return emit_runtime_call("build_set", { m_builder.getInt32(0), null_ptr });
+    }
 
-	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
-	auto *arr = m_builder.CreateAlloca(arr_type, nullptr, "set_elems");
+    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
+    auto *arr = create_entry_block_alloca(arr_type, "set_elems");
 
-	for (size_t i = 0; i < elements.size(); ++i) {
+    for (size_t i = 0; i < elements.size(); ++i) {
 		auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
 		m_builder.CreateStore(elements[i], gep);
 	}

@@ -59,7 +59,7 @@ void rt_init()
 {
 #ifdef PYLANG_USE_Boehm_GC
 	GC_INIT();
-	//GC_enable_incremental();
+	GC_enable_incremental();
 	GC_allow_register_threads();
 	GC_set_warn_proc(pylang_gc_warn_proc);
 	GC_set_finalize_on_demand(0);

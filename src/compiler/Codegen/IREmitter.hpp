@@ -240,6 +240,9 @@ class IREmitter
 	/// 创建 null PyObject* 常量
 	llvm::Constant *null_pyobject() const;
 
+	/// 在当前函数的 entry block 创建 AllocaInst (解决循环爆栈)
+	llvm::AllocaInst *create_entry_block_alloca(llvm::Type *type, const std::string &name);
+
 	/// C++ EH 辅助
 	void declare_eh_intrinsics();
 	llvm::Function *get_personality_function();

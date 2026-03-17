@@ -403,23 +403,23 @@ void PylangCodegen::generate_store_target(const ast::ASTNode *target, llvm::Valu
 		break;
 	}
 	case ast::ASTNodeType::Tuple:
-	case ast::ASTNodeType::List: {
-		// 解包赋值: a, b = expr
-		const std::vector<std::shared_ptr<ast::ASTNode>> *elements = nullptr;
-		if (target->node_type() == ast::ASTNodeType::Tuple) {
-			elements = &static_cast<const ast::Tuple *>(target)->elements();
-		} else {
-			elements = &static_cast<const ast::List *>(target)->elements();
-		}
-		auto count = static_cast<int32_t>(elements->size());
+    case ast::ASTNodeType::List: {
+        // 解包赋值: a, b = expr
+        const std::vector<std::shared_ptr<ast::ASTNode>> *elements = nullptr;
+        if (target->node_type() == ast::ASTNodeType::Tuple) {
+            elements = &static_cast<const ast::Tuple *>(target)->elements();
+        } else {
+            elements = &static_cast<const ast::List *>(target)->elements();
+        }
+        auto count = static_cast<int32_t>(elements->size());
 
-		// alloca 输出数组
-		auto *ptr_ty = m_emitter.pyobject_ptr_type();
-		auto *arr_ty = llvm::ArrayType::get(ptr_ty, count);
-		auto *out_arr = m_builder.CreateAlloca(arr_ty, nullptr, "unpack_arr");
+        // alloca 输出解包数组需要放在入口以防爆栈
+        auto *ptr_ty = m_emitter.pyobject_ptr_type();
+        auto *arr_ty = llvm::ArrayType::get(ptr_ty, count);
+        auto *out_arr = m_emitter.create_entry_block_alloca(arr_ty, "unpack_arr");
 
-		m_emitter.call_unpack_sequence(
-			value, count, m_builder.CreateBitCast(out_arr, llvm::PointerType::getUnqual(m_ctx)));
+        m_emitter.call_unpack_sequence(
+            value, count, m_builder.CreateBitCast(out_arr, llvm::PointerType::getUnqual(m_ctx)));
 
 		for (int32_t i = 0; i < count; ++i) {
 			auto *gep = m_builder.CreateConstGEP2_32(arr_ty, out_arr, 0, i);
@@ -1294,25 +1294,26 @@ ast::Value *PylangCodegen::visit(const ast::While *node)
 
 ast::Value *PylangCodegen::visit(const ast::For *node)
 {
-	auto *func = m_codegen_ctx.current_function();
-	auto *iter_obj = generate(node->iter().get());
-	auto *iterator = m_emitter.call_get_iter(iter_obj);
+    auto *func = m_codegen_ctx.current_function();
+    auto *iter_obj = generate(node->iter().get());
+    auto *iterator = m_emitter.call_get_iter(iter_obj);
 
-	auto *cond_bb = llvm::BasicBlock::Create(m_ctx, "for.cond", func);
-	auto *body_bb = llvm::BasicBlock::Create(m_ctx, "for.body", func);
-	auto *else_bb =
-		node->orelse().empty() ? nullptr : llvm::BasicBlock::Create(m_ctx, "for.else", func);
-	auto *merge_bb = llvm::BasicBlock::Create(m_ctx, "for.merge", func);
+    auto *cond_bb = llvm::BasicBlock::Create(m_ctx, "for.cond", func);
+    auto *body_bb = llvm::BasicBlock::Create(m_ctx, "for.body", func);
+    auto *else_bb =
+        node->orelse().empty() ? nullptr : llvm::BasicBlock::Create(m_ctx, "for.else", func);
+    auto *merge_bb = llvm::BasicBlock::Create(m_ctx, "for.merge", func);
 
-	m_builder.CreateBr(cond_bb);
+    m_builder.CreateBr(cond_bb);
 
-	// 条件: has_value = iter_next(iter, &flag)
-	m_builder.SetInsertPoint(cond_bb);
-	auto *has_value_alloca =
-		m_builder.CreateAlloca(llvm::Type::getInt1Ty(m_ctx), nullptr, "has_value");
-	auto *next_val = m_emitter.call_iter_next(iterator, has_value_alloca);
-	auto *has_value = m_builder.CreateLoad(llvm::Type::getInt1Ty(m_ctx), has_value_alloca);
-	m_builder.CreateCondBr(has_value, body_bb, else_bb ? else_bb : merge_bb);
+    // 在 entry block 分配判定标志，循环重复利用这 1 bytes 地址，从此杜绝爆栈
+    auto *has_value_alloca = m_codegen_ctx.create_local("for_has_value", llvm::Type::getInt1Ty(m_ctx));
+
+    // 条件: has_value = iter_next(iter, &flag)
+    m_builder.SetInsertPoint(cond_bb);
+    auto *next_val = m_emitter.call_iter_next(iterator, has_value_alloca);
+    auto *has_value = m_builder.CreateLoad(llvm::Type::getInt1Ty(m_ctx), has_value_alloca);
+    m_builder.CreateCondBr(has_value, body_bb, else_bb ? else_bb : merge_bb);
 
 	// 循环体
 	m_codegen_ctx.push_loop({ merge_bb, cond_bb });
@@ -2846,27 +2847,27 @@ ast::Value *PylangCodegen::visit(const ast::ListComp *node)
 //               <body_emitter>()
 // =============================================================================
 void PylangCodegen::emit_comprehension_loops(
-	const std::vector<std::shared_ptr<ast::Comprehension>> &generators,
-	size_t gen_idx,
-	llvm::Value *iterator,
-	std::function<void()> body_emitter)
+    const std::vector<std::shared_ptr<ast::Comprehension>> &generators,
+    size_t gen_idx,
+    llvm::Value *iterator,
+    std::function<void()> body_emitter)
 {
-	auto *func = m_codegen_ctx.current_function();
-	auto *gen = generators[gen_idx].get();
+    auto *func = m_codegen_ctx.current_function();
+    auto *gen = generators[gen_idx].get();
 
-	// for 循环: while (has_value) { x = next(iter); ... }
-	auto *loop_header = llvm::BasicBlock::Create(m_ctx, "comp.header", func);
-	auto *loop_body = llvm::BasicBlock::Create(m_ctx, "comp.body", func);
-	auto *loop_end = llvm::BasicBlock::Create(m_ctx, "comp.end", func);
+    // for 循环: while (has_value) { x = next(iter); ... }
+    auto *loop_header = llvm::BasicBlock::Create(m_ctx, "comp.header", func);
+    auto *loop_body = llvm::BasicBlock::Create(m_ctx, "comp.body", func);
+    auto *loop_end = llvm::BasicBlock::Create(m_ctx, "comp.end", func);
 
-	// has_value 标志
-	auto *has_value_alloca = m_builder.CreateAlloca(m_builder.getInt1Ty(), nullptr, "has_value");
+    // 同理提升到入口安全区
+    auto *has_value_alloca = m_codegen_ctx.create_local("comp_has_value", m_builder.getInt1Ty());
 
-	m_builder.CreateBr(loop_header);
-	m_builder.SetInsertPoint(loop_header);
+    m_builder.CreateBr(loop_header);
+    m_builder.SetInsertPoint(loop_header);
 
-	// next_val = iter_next(iterator, &has_value)
-	auto *next_val = m_emitter.call_iter_next(iterator, has_value_alloca);
+    // next_val = iter_next(iterator, &has_value)
+    auto *next_val = m_emitter.call_iter_next(iterator, has_value_alloca);
 	auto *has_value = m_builder.CreateLoad(m_builder.getInt1Ty(), has_value_alloca);
 	m_builder.CreateCondBr(has_value, loop_body, loop_end);
 

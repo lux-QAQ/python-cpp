@@ -72,7 +72,7 @@ template<typename T> constexpr bool gc_needs_finalizer()
 		return !std::is_trivially_destructible_v<T>;
 	}
 #else
-#error "gc_needs_finalizer is only relevant when PYLANG_USE_Boehm_GC is defined"
+
 	return !std::is_trivially_destructible_v<T>;
 	
 #endif

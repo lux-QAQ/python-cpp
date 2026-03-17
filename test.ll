@@ -1,6 +1,6 @@
-[2026-03-15 21:07:47.588] [info] [timer] precompile_runtime: 43596.18ms
-[2026-03-15 21:07:56.198] [info] [timer] SimpleDriver::create: 52209.44ms
-[2026-03-15 21:07:56.202] [info] [timer] stage_codegen: 4.86ms
+[2026-03-17 19:09:31.798] [info] [timer] precompile_runtime: 45351.95ms
+[2026-03-17 19:09:40.495] [info] [timer] SimpleDriver::create: 54050.25ms
+[2026-03-17 19:09:40.504] [info] [timer] stage_codegen: 7.88ms
 ; ModuleID = 'test'
 source_filename = "test"
 
@@ -72,6 +72,9 @@ source_filename = "test"
 ; Function Attrs: uwtable(sync)
 define void @PyInit_test() #0 {
 entry:
+  %tuple_elems3 = alloca [2 x ptr], align 8
+  %tuple_elems1 = alloca [2 x ptr], align 8
+  %tuple_elems = alloca [3 x ptr], align 8
   %0 = call ptr @_Z13rt_add_modulePKc(ptr @.str)
   %1 = call ptr @_Z19rt_integer_from_i64l(i64 5000000)
   call void @_Z15rt_store_globalPN2py8PyObjectEPKcS1_(ptr %0, ptr @.str.1, ptr %1)
@@ -98,7 +101,6 @@ entry:
   %16 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.60, i64 40)
   %17 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %0, ptr @.str.1)
   %18 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.61, i64 1)
-  %tuple_elems = alloca [3 x ptr], align 8
   %19 = getelementptr [3 x ptr], ptr %tuple_elems, i32 0, i32 0
   store ptr %16, ptr %19, align 8
   %20 = getelementptr [3 x ptr], ptr %tuple_elems, i32 0, i32 1
@@ -111,7 +113,6 @@ entry:
   %24 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %0, ptr @.str.54)
   %25 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %0, ptr @.str.1)
   %26 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %0, ptr @.str.2)
-  %tuple_elems1 = alloca [2 x ptr], align 8
   %27 = getelementptr [2 x ptr], ptr %tuple_elems1, i32 0, i32 0
   store ptr %25, ptr %27, align 8
   %28 = getelementptr [2 x ptr], ptr %tuple_elems1, i32 0, i32 1
@@ -123,7 +124,6 @@ entry:
   %31 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %0, ptr @.str.10)
   %32 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.63, i64 14)
   %33 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %0, ptr @.str.62)
-  %tuple_elems3 = alloca [2 x ptr], align 8
   %34 = getelementptr [2 x ptr], ptr %tuple_elems3, i32 0, i32 0
   store ptr %32, ptr %34, align 8
   %35 = getelementptr [2 x ptr], ptr %tuple_elems3, i32 0, i32 1
@@ -141,7 +141,7 @@ declare noundef ptr @_Z13rt_add_modulePKc(ptr noundef readonly) #1
 declare noundef ptr @_Z19rt_integer_from_i64l(i64 noundef) #1
 
 ; Function Attrs: mustprogress uwtable
-declare void @_Z15rt_store_globalPN2py8PyObjectEPKcS1_(ptr noundef, ptr noundef readonly, ptr noundef) #1
+declare void @_Z15rt_store_globalPN2py8PyObjectEPKcS1_(ptr noundef, ptr noundef, ptr noundef) #1
 
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.Node.3:0.__body__"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
@@ -188,7 +188,7 @@ entry:
 declare noundef ptr @_Z13rt_build_dictiPPN2py8PyObjectES2_(i32 noundef, ptr nocapture noundef readonly, ptr nocapture noundef readonly) #1
 
 ; Function Attrs: mustprogress uwtable
-declare void @_Z10rt_setattrPN2py8PyObjectEPKcS1_(ptr noundef, ptr noundef readonly, ptr noundef) #1
+declare void @_Z10rt_setattrPN2py8PyObjectEPKcS1_(ptr noundef, ptr noundef, ptr noundef) #1
 
 ; Function Attrs: mustprogress uwtable
 declare noundef ptr @_Z8rt_falsev() #1
@@ -206,7 +206,7 @@ declare void @_Z19rt_dict_setitem_strPN2py8PyObjectEPKcS1_(ptr noundef, ptr noun
 declare noundef ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 noundef, ptr nocapture noundef readonly) #1
 
 ; Function Attrs: mustprogress uwtable
-declare noundef ptr @_Z18rt_build_class_aotPN2py8PyObjectEPKcS1_S1_(ptr noundef, ptr noundef readonly, ptr noundef, ptr noundef) #1
+declare noundef ptr @_Z18rt_build_class_aotPN2py8PyObjectEPKcS1_S1_(ptr noundef, ptr noundef, ptr noundef, ptr noundef) #1
 
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.Sieve.8:0.__body__"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
@@ -243,6 +243,8 @@ entry:
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.Sieve.8:0.__init__.9:4"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
 entry:
+  %tuple_elems = alloca [2 x ptr], align 8
+  %list_elems = alloca [1 x ptr], align 8
   %limit = alloca ptr, align 8
   store ptr null, ptr %limit, align 8
   %self = alloca ptr, align 8
@@ -255,7 +257,6 @@ entry:
   %self2 = load ptr, ptr %self, align 8
   call void @_Z10rt_setattrPN2py8PyObjectEPKcS1_(ptr %self2, ptr @.str.8, ptr %limit1)
   %2 = call ptr @_Z8rt_falsev()
-  %list_elems = alloca [1 x ptr], align 8
   %3 = getelementptr [1 x ptr], ptr %list_elems, i32 0, i32 0
   store ptr %2, ptr %3, align 8
   %4 = call ptr @_Z13rt_build_listiPPN2py8PyObjectE(i32 1, ptr %list_elems)
@@ -268,7 +269,6 @@ entry:
   %8 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %9 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.11, i64 29)
   %limit5 = load ptr, ptr %limit, align 8
-  %tuple_elems = alloca [2 x ptr], align 8
   %10 = getelementptr [2 x ptr], ptr %tuple_elems, i32 0, i32 0
   store ptr %9, ptr %10, align 8
   %11 = getelementptr [2 x ptr], ptr %tuple_elems, i32 0, i32 1
@@ -301,17 +301,23 @@ declare noundef ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr noundef nonnull, ptr no
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.Sieve.8:0.to_list.14:4"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
 entry:
+  %tuple_elems11 = alloca [2 x ptr], align 8
+  %tuple_elems9 = alloca [1 x ptr], align 8
+  %tuple_elems6 = alloca [1 x ptr], align 8
   %p = alloca ptr, align 8
   store ptr null, ptr %p, align 8
+  %for_has_value = alloca i1, align 1
+  store i1 false, ptr %for_has_value, align 1
+  %tuple_elems = alloca [2 x ptr], align 8
   %result = alloca ptr, align 8
   store ptr null, ptr %result, align 8
+  %list_elems = alloca [2 x ptr], align 8
   %self = alloca ptr, align 8
   store ptr null, ptr %self, align 8
   %0 = call ptr @_Z16rt_tuple_getitemPN2py8PyObjectEi(ptr %args, i32 0)
   store ptr %0, ptr %self, align 8
   %1 = call ptr @_Z19rt_integer_from_i64l(i64 2)
   %2 = call ptr @_Z19rt_integer_from_i64l(i64 3)
-  %list_elems = alloca [2 x ptr], align 8
   %3 = getelementptr [2 x ptr], ptr %list_elems, i32 0, i32 0
   store ptr %1, ptr %3, align 8
   %4 = getelementptr [2 x ptr], ptr %list_elems, i32 0, i32 1
@@ -324,7 +330,6 @@ entry:
   %8 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %self1, ptr @.str.8)
   %9 = call ptr @_Z19rt_integer_from_i64l(i64 1)
   %10 = call ptr @_Z13rt_binary_addPN2py8PyObjectES1_(ptr %8, ptr %9)
-  %tuple_elems = alloca [2 x ptr], align 8
   %11 = getelementptr [2 x ptr], ptr %tuple_elems, i32 0, i32 0
   store ptr %7, ptr %11, align 8
   %12 = getelementptr [2 x ptr], ptr %tuple_elems, i32 0, i32 1
@@ -336,9 +341,8 @@ entry:
   br label %for.cond
 
 for.cond:                                         ; preds = %if.merge, %entry
-  %has_value = alloca i1, align 1
-  %16 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %15, ptr %has_value)
-  %17 = load i1, ptr %has_value, align 1
+  %16 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %15, ptr %for_has_value)
+  %17 = load i1, ptr %for_has_value, align 1
   br i1 %17, label %for.body, label %for.merge
 
 for.body:                                         ; preds = %for.cond
@@ -355,13 +359,11 @@ for.merge:                                        ; preds = %for.cond
   %22 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.14, i64 19)
   %23 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.15)
   %result8 = load ptr, ptr %result, align 8
-  %tuple_elems9 = alloca [1 x ptr], align 8
   %24 = getelementptr [1 x ptr], ptr %tuple_elems9, i32 0, i32 0
   store ptr %result8, ptr %24, align 8
   %arr_ptr10 = getelementptr [1 x ptr], ptr %tuple_elems9, i32 0, i32 0
   %25 = call ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 1, ptr %arr_ptr10)
   %26 = call ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr %23, ptr %25, ptr null)
-  %tuple_elems11 = alloca [2 x ptr], align 8
   %27 = getelementptr [2 x ptr], ptr %tuple_elems11, i32 0, i32 0
   store ptr %22, ptr %27, align 8
   %28 = getelementptr [2 x ptr], ptr %tuple_elems11, i32 0, i32 1
@@ -376,7 +378,6 @@ if.then:                                          ; preds = %for.body
   %result4 = load ptr, ptr %result, align 8
   %31 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %result4, ptr @.str.13)
   %p5 = load ptr, ptr %p, align 8
-  %tuple_elems6 = alloca [1 x ptr], align 8
   %32 = getelementptr [1 x ptr], ptr %tuple_elems6, i32 0, i32 0
   store ptr %p5, ptr %32, align 8
   %arr_ptr7 = getelementptr [1 x ptr], ptr %tuple_elems6, i32 0, i32 0
@@ -389,7 +390,7 @@ if.merge:                                         ; preds = %if.then, %for.body
 }
 
 ; Function Attrs: mustprogress uwtable
-declare noundef ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr noundef, ptr noundef readonly) #1
+declare noundef ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr noundef, ptr noundef) #1
 
 ; Function Attrs: mustprogress uwtable
 declare noundef ptr @_Z11rt_get_iterPN2py8PyObjectE(ptr noundef nonnull) #1
@@ -739,6 +740,9 @@ declare noundef ptr @_Z13rt_compare_gtPN2py8PyObjectES1_(ptr noundef nonnull, pt
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.Sieve.8:0.loop_y.48:4"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
 entry:
+  %tuple_elems15 = alloca [2 x ptr], align 8
+  %tuple_elems10 = alloca [2 x ptr], align 8
+  %tuple_elems = alloca [2 x ptr], align 8
   %y = alloca ptr, align 8
   store ptr null, ptr %y, align 8
   %x = alloca ptr, align 8
@@ -768,7 +772,6 @@ while.body:                                       ; preds = %while.cond
   %7 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %self4, ptr @.str.18)
   %x5 = load ptr, ptr %x, align 8
   %y6 = load ptr, ptr %y, align 8
-  %tuple_elems = alloca [2 x ptr], align 8
   %8 = getelementptr [2 x ptr], ptr %tuple_elems, i32 0, i32 0
   store ptr %x5, ptr %8, align 8
   %9 = getelementptr [2 x ptr], ptr %tuple_elems, i32 0, i32 1
@@ -780,7 +783,6 @@ while.body:                                       ; preds = %while.cond
   %12 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %self7, ptr @.str.19)
   %x8 = load ptr, ptr %x, align 8
   %y9 = load ptr, ptr %y, align 8
-  %tuple_elems10 = alloca [2 x ptr], align 8
   %13 = getelementptr [2 x ptr], ptr %tuple_elems10, i32 0, i32 0
   store ptr %x8, ptr %13, align 8
   %14 = getelementptr [2 x ptr], ptr %tuple_elems10, i32 0, i32 1
@@ -792,7 +794,6 @@ while.body:                                       ; preds = %while.cond
   %17 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %self12, ptr @.str.20)
   %x13 = load ptr, ptr %x, align 8
   %y14 = load ptr, ptr %y, align 8
-  %tuple_elems15 = alloca [2 x ptr], align 8
   %18 = getelementptr [2 x ptr], ptr %tuple_elems15, i32 0, i32 0
   store ptr %x13, ptr %18, align 8
   %19 = getelementptr [2 x ptr], ptr %tuple_elems15, i32 0, i32 1
@@ -814,6 +815,8 @@ while.merge:                                      ; preds = %while.cond
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.Sieve.8:0.loop_x.56:4"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
 entry:
+  %tuple_elems8 = alloca [1 x ptr], align 8
+  %tuple_elems = alloca [2 x ptr], align 8
   %x = alloca ptr, align 8
   store ptr null, ptr %x, align 8
   %self = alloca ptr, align 8
@@ -851,7 +854,6 @@ if.then:                                          ; preds = %while.body
   %12 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %13 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.22, i64 22)
   %x5 = load ptr, ptr %x, align 8
-  %tuple_elems = alloca [2 x ptr], align 8
   %14 = getelementptr [2 x ptr], ptr %tuple_elems, i32 0, i32 0
   store ptr %13, ptr %14, align 8
   %15 = getelementptr [2 x ptr], ptr %tuple_elems, i32 0, i32 1
@@ -865,7 +867,6 @@ if.merge:                                         ; preds = %if.then, %while.bod
   %self6 = load ptr, ptr %self, align 8
   %18 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %self6, ptr @.str.21)
   %x7 = load ptr, ptr %x, align 8
-  %tuple_elems8 = alloca [1 x ptr], align 8
   %19 = getelementptr [1 x ptr], ptr %tuple_elems8, i32 0, i32 0
   store ptr %x7, ptr %19, align 8
   %arr_ptr9 = getelementptr [1 x ptr], ptr %tuple_elems8, i32 0, i32 0
@@ -881,13 +882,14 @@ if.merge:                                         ; preds = %if.then, %while.bod
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.Sieve.8:0.calc.64:4"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
 entry:
+  %tuple_elems2 = alloca [1 x ptr], align 8
+  %tuple_elems = alloca [1 x ptr], align 8
   %self = alloca ptr, align 8
   store ptr null, ptr %self, align 8
   %0 = call ptr @_Z16rt_tuple_getitemPN2py8PyObjectEi(ptr %args, i32 0)
   store ptr %0, ptr %self, align 8
   %1 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %2 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.24, i64 29)
-  %tuple_elems = alloca [1 x ptr], align 8
   %3 = getelementptr [1 x ptr], ptr %tuple_elems, i32 0, i32 0
   store ptr %2, ptr %3, align 8
   %arr_ptr = getelementptr [1 x ptr], ptr %tuple_elems, i32 0, i32 0
@@ -899,7 +901,6 @@ entry:
   %8 = call ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr %6, ptr %7, ptr null)
   %9 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %10 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.25, i64 41)
-  %tuple_elems2 = alloca [1 x ptr], align 8
   %11 = getelementptr [1 x ptr], ptr %tuple_elems2, i32 0, i32 0
   store ptr %10, ptr %11, align 8
   %arr_ptr3 = getelementptr [1 x ptr], ptr %tuple_elems2, i32 0, i32 0
@@ -915,16 +916,24 @@ entry:
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.generate_trie.71:0"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
 entry:
+  %tuple_elems21 = alloca [1 x ptr], align 8
   %ch = alloca ptr, align 8
   store ptr null, ptr %ch, align 8
+  %for_has_value13 = alloca i1, align 1
+  store i1 false, ptr %for_has_value13, align 1
   %head = alloca ptr, align 8
   store ptr null, ptr %head, align 8
   %s_el = alloca ptr, align 8
   store ptr null, ptr %s_el, align 8
+  %tuple_elems6 = alloca [1 x ptr], align 8
   %el = alloca ptr, align 8
   store ptr null, ptr %el, align 8
+  %for_has_value = alloca i1, align 1
+  store i1 false, ptr %for_has_value, align 1
   %root = alloca ptr, align 8
   store ptr null, ptr %root, align 8
+  %tuple_elems2 = alloca [2 x ptr], align 8
+  %tuple_elems = alloca [1 x ptr], align 8
   %l = alloca ptr, align 8
   store ptr null, ptr %l, align 8
   %0 = call ptr @_Z16rt_tuple_getitemPN2py8PyObjectEi(ptr %args, i32 0)
@@ -933,13 +942,11 @@ entry:
   %2 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.28, i64 38)
   %3 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.15)
   %l1 = load ptr, ptr %l, align 8
-  %tuple_elems = alloca [1 x ptr], align 8
   %4 = getelementptr [1 x ptr], ptr %tuple_elems, i32 0, i32 0
   store ptr %l1, ptr %4, align 8
   %arr_ptr = getelementptr [1 x ptr], ptr %tuple_elems, i32 0, i32 0
   %5 = call ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 1, ptr %arr_ptr)
   %6 = call ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr %3, ptr %5, ptr null)
-  %tuple_elems2 = alloca [2 x ptr], align 8
   %7 = getelementptr [2 x ptr], ptr %tuple_elems2, i32 0, i32 0
   store ptr %2, ptr %7, align 8
   %8 = getelementptr [2 x ptr], ptr %tuple_elems2, i32 0, i32 1
@@ -956,16 +963,14 @@ entry:
   br label %for.cond
 
 for.cond:                                         ; preds = %for.merge12, %entry
-  %has_value = alloca i1, align 1
-  %15 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %14, ptr %has_value)
-  %16 = load i1, ptr %has_value, align 1
+  %15 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %14, ptr %for_has_value)
+  %16 = load i1, ptr %for_has_value, align 1
   br i1 %16, label %for.body, label %for.merge
 
 for.body:                                         ; preds = %for.cond
   store ptr %15, ptr %el, align 8
   %17 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.29)
   %el5 = load ptr, ptr %el, align 8
-  %tuple_elems6 = alloca [1 x ptr], align 8
   %18 = getelementptr [1 x ptr], ptr %tuple_elems6, i32 0, i32 0
   store ptr %el5, ptr %18, align 8
   %arr_ptr7 = getelementptr [1 x ptr], ptr %tuple_elems6, i32 0, i32 0
@@ -981,7 +986,6 @@ for.body:                                         ; preds = %for.cond
 for.merge:                                        ; preds = %for.cond
   %22 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %23 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.30, i64 25)
-  %tuple_elems21 = alloca [1 x ptr], align 8
   %24 = getelementptr [1 x ptr], ptr %tuple_elems21, i32 0, i32 0
   store ptr %23, ptr %24, align 8
   %arr_ptr22 = getelementptr [1 x ptr], ptr %tuple_elems21, i32 0, i32 0
@@ -991,9 +995,8 @@ for.merge:                                        ; preds = %for.cond
   ret ptr %root23
 
 for.cond10:                                       ; preds = %if.merge, %for.body
-  %has_value13 = alloca i1, align 1
-  %27 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %21, ptr %has_value13)
-  %28 = load i1, ptr %has_value13, align 1
+  %27 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %21, ptr %for_has_value13)
+  %28 = load i1, ptr %for_has_value13, align 1
   br i1 %28, label %for.body11, label %for.merge12
 
 for.body11:                                       ; preds = %for.cond10
@@ -1039,30 +1042,63 @@ declare noundef ptr @_Z7rt_truev() #1
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.find.86:0"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
 entry:
+  %tuple_elems99 = alloca [4 x ptr], align 8
+  %tuple_elems96 = alloca [1 x ptr], align 8
+  %tuple_elems92 = alloca [2 x ptr], align 8
+  %tuple_elems90 = alloca [2 x ptr], align 8
+  %tuple_elems85 = alloca [2 x ptr], align 8
   %new_prefix = alloca ptr, align 8
   store ptr null, ptr %new_prefix, align 8
   %v = alloca ptr, align 8
   store ptr null, ptr %v, align 8
+  %unpack_arr81 = alloca [2 x ptr], align 8
+  %for_has_value80 = alloca i1, align 1
+  store i1 false, ptr %for_has_value80, align 1
+  %tuple_elems74 = alloca [4 x ptr], align 8
+  %tuple_elems72 = alloca [1 x ptr], align 8
+  %tuple_elems66 = alloca [1 x ptr], align 8
   %child_chars = alloca ptr, align 8
   store ptr null, ptr %child_chars, align 8
+  %tuple_elems62 = alloca [1 x ptr], align 8
+  %tuple_elems60 = alloca [1 x ptr], align 8
+  %tuple_elems53 = alloca [4 x ptr], align 8
   %current_prefix = alloca ptr, align 8
   store ptr null, ptr %current_prefix, align 8
   %top = alloca ptr, align 8
   store ptr null, ptr %top, align 8
+  %unpack_arr50 = alloca [2 x ptr], align 8
+  %tuple_elems46 = alloca [2 x ptr], align 8
+  %tuple_elems44 = alloca [1 x ptr], align 8
   %result = alloca ptr, align 8
   store ptr null, ptr %result, align 8
   %queue = alloca ptr, align 8
   store ptr null, ptr %queue, align 8
+  %unpack_arr = alloca [2 x ptr], align 8
+  %tuple_elems41 = alloca [2 x ptr], align 8
+  %list_elems = alloca [1 x ptr], align 8
+  %tuple_elems39 = alloca [2 x ptr], align 8
+  %tuple_elems35 = alloca [2 x ptr], align 8
+  %tuple_elems32 = alloca [2 x ptr], align 8
+  %tuple_elems26 = alloca [1 x ptr], align 8
+  %tuple_elems22 = alloca [2 x ptr], align 8
   %ch = alloca ptr, align 8
   store ptr null, ptr %ch, align 8
+  %for_has_value = alloca i1, align 1
+  store i1 false, ptr %for_has_value, align 1
+  %tuple_elems18 = alloca [1 x ptr], align 8
   %head = alloca ptr, align 8
   store ptr null, ptr %head, align 8
+  %tuple_elems16 = alloca [1 x ptr], align 8
+  %tuple_elems13 = alloca [4 x ptr], align 8
   %prime_list = alloca ptr, align 8
   store ptr null, ptr %prime_list, align 8
+  %tuple_elems6 = alloca [2 x ptr], align 8
   %str_prefix = alloca ptr, align 8
   store ptr null, ptr %str_prefix, align 8
+  %tuple_elems3 = alloca [1 x ptr], align 8
   %primes = alloca ptr, align 8
   store ptr null, ptr %primes, align 8
+  %tuple_elems = alloca [1 x ptr], align 8
   %prefix = alloca ptr, align 8
   store ptr null, ptr %prefix, align 8
   %upper_bound = alloca ptr, align 8
@@ -1073,7 +1109,6 @@ entry:
   store ptr %1, ptr %prefix, align 8
   %2 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.27)
   %upper_bound1 = load ptr, ptr %upper_bound, align 8
-  %tuple_elems = alloca [1 x ptr], align 8
   %3 = getelementptr [1 x ptr], ptr %tuple_elems, i32 0, i32 0
   store ptr %upper_bound1, ptr %3, align 8
   %arr_ptr = getelementptr [1 x ptr], ptr %tuple_elems, i32 0, i32 0
@@ -1085,7 +1120,6 @@ entry:
   store ptr %8, ptr %primes, align 8
   %9 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.29)
   %prefix2 = load ptr, ptr %prefix, align 8
-  %tuple_elems3 = alloca [1 x ptr], align 8
   %10 = getelementptr [1 x ptr], ptr %tuple_elems3, i32 0, i32 0
   store ptr %prefix2, ptr %10, align 8
   %arr_ptr4 = getelementptr [1 x ptr], ptr %tuple_elems3, i32 0, i32 0
@@ -1095,7 +1129,6 @@ entry:
   %13 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %14 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.32, i64 21)
   %str_prefix5 = load ptr, ptr %str_prefix, align 8
-  %tuple_elems6 = alloca [2 x ptr], align 8
   %15 = getelementptr [2 x ptr], ptr %tuple_elems6, i32 0, i32 0
   store ptr %14, ptr %15, align 8
   %16 = getelementptr [2 x ptr], ptr %tuple_elems6, i32 0, i32 1
@@ -1126,7 +1159,6 @@ if.then:                                          ; preds = %entry
   %31 = call ptr @_Z19rt_integer_from_i64l(i64 29)
   %prime_list12 = load ptr, ptr %prime_list, align 8
   %32 = call ptr @_Z13rt_compare_inPN2py8PyObjectES1_(ptr %31, ptr %prime_list12)
-  %tuple_elems13 = alloca [4 x ptr], align 8
   %33 = getelementptr [4 x ptr], ptr %tuple_elems13, i32 0, i32 0
   store ptr %26, ptr %33, align 8
   %34 = getelementptr [4 x ptr], ptr %tuple_elems13, i32 0, i32 1
@@ -1143,7 +1175,6 @@ if.then:                                          ; preds = %entry
 if.merge:                                         ; preds = %if.then, %entry
   %39 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.31)
   %prime_list15 = load ptr, ptr %prime_list, align 8
-  %tuple_elems16 = alloca [1 x ptr], align 8
   %40 = getelementptr [1 x ptr], ptr %tuple_elems16, i32 0, i32 0
   store ptr %prime_list15, ptr %40, align 8
   %arr_ptr17 = getelementptr [1 x ptr], ptr %tuple_elems16, i32 0, i32 0
@@ -1152,7 +1183,6 @@ if.merge:                                         ; preds = %if.then, %entry
   store ptr %42, ptr %head, align 8
   %43 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %44 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.34, i64 28)
-  %tuple_elems18 = alloca [1 x ptr], align 8
   %45 = getelementptr [1 x ptr], ptr %tuple_elems18, i32 0, i32 0
   store ptr %44, ptr %45, align 8
   %arr_ptr19 = getelementptr [1 x ptr], ptr %tuple_elems18, i32 0, i32 0
@@ -1163,9 +1193,8 @@ if.merge:                                         ; preds = %if.then, %entry
   br label %for.cond
 
 for.cond:                                         ; preds = %if.merge30, %if.merge
-  %has_value = alloca i1, align 1
-  %49 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %48, ptr %has_value)
-  %50 = load i1, ptr %has_value, align 1
+  %49 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %48, ptr %for_has_value)
+  %50 = load i1, ptr %for_has_value, align 1
   br i1 %50, label %for.body, label %for.merge
 
 for.body:                                         ; preds = %for.cond
@@ -1173,7 +1202,6 @@ for.body:                                         ; preds = %for.cond
   %51 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %52 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.35, i64 20)
   %ch21 = load ptr, ptr %ch, align 8
-  %tuple_elems22 = alloca [2 x ptr], align 8
   %53 = getelementptr [2 x ptr], ptr %tuple_elems22, i32 0, i32 0
   store ptr %52, ptr %53, align 8
   %54 = getelementptr [2 x ptr], ptr %tuple_elems22, i32 0, i32 1
@@ -1185,7 +1213,6 @@ for.body:                                         ; preds = %for.cond
   %57 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %head24, ptr @.str.3)
   %58 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %57, ptr @.str.36)
   %ch25 = load ptr, ptr %ch, align 8
-  %tuple_elems26 = alloca [1 x ptr], align 8
   %59 = getelementptr [1 x ptr], ptr %tuple_elems26, i32 0, i32 0
   store ptr %ch25, ptr %59, align 8
   %arr_ptr27 = getelementptr [1 x ptr], ptr %tuple_elems26, i32 0, i32 0
@@ -1203,7 +1230,6 @@ for.merge:                                        ; preds = %for.cond
   %66 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.38, i64 49)
   %head34 = load ptr, ptr %head, align 8
   %67 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %head34, ptr @.str.4)
-  %tuple_elems35 = alloca [2 x ptr], align 8
   %68 = getelementptr [2 x ptr], ptr %tuple_elems35, i32 0, i32 0
   store ptr %66, ptr %68, align 8
   %69 = getelementptr [2 x ptr], ptr %tuple_elems35, i32 0, i32 1
@@ -1213,26 +1239,22 @@ for.merge:                                        ; preds = %for.cond
   %71 = call ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr %65, ptr %70, ptr null)
   %head37 = load ptr, ptr %head, align 8
   %str_prefix38 = load ptr, ptr %str_prefix, align 8
-  %tuple_elems39 = alloca [2 x ptr], align 8
   %72 = getelementptr [2 x ptr], ptr %tuple_elems39, i32 0, i32 0
   store ptr %head37, ptr %72, align 8
   %73 = getelementptr [2 x ptr], ptr %tuple_elems39, i32 0, i32 1
   store ptr %str_prefix38, ptr %73, align 8
   %arr_ptr40 = getelementptr [2 x ptr], ptr %tuple_elems39, i32 0, i32 0
   %74 = call ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 2, ptr %arr_ptr40)
-  %list_elems = alloca [1 x ptr], align 8
   %75 = getelementptr [1 x ptr], ptr %list_elems, i32 0, i32 0
   store ptr %74, ptr %75, align 8
   %76 = call ptr @_Z13rt_build_listiPPN2py8PyObjectE(i32 1, ptr %list_elems)
   %77 = call ptr @_Z13rt_build_listiPPN2py8PyObjectE(i32 0, ptr null)
-  %tuple_elems41 = alloca [2 x ptr], align 8
   %78 = getelementptr [2 x ptr], ptr %tuple_elems41, i32 0, i32 0
   store ptr %76, ptr %78, align 8
   %79 = getelementptr [2 x ptr], ptr %tuple_elems41, i32 0, i32 1
   store ptr %77, ptr %79, align 8
   %arr_ptr42 = getelementptr [2 x ptr], ptr %tuple_elems41, i32 0, i32 0
   %80 = call ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 2, ptr %arr_ptr42)
-  %unpack_arr = alloca [2 x ptr], align 8
   call void @_Z18rt_unpack_sequencePN2py8PyObjectEiPS1_(ptr %80, i32 2, ptr %unpack_arr)
   %81 = getelementptr [2 x ptr], ptr %unpack_arr, i32 0, i32 0
   %82 = load ptr, ptr %81, align 8
@@ -1244,13 +1266,11 @@ for.merge:                                        ; preds = %for.cond
   %86 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.39, i64 45)
   %87 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.15)
   %queue43 = load ptr, ptr %queue, align 8
-  %tuple_elems44 = alloca [1 x ptr], align 8
   %88 = getelementptr [1 x ptr], ptr %tuple_elems44, i32 0, i32 0
   store ptr %queue43, ptr %88, align 8
   %arr_ptr45 = getelementptr [1 x ptr], ptr %tuple_elems44, i32 0, i32 0
   %89 = call ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 1, ptr %arr_ptr45)
   %90 = call ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr %87, ptr %89, ptr null)
-  %tuple_elems46 = alloca [2 x ptr], align 8
   %91 = getelementptr [2 x ptr], ptr %tuple_elems46, i32 0, i32 0
   store ptr %86, ptr %91, align 8
   %92 = getelementptr [2 x ptr], ptr %tuple_elems46, i32 0, i32 1
@@ -1264,7 +1284,6 @@ if.then29:                                        ; preds = %for.body
   %95 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %96 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.37, i64 26)
   %ch31 = load ptr, ptr %ch, align 8
-  %tuple_elems32 = alloca [2 x ptr], align 8
   %97 = getelementptr [2 x ptr], ptr %tuple_elems32, i32 0, i32 0
   store ptr %96, ptr %97, align 8
   %98 = getelementptr [2 x ptr], ptr %tuple_elems32, i32 0, i32 1
@@ -1288,7 +1307,6 @@ while.body:                                       ; preds = %while.cond
   %103 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %queue49, ptr @.str.40)
   %104 = call ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 0, ptr null)
   %105 = call ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr %103, ptr %104, ptr null)
-  %unpack_arr50 = alloca [2 x ptr], align 8
   call void @_Z18rt_unpack_sequencePN2py8PyObjectEiPS1_(ptr %105, i32 2, ptr %unpack_arr50)
   %106 = getelementptr [2 x ptr], ptr %unpack_arr50, i32 0, i32 0
   %107 = load ptr, ptr %106, align 8
@@ -1302,7 +1320,6 @@ while.body:                                       ; preds = %while.cond
   %112 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.42, i64 9)
   %top52 = load ptr, ptr %top, align 8
   %113 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %top52, ptr @.str.4)
-  %tuple_elems53 = alloca [4 x ptr], align 8
   %114 = getelementptr [4 x ptr], ptr %tuple_elems53, i32 0, i32 0
   store ptr %111, ptr %114, align 8
   %115 = getelementptr [4 x ptr], ptr %tuple_elems53, i32 0, i32 1
@@ -1328,7 +1345,6 @@ while.merge:                                      ; preds = %while.cond
   %126 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.52, i64 30)
   %127 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.15)
   %result95 = load ptr, ptr %result, align 8
-  %tuple_elems96 = alloca [1 x ptr], align 8
   %128 = getelementptr [1 x ptr], ptr %tuple_elems96, i32 0, i32 0
   store ptr %result95, ptr %128, align 8
   %arr_ptr97 = getelementptr [1 x ptr], ptr %tuple_elems96, i32 0, i32 0
@@ -1336,7 +1352,6 @@ while.merge:                                      ; preds = %while.cond
   %130 = call ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr %127, ptr %129, ptr null)
   %131 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.53, i64 7)
   %result98 = load ptr, ptr %result, align 8
-  %tuple_elems99 = alloca [4 x ptr], align 8
   %132 = getelementptr [4 x ptr], ptr %tuple_elems99, i32 0, i32 0
   store ptr %126, ptr %132, align 8
   %133 = getelementptr [4 x ptr], ptr %tuple_elems99, i32 0, i32 1
@@ -1356,13 +1371,11 @@ if.then56:                                        ; preds = %while.body
   %138 = call ptr @_Z10rt_getattrPN2py8PyObjectEPKc(ptr %result58, ptr @.str.13)
   %139 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.43)
   %current_prefix59 = load ptr, ptr %current_prefix, align 8
-  %tuple_elems60 = alloca [1 x ptr], align 8
   %140 = getelementptr [1 x ptr], ptr %tuple_elems60, i32 0, i32 0
   store ptr %current_prefix59, ptr %140, align 8
   %arr_ptr61 = getelementptr [1 x ptr], ptr %tuple_elems60, i32 0, i32 0
   %141 = call ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 1, ptr %arr_ptr61)
   %142 = call ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr %139, ptr %141, ptr null)
-  %tuple_elems62 = alloca [1 x ptr], align 8
   %143 = getelementptr [1 x ptr], ptr %tuple_elems62, i32 0, i32 0
   store ptr %142, ptr %143, align 8
   %arr_ptr63 = getelementptr [1 x ptr], ptr %tuple_elems62, i32 0, i32 0
@@ -1379,7 +1392,6 @@ if.merge57:                                       ; preds = %if.then56, %while.b
   store ptr %149, ptr %child_chars, align 8
   %150 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.15)
   %child_chars65 = load ptr, ptr %child_chars, align 8
-  %tuple_elems66 = alloca [1 x ptr], align 8
   %151 = getelementptr [1 x ptr], ptr %tuple_elems66, i32 0, i32 0
   store ptr %child_chars65, ptr %151, align 8
   %arr_ptr67 = getelementptr [1 x ptr], ptr %tuple_elems66, i32 0, i32 0
@@ -1397,13 +1409,11 @@ if.then68:                                        ; preds = %if.merge57
   %159 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.46, i64 1)
   %160 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.47)
   %child_chars71 = load ptr, ptr %child_chars, align 8
-  %tuple_elems72 = alloca [1 x ptr], align 8
   %161 = getelementptr [1 x ptr], ptr %tuple_elems72, i32 0, i32 0
   store ptr %child_chars71, ptr %161, align 8
   %arr_ptr73 = getelementptr [1 x ptr], ptr %tuple_elems72, i32 0, i32 0
   %162 = call ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 1, ptr %arr_ptr73)
   %163 = call ptr @_Z7rt_callPN2py8PyObjectES1_S1_(ptr %160, ptr %162, ptr null)
-  %tuple_elems74 = alloca [4 x ptr], align 8
   %164 = getelementptr [4 x ptr], ptr %tuple_elems74, i32 0, i32 0
   store ptr %158, ptr %164, align 8
   %165 = getelementptr [4 x ptr], ptr %tuple_elems74, i32 0, i32 1
@@ -1427,13 +1437,11 @@ if.merge69:                                       ; preds = %if.then68, %if.merg
   br label %for.cond77
 
 for.cond77:                                       ; preds = %for.body78, %if.merge69
-  %has_value80 = alloca i1, align 1
-  %175 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %174, ptr %has_value80)
-  %176 = load i1, ptr %has_value80, align 1
+  %175 = call ptr @_Z12rt_iter_nextPN2py8PyObjectEPb(ptr %174, ptr %for_has_value80)
+  %176 = load i1, ptr %for_has_value80, align 1
   br i1 %176, label %for.body78, label %for.merge79
 
 for.body78:                                       ; preds = %for.cond77
-  %unpack_arr81 = alloca [2 x ptr], align 8
   call void @_Z18rt_unpack_sequencePN2py8PyObjectEiPS1_(ptr %175, i32 2, ptr %unpack_arr81)
   %177 = getelementptr [2 x ptr], ptr %unpack_arr81, i32 0, i32 0
   %178 = load ptr, ptr %177, align 8
@@ -1448,7 +1456,6 @@ for.body78:                                       ; preds = %for.cond77
   %182 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %183 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.49, i64 17)
   %new_prefix84 = load ptr, ptr %new_prefix, align 8
-  %tuple_elems85 = alloca [2 x ptr], align 8
   %184 = getelementptr [2 x ptr], ptr %tuple_elems85, i32 0, i32 0
   store ptr %183, ptr %184, align 8
   %185 = getelementptr [2 x ptr], ptr %tuple_elems85, i32 0, i32 1
@@ -1461,14 +1468,12 @@ for.body78:                                       ; preds = %for.cond77
   %189 = call ptr @_Z19rt_integer_from_i64l(i64 0)
   %v88 = load ptr, ptr %v, align 8
   %new_prefix89 = load ptr, ptr %new_prefix, align 8
-  %tuple_elems90 = alloca [2 x ptr], align 8
   %190 = getelementptr [2 x ptr], ptr %tuple_elems90, i32 0, i32 0
   store ptr %v88, ptr %190, align 8
   %191 = getelementptr [2 x ptr], ptr %tuple_elems90, i32 0, i32 1
   store ptr %new_prefix89, ptr %191, align 8
   %arr_ptr91 = getelementptr [2 x ptr], ptr %tuple_elems90, i32 0, i32 0
   %192 = call ptr @_Z14rt_build_tupleiPPN2py8PyObjectE(i32 2, ptr %arr_ptr91)
-  %tuple_elems92 = alloca [2 x ptr], align 8
   %193 = getelementptr [2 x ptr], ptr %tuple_elems92, i32 0, i32 0
   store ptr %189, ptr %193, align 8
   %194 = getelementptr [2 x ptr], ptr %tuple_elems92, i32 0, i32 1
@@ -1494,13 +1499,18 @@ declare void @_Z18rt_unpack_sequencePN2py8PyObjectEiPS1_(ptr noundef, i32 nounde
 ; Function Attrs: uwtable(sync)
 define internal ptr @"test.<module>.0:0.verify.132:0"(ptr %module, ptr %args, ptr %kwargs) #0 personality ptr @__gxx_personality_v0 {
 entry:
+  %tuple_elems11 = alloca [2 x ptr], align 8
+  %tuple_elems8 = alloca [2 x ptr], align 8
+  %tuple_elems5 = alloca [2 x ptr], align 8
   %right = alloca ptr, align 8
   store ptr null, ptr %right, align 8
+  %tuple_elems1 = alloca [2 x ptr], align 8
   %left = alloca ptr, align 8
   store ptr null, ptr %left, align 8
+  %list_elems = alloca [3 x ptr], align 8
+  %tuple_elems = alloca [1 x ptr], align 8
   %0 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %1 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.55, i64 19)
-  %tuple_elems = alloca [1 x ptr], align 8
   %2 = getelementptr [1 x ptr], ptr %tuple_elems, i32 0, i32 0
   store ptr %1, ptr %2, align 8
   %arr_ptr = getelementptr [1 x ptr], ptr %tuple_elems, i32 0, i32 0
@@ -1509,7 +1519,6 @@ entry:
   %5 = call ptr @_Z19rt_integer_from_i64l(i64 2)
   %6 = call ptr @_Z19rt_integer_from_i64l(i64 23)
   %7 = call ptr @_Z19rt_integer_from_i64l(i64 29)
-  %list_elems = alloca [3 x ptr], align 8
   %8 = getelementptr [3 x ptr], ptr %list_elems, i32 0, i32 0
   store ptr %5, ptr %8, align 8
   %9 = getelementptr [3 x ptr], ptr %list_elems, i32 0, i32 1
@@ -1521,7 +1530,6 @@ entry:
   %12 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.54)
   %13 = call ptr @_Z19rt_integer_from_i64l(i64 100)
   %14 = call ptr @_Z19rt_integer_from_i64l(i64 2)
-  %tuple_elems1 = alloca [2 x ptr], align 8
   %15 = getelementptr [2 x ptr], ptr %tuple_elems1, i32 0, i32 0
   store ptr %13, ptr %15, align 8
   %16 = getelementptr [2 x ptr], ptr %tuple_elems1, i32 0, i32 1
@@ -1535,7 +1543,6 @@ entry:
   %left3 = load ptr, ptr %left, align 8
   %right4 = load ptr, ptr %right, align 8
   %21 = call ptr @_Z13rt_compare_eqPN2py8PyObjectES1_(ptr %left3, ptr %right4)
-  %tuple_elems5 = alloca [2 x ptr], align 8
   %22 = getelementptr [2 x ptr], ptr %tuple_elems5, i32 0, i32 0
   store ptr %20, ptr %22, align 8
   %23 = getelementptr [2 x ptr], ptr %tuple_elems5, i32 0, i32 1
@@ -1546,7 +1553,6 @@ entry:
   %26 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %27 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.57, i64 9)
   %left7 = load ptr, ptr %left, align 8
-  %tuple_elems8 = alloca [2 x ptr], align 8
   %28 = getelementptr [2 x ptr], ptr %tuple_elems8, i32 0, i32 0
   store ptr %27, ptr %28, align 8
   %29 = getelementptr [2 x ptr], ptr %tuple_elems8, i32 0, i32 1
@@ -1557,7 +1563,6 @@ entry:
   %32 = call ptr @_Z14rt_load_globalPN2py8PyObjectEPKc(ptr %module, ptr @.str.10)
   %33 = call ptr @_Z19rt_string_from_cstrPKcl(ptr @.str.58, i64 7)
   %right10 = load ptr, ptr %right, align 8
-  %tuple_elems11 = alloca [2 x ptr], align 8
   %34 = getelementptr [2 x ptr], ptr %tuple_elems11, i32 0, i32 0
   store ptr %33, ptr %34, align 8
   %35 = getelementptr [2 x ptr], ptr %tuple_elems11, i32 0, i32 1
