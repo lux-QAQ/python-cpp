@@ -493,9 +493,11 @@ class PyObject : public Cell
 
 	PyResult<PyObject *> call(PyTuple *args, PyDict *kwargs);
 
-	// ✅ 新增：接受原始 Value 序列的调用接口
+	// 新增：接受原始 Value 序列的调用接口
 	virtual PyResult<PyObject *> call_raw(std::span<Value> args, PyDict *kwargs);
 
+	// 原生初始化接口，接受 span 以规避元组分配
+	virtual PyResult<int32_t> init_raw(std::span<Value> args, PyDict *kwargs);
 
 	virtual PyResult<PyObject *> new_(PyTuple *args, PyDict *kwargs) const;
 	PyResult<int32_t> init(PyTuple *args, PyDict *kwargs);
@@ -542,6 +544,8 @@ template<> PyResult<PyObject *> PyObject::from(const Ellipsis &value);
 template<> PyResult<PyObject *> PyObject::from(const NameConstant &value);
 template<> PyResult<PyObject *> PyObject::from(const Value &value);
 
+
+bool descriptor_is_data(const PyObject *obj);
 BaseException *memory_error(size_t failed_allocation_size);
 
 namespace detail {

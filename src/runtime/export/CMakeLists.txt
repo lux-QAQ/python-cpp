@@ -84,18 +84,18 @@ foreach(_var "ordered-map_SOURCE_DIR" "tsl-ordered-map_SOURCE_DIR" "ordered_map_
   endif()
 endforeach()
 
-# ✅ [新增]: 将 Boehm GC 的 include 路径暴露给 wllvm
+# [新增]: 将 Boehm GC 的 include 路径暴露给 wllvm
 if(DEFINED bdwgc_SOURCE_DIR)
   list(APPEND BC_INC "-isystem" "${bdwgc_SOURCE_DIR}/include")
 endif()
 
-# ✅ [新增]: 将 cpptrace 的 include 路径暴露给 wllvm
+# [新增]: 将 cpptrace 的 include 路径暴露给 wllvm
 if(DEFINED cpptrace_SOURCE_DIR)
   list(APPEND BC_INC "-isystem" "${cpptrace_SOURCE_DIR}/include")
 endif()
 
 
-# ✅ [新增]: 将 yalantinglibs 的编译期反射库暴露给 wllvm
+# [新增]: 将 yalantinglibs 的编译期反射库暴露给 wllvm
 if(DEFINED yalantinglibs_SOURCE_DIR)
   list(APPEND BC_INC "-isystem" "${yalantinglibs_SOURCE_DIR}/include")
   # [修复]: 必须包含 ylt 的第三方库路径，否则找不到 frozen/string.h
@@ -110,7 +110,7 @@ endif()
 # Compile definitions
 # ---------------------------------------------------------------------------
 set(BC_DEFS "-DSPDLOG_COMPILED_LIB")
-# ✅ 显式同步 Debug 宏，确保 compat.hpp 逻辑正确
+# 显式同步 Debug 宏，确保 compat.hpp 逻辑正确
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
   list(APPEND BC_DEFS "-DDEBUG")
 endif()
@@ -120,7 +120,7 @@ list(APPEND BC_DEFS "-DPYLANG_AOT_MODE")
 if(ENABLE_RUNTIME_ARENA)
   list(APPEND BC_DEFS "-DPYLANG_USE_ARENA")
 
-  # ✅ [新增]: 将宏传递给 wllvm，以确保 bitcode 也会调用 GC_MALLOC
+  # [新增]: 将宏传递给 wllvm，以确保 bitcode 也会调用 GC_MALLOC
   if(ENABLE_BOEHM_GC)
     list(APPEND BC_DEFS "-DPYLANG_USE_Boehm_GC")
     list(APPEND BC_DEFS "-DGC_THREADS") # <--- 增加这一行，向 wllvm 暴露多线程 API

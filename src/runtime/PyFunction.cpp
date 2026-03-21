@@ -15,7 +15,7 @@
 
 #include <variant>
 
-#include "memory/GCVectorUtils.hpp"// ✅ 新增 include
+#include "memory/GCVectorUtils.hpp"// 新增 include
 
 namespace py {
 
@@ -65,6 +65,60 @@ PyFunction::PyFunction(std::vector<Value> defaults,
 // =============================================================================
 
 
+// PyResult<PyNativeFunction *> PyNativeFunction::create_aot(std::string name,
+// 	void *code_ptr,
+// 	PyObject *module,
+// 	PyObject *defaults,
+// 	PyObject *kwdefaults,
+// 	PyObject *closure)
+// {
+// 	PyNativeFunction *result = nullptr;
+
+// 	if (closure && closure != py_none()) {
+// 		// 有闭包: 签名 PyObject*(PyObject* module, PyObject* closure, PyTuple* args, PyDict*
+// 		// kwargs)
+// 		auto fn = reinterpret_cast<AOTClosureFuncPtr>(code_ptr);
+// 		PyObject *captured_closure = closure;
+// 		PyObject *captured_module = module;
+
+// 		FreeFunctionType func = [fn, captured_module, captured_closure](
+// 									PyTuple *args, PyDict *kwargs) -> PyResult<PyObject *> {
+// 			auto *r = fn(captured_module, captured_closure, args, kwargs);
+// 			if (!r) { return Err(runtime_error("compiled closure returned null")); }
+// 			return Ok(r);
+// 		};
+
+// 		result = PYLANG_ALLOC(
+// 			PyNativeFunction, std::move(name), FunctionType{ std::move(func) }, nullptr);
+// 	} else {
+// 		// 无闭包: 签名 PyObject*(PyObject* module, PyTuple* args, PyDict* kwargs)
+// 		auto fn = reinterpret_cast<AOTFuncPtr>(code_ptr);
+// 		PyObject *captured_module = module;
+
+// 		FreeFunctionType func = [fn, captured_module](
+// 									PyTuple *args, PyDict *kwargs) -> PyResult<PyObject *> {
+// 			auto *r = fn(captured_module, args, kwargs);
+// 			if (!r) { return Err(runtime_error("compiled function returned null")); }
+// 			return Ok(r);
+// 		};
+
+// 		result = PYLANG_ALLOC(
+// 			PyNativeFunction, std::move(name), FunctionType{ std::move(func) }, nullptr);
+// 	}
+
+// 	if (!result) { return Err(memory_error(sizeof(PyNativeFunction))); }
+
+// 	result->m_closure =
+// 		(closure && closure != py_none()) ? static_cast<PyTuple *>(closure) : nullptr;
+// 	result->m_module_ref = module;
+
+// 	if (closure && closure != py_none()) { result->m_captures.push_back(closure); }
+// 	if (defaults) { result->m_captures.push_back(defaults); }
+// 	if (kwdefaults) { result->m_captures.push_back(kwdefaults); }
+// 	if (module) { result->m_captures.push_back(module); }
+
+// 	return Ok(result);
+// }
 
 
 PyResult<PyNativeFunction *> PyNativeFunction::create_aot(std::string name,
@@ -74,54 +128,40 @@ PyResult<PyNativeFunction *> PyNativeFunction::create_aot(std::string name,
 	PyObject *kwdefaults,
 	PyObject *closure)
 {
-	PyNativeFunction *result = nullptr;
+	// 统一强制转换为 5 参数签名
+	auto raw_fn = reinterpret_cast<AOTRawFuncPtr>(code_ptr);
+	PyObject *captured_closure = (closure && closure != py_none()) ? closure : nullptr;
+	PyObject *captured_module = module;
 
-	if (closure && closure != py_none()) {
-		// 有闭包: 签名 PyObject*(PyObject* module, PyObject* closure, PyTuple* args, PyDict*
-		// kwargs)
-		auto fn = reinterpret_cast<AOTClosureFuncPtr>(code_ptr);
-		PyObject *captured_closure = closure;
-		PyObject *captured_module = module;
+	// 桥接函数：用于从 Python (PyTuple) 环境调用 AOT 函数
+	FreeFunctionType bridge_func = [raw_fn, captured_module, captured_closure](
+									   PyTuple *args, PyDict *kwargs) -> PyResult<PyObject *> {
+		// ✅ 优化：直接使用 GCVector::data()，不再使用 to_std_vector 触发堆分配
+		auto *r = raw_fn(captured_module,
+			captured_closure,
+			args->elements().data(),
+			static_cast<int32_t>(args->size()),
+			kwargs);
+		if (!r) { return Err(runtime_error("AOT function returned NULL")); }
+		return Ok(r);
+	};
 
-		FreeFunctionType func = [fn, captured_module, captured_closure](
-									PyTuple *args, PyDict *kwargs) -> PyResult<PyObject *> {
-			auto *r = fn(captured_module, captured_closure, args, kwargs);
-			if (!r) { return Err(runtime_error("compiled closure returned null")); }
-			return Ok(r);
-		};
-
-		result = PYLANG_ALLOC(
-			PyNativeFunction, std::move(name), FunctionType{ std::move(func) }, nullptr);
-	} else {
-		// 无闭包: 签名 PyObject*(PyObject* module, PyTuple* args, PyDict* kwargs)
-		auto fn = reinterpret_cast<AOTFuncPtr>(code_ptr);
-		PyObject *captured_module = module;
-
-		FreeFunctionType func = [fn, captured_module](
-									PyTuple *args, PyDict *kwargs) -> PyResult<PyObject *> {
-			auto *r = fn(captured_module, args, kwargs);
-			if (!r) { return Err(runtime_error("compiled function returned null")); }
-			return Ok(r);
-		};
-
-		result = PYLANG_ALLOC(
-			PyNativeFunction, std::move(name), FunctionType{ std::move(func) }, nullptr);
-	}
-
+	auto *result = PYLANG_ALLOC(
+		PyNativeFunction, std::move(name), FunctionType{ std::move(bridge_func) }, nullptr);
 	if (!result) { return Err(memory_error(sizeof(PyNativeFunction))); }
 
-	result->m_closure =
-		(closure && closure != py_none()) ? static_cast<PyTuple *>(closure) : nullptr;
+	// 关键：保存原始指针用于 call_raw 快速路径
+	result->m_aot_ptr = raw_fn;
+	result->m_closure = static_cast<PyTuple *>(captured_closure);
 	result->m_module_ref = module;
 
-	if (closure && closure != py_none()) { result->m_captures.push_back(closure); }
-	if (defaults) { result->m_captures.push_back(defaults); }
-	if (kwdefaults) { result->m_captures.push_back(kwdefaults); }
+	if (captured_closure) { result->m_captures.push_back(captured_closure); }
+	if (defaults && defaults != py_none()) { result->m_captures.push_back(defaults); }
+	if (kwdefaults && kwdefaults != py_none()) { result->m_captures.push_back(kwdefaults); }
 	if (module) { result->m_captures.push_back(module); }
 
 	return Ok(result);
 }
-
 
 void PyFunction::visit_graph(Visitor &visitor)
 {
@@ -182,23 +222,93 @@ PyResult<PyObject *> PyFunction::call_with_frame(PyObject *ns, PyTuple *args, Py
 		m_name);
 }
 
+// PyResult<PyObject *> PyNativeFunction::call_raw(std::span<Value> args, PyDict *kwargs)
+// {
+//     // [防御性检查]：防止 AOT 编译器生成错误的 argc (-1) 导致崩溃
+//     if (args.size() > 0x1000000) {
+//         return Err(runtime_error("Invalid argument count in call_raw"));
+//     }
+
+//     // 1. 优先走 AOT 快速路径
+//     if (m_aot_ptr) {
+//         auto *res = m_aot_ptr(
+//             m_module_ref, m_closure, args.data(), static_cast<int32_t>(args.size()), kwargs);
+//         if (!res) return Err(runtime_error("AOT execution returned NULL (possible exception)"));
+//         return Ok(res);
+//     }
+
+//     // 2. 处理已经通过 __get__ 绑定的原生方法
+//     if (m_self) {
+//         // 创建临时栈空间，将 self 插入第一项
+//         size_t total_argc = args.size() + 1;
+//         Value* stack_args = static_cast<Value*>(alloca(sizeof(Value) * total_argc));
+//         new (&stack_args[0]) Value(m_self);
+//         std::copy(args.begin(), args.end(), stack_args + 1);
+
+//         // 注意：此处必须使用 std::span 显式调用基类的 call_raw 或直接分发
+//         auto res = PyObject::call_raw(std::span<Value>(stack_args, total_argc), kwargs);
+
+//         for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&stack_args[i]);
+//         return res;
+//     }
+
+//     return PyObject::call_raw(args, kwargs);
+// }
+
 PyResult<PyObject *> PyNativeFunction::call_raw(std::span<Value> args, PyDict *kwargs)
 {
-    // 如果这个 NativeFunction 是通过 create_aot 创建的，它会携带原始函数指针
-    // 我们在 m_captures 或特定的成员中存储这个原始指针（假设我们将其存入了 variant 的 target）
-    // 为了演示简洁，我们假设 AOT 模式下 operator() 已经被适配或通过 target 获取
-    
-    // 核心逻辑：直接解包 std::function 的 target 到 AOTRawFuncPtr
-    if (auto* raw_ptr = m_function.target<AOTRawFuncPtr>()) {
-        auto* result = (*raw_ptr)(m_module_ref, m_closure, args.data(), static_cast<int32_t>(args.size()), kwargs);
-        if (!result) return Err(runtime_error("AOT call returned NULL"));
-        return Ok(result);
-    }
 
-    // 回退：如果不是 AOT 函数，则不得不打包 Tuple（保证向后兼容）
-    auto args_tuple = PyTuple::create(GCVector<Value>(args.begin(), args.end()));
-    if (args_tuple.is_err()) return Err(args_tuple.unwrap_err());
-    return __call__(args_tuple.unwrap(), kwargs);
+	spdlog::debug("[NativeFunc::call_raw] fn='{}', argc={}, has_aot={}, has_self={}",
+		m_name,
+		args.size(),
+		m_aot_ptr != nullptr,
+		m_self != nullptr);
+
+	// 防御非法 argc
+	if (args.size() > 1000000) {
+		spdlog::critical("[call_raw] Corrupt argc detected: {}", args.size());
+		return Err(runtime_error("Corrupt execution stack: invalid argument count"));
+	}
+
+	// 1. 如果有 self (BoundMethod 路径)，需要 prepend self
+	if (m_self) {
+		size_t total_argc = args.size() + 1;
+		Value *stack_args = static_cast<Value *>(alloca(sizeof(Value) * total_argc));
+
+		new (&stack_args[0]) Value(m_self);
+		for (size_t i = 0; i < args.size(); ++i) { new (&stack_args[i + 1]) Value(args[i]); }
+
+		// [修复编译错误]：使用 IIFE 立即初始化 PyResult
+		auto result = [&]() -> PyResult<PyObject *> {
+			if (m_aot_ptr) {
+				spdlog::trace("[NativeFunc::call_raw] Dispatching to AOT pointer with self: {:p}",
+					(void *)m_self);
+				auto *res = m_aot_ptr(
+					m_module_ref, m_closure, stack_args, static_cast<int32_t>(total_argc), kwargs);
+				if (res) {
+					return Ok(res);
+				} else {
+					spdlog::debug("[call_raw] m_aot_ptr failed");
+					return Err(runtime_error("AOT call failed"));
+				}
+			}
+			return PyObject::call_raw(std::span<Value>(stack_args, total_argc), kwargs);
+		}();
+
+		for (size_t i = 0; i < total_argc; ++i) { std::destroy_at(&stack_args[i]); }
+		return result;
+	}
+
+	// 2. 原始函数快速路径
+	if (m_aot_ptr) {
+		auto *res = m_aot_ptr(
+			m_module_ref, m_closure, args.data(), static_cast<int32_t>(args.size()), kwargs);
+		// [修复编译错误]
+		if (res) return Ok(res);
+		return Err(runtime_error("AOT call failed"));
+	}
+
+	return PyObject::call_raw(args, kwargs);
 }
 
 PyResult<PyObject *> PyFunction::__call__(PyTuple *args, PyDict *kwargs)
@@ -339,16 +449,16 @@ PyResult<PyObject *> PyNativeFunction::__repr__() const { return PyString::creat
 
 PyResult<PyObject *> PyNativeFunction::__get__(PyObject *instance, PyObject * /*owner*/) const
 {
-    // Python 3.9 描述符协议:
-    //   Class.method      → instance=None  → 返回未绑定函数
-    //   obj.method         → instance=obj   → 返回绑定方法
-    if (!instance || instance == py_none()) { return Ok(const_cast<PyNativeFunction *>(this)); }
+	// Python 3.9 描述符协议:
+	//   Class.method      → instance=None  → 返回未绑定函数
+	//   obj.method         → instance=obj   → 返回绑定方法
+	if (!instance || instance == py_none()) { return Ok(const_cast<PyNativeFunction *>(this)); }
 
-    // [修复极度致命的性能结节]：
-    // 不要去创建新的 PyNativeFunction + std::function(malloc) 闭包！
-    // std::function 内部状态分配极慢，且阻碍了 GC。
-    // 直接生成轻巧的 PyBoundMethod 进行实例绑定，立减亿级堆分配！
-    return PyBoundMethod::create(instance, const_cast<PyNativeFunction *>(this));
+	// [修复极度致命的性能结节]：
+	// 不要去创建新的 PyNativeFunction + std::function(malloc) 闭包！
+	// std::function 内部状态分配极慢，且阻碍了 GC。
+	// 直接生成轻巧的 PyBoundMethod 进行实例绑定，立减亿级堆分配！
+	return PyBoundMethod::create(instance, const_cast<PyNativeFunction *>(this));
 }
 
 void PyNativeFunction::visit_graph(Visitor &visitor)

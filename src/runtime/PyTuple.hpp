@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PyObject.hpp"
-#include "memory/GCTracingAllocator.hpp"// ✅ 新增
+#include "memory/GCTracingAllocator.hpp"// 新增
 
 namespace py {
 
@@ -15,7 +15,7 @@ class PyTuple
 	friend class ::py::Arena;
 	friend class PyTupleIterator;
 
-	const py::GCVector<Value> m_elements;// ✅ 修改为 GCVector
+	const py::GCVector<Value> m_elements;// 修改为 GCVector
 
   protected:
 	PyTuple(PyType *);
@@ -31,26 +31,26 @@ class PyTuple
   public:
 	static PyResult<PyTuple *> create();
 
-	// ✅ [关键拦截器]：拦截非 const 的 GCVector 引用
+	// [关键拦截器]：拦截非 const 的 GCVector 引用
 	static PyResult<PyTuple *> create(py::GCVector<Value> &elements)
 	{
 		return PyTuple::create(const_cast<const py::GCVector<Value> &>(elements));
 	}
 
-	// ✅ [关键拦截器]：拦截 const 的 GCVector 引用
+	// [关键拦截器]：拦截 const 的 GCVector 引用
 	static PyResult<PyTuple *> create(const py::GCVector<Value> &elements)
 	{
 		py::GCVector<Value> tmp(elements.begin(), elements.end());
 		return PyTuple::create(std::move(tmp));
 	}
 
-	// ✅ [关键拦截器]：拦截非 const 的 std::vector 引用
+	// [关键拦截器]：拦截非 const 的 std::vector 引用
 	static PyResult<PyTuple *> create(std::vector<Value> &elements)
 	{
 		return PyTuple::create(const_cast<const std::vector<Value> &>(elements));
 	}
 
-	// ✅ [关键拦截器]：拦截 const 的 std::vector 引用
+	// [关键拦截器]：拦截 const 的 std::vector 引用
 	static PyResult<PyTuple *> create(const std::vector<Value> &elements)
 	{
 		py::GCVector<Value> tmp(elements.begin(), elements.end());
@@ -63,17 +63,20 @@ class PyTuple
 	static PyResult<PyTuple *> create(const std::vector<PyObject *> &elements);
 	static PyResult<PyTuple *> create(PyType *type, const std::vector<PyObject *> &elements);
 
-	// ✅ 接受 initializer_list，解决 PyTuple::create({a, b}) 的歧义
+	// 接受 initializer_list，解决 PyTuple::create({a, b}) 的歧义
 	static PyResult<PyTuple *> create(std::initializer_list<Value> il)
 	{
 		return PyTuple::create(py::GCVector<Value>(il.begin(), il.end()));
 	}
 
-	// ✅ 零拷贝核心接口
+	// 零拷贝核心接口
 	static PyResult<PyTuple *> create(py::GCVector<Value> &&elements);
 	PyTuple(py::GCVector<Value> &&elements);
-
-	// ✅ 变长模板：仅用于处理多个参数的情况
+	static PyResult<PyTuple *> create(std::span<Value> elements)
+	{
+		return PyTuple::create(py::GCVector<Value>(elements.begin(), elements.end()));
+	}
+	// 变长模板：仅用于处理多个参数的情况
 	template<typename... Args> static PyResult<PyTuple *> create(Args &&...args)
 	{
 		return PyTuple::create(py::GCVector<Value>{ std::forward<Args>(args)... });
@@ -95,7 +98,7 @@ class PyTuple
 	PyTupleIterator begin() const;
 	PyTupleIterator end() const;
 
-	// ✅ 修改：将返回类型与底层对齐
+	// 修改：将返回类型与底层对齐
 	const py::GCVector<Value> &elements() const { return m_elements; }
 	size_t size() const { return m_elements.size(); }
 	PyResult<PyObject *> operator[](size_t idx) const;
@@ -125,7 +128,7 @@ class PyTupleIterator : public PyBaseObject
 	void visit_graph(Visitor &) override;
 
   public:
-	// ✅ 修正：使用 GCVector 的差值类型
+	// 修正：使用 GCVector 的差值类型
 	using difference_type = py::GCVector<Value>::difference_type;
 	using value_type = PyObject *;
 	using pointer = value_type *;

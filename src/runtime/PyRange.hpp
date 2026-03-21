@@ -1,6 +1,8 @@
 #pragma once
 
 #include "PyObject.hpp"
+#include <optional>
+
 
 namespace py {
 
@@ -57,6 +59,7 @@ class PyRangeIterator : public PyBaseObject
 	PyRangeIterator(const PyRange &);
 
 	std::string to_string() const override;
+	std::optional<int64_t> next_fast();
 
 	PyResult<PyObject *> __repr__() const;
 	PyResult<PyObject *> __next__();

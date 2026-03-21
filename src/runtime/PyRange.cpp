@@ -215,6 +215,26 @@ std::string PyRangeIterator::to_string() const
 
 PyResult<PyObject *> PyRangeIterator::__repr__() const { return PyString::create(to_string()); }
 
+// [新增]: 实现 AOT 专用的底层迭代短路，只吐出原生 int64_t，绝不产生 PyInteger 分配
+std::optional<int64_t> PyRangeIterator::next_fast()
+{
+	auto within_range = [this](const BigIntType &current) {
+		if (m_pyrange.step() < 0) {
+			return current > m_pyrange.stop();
+		} else {
+			return current < m_pyrange.stop();
+		}
+	};
+	if (within_range(m_current_index)) {
+		if (m_current_index.fits_slong_p()) {
+			int64_t val = m_current_index.get_si();
+			m_current_index += m_pyrange.step();
+			return val;
+		}
+	}
+	return std::nullopt;
+}
+
 PyResult<PyObject *> PyRangeIterator::__next__()
 {
 	auto within_range = [this](const BigIntType &current) {

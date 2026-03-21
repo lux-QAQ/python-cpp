@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "runtime/Value.hpp"
+
 namespace py {
 
 class PyObject;
@@ -90,9 +92,15 @@ class RtValue
 
 	// --- 核心装箱 ---
 
-	/// 任何需要传入容器 / 获取属性的地方，必须先调用此方法
+	/// 强制装箱：任何需要传入容器 / 获取属性的地方，必须先调用此方法
 	/// 保证返回的是真实的 Heap 上的 PyObject*
 	[[nodiscard]] PyObject *box() const;
+
+	/// [新增]：转换为底层 variant 容器 Value
+	[[nodiscard]] py::Value to_value() const;
+
+	/// [新增]：从底层 variant 容器 Value 恢复为 RtValue
+	[[nodiscard]] static RtValue from_value(const py::Value &v);
 
 	/// 强制碾平：尝试将已经是堆对象的 PyInteger，剥离回零开销的 TaggedPointer
 	[[nodiscard]] static RtValue flatten(PyObject *ptr);
@@ -108,6 +116,9 @@ class RtValue
 	[[nodiscard]] static RtValue bit_and(RtValue lhs, RtValue rhs);
 	[[nodiscard]] static RtValue bit_or(RtValue lhs, RtValue rhs);
 	[[nodiscard]] static RtValue bit_xor(RtValue lhs, RtValue rhs);
+
+	[[nodiscard]] static RtValue lshift(RtValue lhs, RtValue rhs);
+	[[nodiscard]] static RtValue rshift(RtValue lhs, RtValue rhs);
 
 	[[nodiscard]] static RtValue compare_eq(RtValue lhs, RtValue rhs);
 	[[nodiscard]] static RtValue compare_ne(RtValue lhs, RtValue rhs);

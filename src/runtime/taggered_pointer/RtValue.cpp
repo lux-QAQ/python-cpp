@@ -4,6 +4,7 @@
 #include "runtime/PyNumber.hpp"
 #include "runtime/PyObject.hpp"
 #include "runtime/PyString.hpp"
+#include "runtime/Value.hpp"
 
 #include <iostream>
 #include <variant>
@@ -31,6 +32,40 @@ PyObject *RtValue::box() const
 		return result.unwrap();
 	}
 	__builtin_unreachable();
+}
+
+py::Value RtValue::to_value() const
+{
+	if (is_tagged_int()) {
+		// 如果是 Tagged Integer，存入 Value 的 Number 分支（无堆分配）
+		return py::Value(py::Number(as_int()));
+	}
+	// 如果是堆对象或空，存入 PyObject* 分支
+	return py::Value(as_ptr());
+}
+
+RtValue RtValue::from_value(const py::Value &v)
+{
+    return std::visit(overloaded{
+                          [](const py::Number &n) -> RtValue {
+                              // [核心修复]：Number 内部 variant 不含 int64_t，需从 mpz_class 提取
+                              if (std::holds_alternative<mpz_class>(n.value)) {
+                                  const auto &gmp_val = std::get<mpz_class>(n.value);
+                                  if (gmp_val.fits_slong_p()) {
+                                      long raw_val = gmp_val.get_si();
+                                      if (fits_tagged_int(raw_val)) return from_int(raw_val);
+                                  }
+                              }
+                              // 否则（是 double 或超大整数）必须装箱
+                              return flatten(PyObject::from(n).unwrap());
+                          },
+                          [](PyObject *obj) -> RtValue { return flatten(obj); },
+						  [](const auto &other) -> RtValue {
+							  // 处理 String, Tuple, Bytes 等其他 variant 分支
+							  return flatten(PyObject::from(other).unwrap());
+						  },
+					  },
+		v);
 }
 
 RtValue RtValue::flatten(PyObject *ptr)
@@ -168,6 +203,37 @@ RtValue RtValue::bit_xor(RtValue lhs, RtValue rhs)
 	return from_ptr(lhs.box()->xor_(rhs.box()).unwrap());
 }
 
+RtValue RtValue::lshift(RtValue lhs, RtValue rhs)
+{
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) {
+		int64_t l = lhs.as_int();
+		int64_t r = rhs.as_int();
+		// Python 语义：负数位移抛出 ValueError，交由底层 Box 逻辑去抛出
+		if (r >= 0 && r < 63) {
+			int64_t result;
+			// lshift 相当于乘 2^r。使用内置函数防止溢出改变符号位
+			if (!__builtin_mul_overflow(l, 1LL << r, &result) && fits_tagged_int(result)) {
+				return from_int(result);
+			}
+		}
+	}
+	return from_ptr(lhs.box()->lshift(rhs.box()).unwrap());
+}
+
+RtValue RtValue::rshift(RtValue lhs, RtValue rhs)
+{
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) {
+		int64_t l = lhs.as_int();
+		int64_t r = rhs.as_int();
+		if (r >= 0) {
+			// C++ 中右移有符号数是算术右移。超出 64 位时行为未定义，需手动截断
+			int64_t result = (r >= 64) ? (l < 0 ? -1 : 0) : (l >> r);
+			return from_int(result);
+		}
+	}
+	return from_ptr(lhs.box()->rshift(rhs.box()).unwrap());
+}
+
 // =============================================================================
 // 比较运算
 // =============================================================================
@@ -238,41 +304,38 @@ struct MethodCacheEntry
 
 // 128容量的碰撞哈希，足以拦截 Sieve 中所有的函数反复提取 (step1 / 2 / 3)
 // 函数内 static：避免全局符号 + 避免 LLVM DCE
-static inline MethodCacheEntry* get_method_cache()
+static inline MethodCacheEntry *get_method_cache()
 {
-    static MethodCacheEntry cache[128] = {};  // ✅ 正确 zero-init
-    return cache;
+	static MethodCacheEntry cache[128] = {};// 正确 zero-init
+	return cache;
 }
 
 PyObject *MethodCache::load_method(PyObject *obj, const char *name)
 {
-    auto *cache = get_method_cache();
+	auto *cache = get_method_cache();
 
-    // hash
-    size_t hash =
-        (reinterpret_cast<uintptr_t>(obj) >> 4) ^
-        (reinterpret_cast<uintptr_t>(name) >> 4);
-    size_t idx = hash & 127;
+	// hash
+	size_t hash =
+		(reinterpret_cast<uintptr_t>(obj) >> 4) ^ (reinterpret_cast<uintptr_t>(name) >> 4);
+	size_t idx = hash & 127;
 
-    auto &entry = cache[idx];
+	auto &entry = cache[idx];
 
-    // fast path
-    if (entry.instance == obj && entry.name == name) {
-        return entry.bound_method;
-    }
+	// fast path
+	if (entry.instance == obj && entry.name == name) { return entry.bound_method; }
 
-    // miss
-    auto method_res = obj->get_method(py::PyString::intern(name));
-    if (method_res.is_err()) return nullptr;
+	// miss
+	auto method_res = obj->get_method(py::PyString::intern(name));
+	if (method_res.is_err()) return nullptr;
 
-    PyObject *m = method_res.unwrap();
+	PyObject *m = method_res.unwrap();
 
-    // update
-    entry.instance = obj;
-    entry.name = name;
-    entry.bound_method = m;
+	// update
+	entry.instance = obj;
+	entry.name = name;
+	entry.bound_method = m;
 
-    return m;
+	return m;
 }
 
 }// namespace py

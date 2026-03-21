@@ -64,13 +64,13 @@ struct ResourceManager
 		extract("libicudata.a", embedded::LIB_ICUDATA());
 
 #ifndef NDEBUG
-		// ✅ 在 Debug 模式下提取 cpptrace 及其依赖项
+		// 在 Debug 模式下提取 cpptrace 及其依赖项
 		extract("libcpptrace.a", embedded::LIB_CPPTRACE());
-		extract("libdwarf.a", embedded::LIB_DWARF());// ✅ 新增 libdwarf
+		extract("libdwarf.a", embedded::LIB_DWARF());// 新增 libdwarf
 #endif
 
 #ifdef PYLANG_USE_Boehm_GC
-		// ✅ 提取 GC 静态库
+		// 提取 GC 静态库
 		extract("libgc.a", embedded::LIB_GC());
 #endif
 
@@ -79,9 +79,9 @@ struct ResourceManager
 
 		// 告诉链接器链接这些特定的静态库 (注意顺序)
 #ifndef NDEBUG
-		// ✅ 链接 cpptrace 及其底层依赖 (注意顺序！)
+		// 链接 cpptrace 及其底层依赖 (注意顺序！)
 		opts.extra_link_flags.push_back("-lcpptrace");
-		opts.extra_link_flags.push_back("-ldwarf");// ✅ 新增: libcpptrace 依赖 libdwarf
+		opts.extra_link_flags.push_back("-ldwarf");// 新增: libcpptrace 依赖 libdwarf
 		opts.extra_link_flags.push_back("-lzstd");// libdwarf 可能依赖 zstd
 		opts.extra_link_flags.push_back("-lz");// libdwarf 依赖 zlib
 		opts.extra_link_flags.push_back("-ldl");
@@ -93,7 +93,7 @@ struct ResourceManager
 		opts.extra_link_flags.push_back("-licudata");
 
 #ifdef PYLANG_USE_Boehm_GC
-		// ✅ 加上 Boehm GC 链接，以及必需的线程支持库
+		// 加上 Boehm GC 链接，以及必需的线程支持库
 		opts.extra_link_flags.push_back("-lgc");
 		opts.extra_link_flags.push_back("-pthread");
 #endif

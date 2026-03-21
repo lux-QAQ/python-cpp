@@ -64,6 +64,22 @@ class PyFunction : public PyBaseObject
 
 class PyNativeFunction : public PyBaseObject
 {
+
+	/// AOT 编译后的函数指针类型（无闭包）
+	/// 签名: PyObject*(PyObject* module, PyTuple* args, PyDict* kwargs)
+	using AOTFuncPtr = py::PyObject *(*)(py::PyObject *, py::PyTuple *, py::PyDict *);
+
+	/// AOT 编译后的函数指针类型（有闭包）
+	/// 签名: PyObject*(PyObject* module, PyObject* closure, PyTuple* args, PyDict* kwargs)
+	using AOTClosureFuncPtr = py::PyObject *(*)(py::PyObject *,
+		py::PyObject *,
+		py::PyTuple *,
+		py::PyDict *);
+
+	// 签名: PyObject*(PyObject* module, PyObject* closure, const Value* args, int32_t argc, PyDict*
+	// kwargs)
+	using AOTRawFuncPtr =
+		py::PyObject *(*)(py::PyObject *, py::PyObject *, const py::Value *, int32_t, py::PyDict *);
 #ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
 #endif
@@ -80,6 +96,7 @@ class PyNativeFunction : public PyBaseObject
 	std::string m_name;
 	FunctionType m_function;
 	PyObject *m_self{ nullptr };
+	AOTRawFuncPtr m_aot_ptr{ nullptr };// 显式存储 AOT 原始指针
 	std::vector<PyObject *> m_captures;
 
 	// ---- AOT 编译器支持 (Phase 3.2) ----
@@ -100,22 +117,6 @@ class PyNativeFunction : public PyBaseObject
 	}
 
   public:
-	/// AOT 编译后的函数指针类型（无闭包）
-	/// 签名: PyObject*(PyObject* module, PyTuple* args, PyDict* kwargs)
-	using AOTFuncPtr = py::PyObject *(*)(py::PyObject *, py::PyTuple *, py::PyDict *);
-
-	/// AOT 编译后的函数指针类型（有闭包）
-	/// 签名: PyObject*(PyObject* module, PyObject* closure, PyTuple* args, PyDict* kwargs)
-	using AOTClosureFuncPtr = py::PyObject *(*)(py::PyObject *,
-		py::PyObject *,
-		py::PyTuple *,
-		py::PyDict *);
-
-	// 签名: PyObject*(PyObject* module, PyObject* closure, const Value* args, int32_t argc, PyDict*
-	// kwargs)
-	using AOTRawFuncPtr =
-		py::PyObject *(*)(py::PyObject *, py::PyObject *, const py::Value *, int32_t, py::PyDict *);
-
 	template<typename... Args>
 	static PyResult<PyNativeFunction *>
 		create(std::string name, FreeFunctionType function, Args &&...args)
@@ -143,7 +144,7 @@ class PyNativeFunction : public PyBaseObject
 		if (!result) { return Err(memory_error(sizeof(PyNativeFunction))); }
 		return Ok(result);
 	}
-
+	PyResult<PyObject *> call_raw(std::span<Value> args, PyDict *kwargs) override;
 	// AOT 编译器工厂
 	/// 从原生函数指针创建 Python 可调用对象
 	///

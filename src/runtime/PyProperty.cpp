@@ -70,57 +70,57 @@ namespace py {
 
 PyResult<PyObject *> PyProperty::__new__(const PyType *type, PyTuple *args, PyDict *kwargs)
 {
-    ASSERT(type == types::property());
+	ASSERT(type == types::property());
 
-    auto fget = [&]() -> PyResult<PyObject *> {
-        if (args && args->size() >= 1) {
-            return PyObject::from(args->elements()[0]);
-        } else if (kwargs) {
-            if (auto it = kwargs->map().find(String{ "fget" }); it != kwargs->map().end()) {
-                return PyObject::from(it->second);
-            }
-        }
-        return Ok(py_none());
-    }();
-    if (fget.is_err()) { return fget; }
+	auto fget = [&]() -> PyResult<PyObject *> {
+		if (args && args->size() >= 1) {
+			return PyObject::from(args->elements()[0]);
+		} else if (kwargs) {
+			if (auto it = kwargs->map().find(String{ "fget" }); it != kwargs->map().end()) {
+				return PyObject::from(it->second);
+			}
+		}
+		return Ok(py_none());
+	}();
+	if (fget.is_err()) { return fget; }
 
-    auto fset = [&]() -> PyResult<PyObject *> {
-        if (args && args->size() >= 2) {
-            return PyObject::from(args->elements()[1]);
-        } else if (kwargs) {
-            if (auto it = kwargs->map().find(String{ "fset" }); it != kwargs->map().end()) {
-                return PyObject::from(it->second);
-            }
-        }
-        return Ok(py_none());
-    }();
-    if (fset.is_err()) { return fset; }
+	auto fset = [&]() -> PyResult<PyObject *> {
+		if (args && args->size() >= 2) {
+			return PyObject::from(args->elements()[1]);
+		} else if (kwargs) {
+			if (auto it = kwargs->map().find(String{ "fset" }); it != kwargs->map().end()) {
+				return PyObject::from(it->second);
+			}
+		}
+		return Ok(py_none());
+	}();
+	if (fset.is_err()) { return fset; }
 
-    auto fdel = [&]() -> PyResult<PyObject *> {
-        if (args && args->size() >= 3) {
-            return PyObject::from(args->elements()[2]); // FIX: was [1]
-        } else if (kwargs) {
-            if (auto it = kwargs->map().find(String{ "fdel" }); it != kwargs->map().end()) {
-                return PyObject::from(it->second);
-            }
-        }
-        return Ok(py_none());
-    }();
-    if (fdel.is_err()) { return fdel; }
+	auto fdel = [&]() -> PyResult<PyObject *> {
+		if (args && args->size() >= 3) {
+			return PyObject::from(args->elements()[2]);// FIX: was [1]
+		} else if (kwargs) {
+			if (auto it = kwargs->map().find(String{ "fdel" }); it != kwargs->map().end()) {
+				return PyObject::from(it->second);
+			}
+		}
+		return Ok(py_none());
+	}();
+	if (fdel.is_err()) { return fdel; }
 
-    auto doc = [&]() -> PyResult<PyObject *> {
-        if (args && args->size() >= 4) { // FIX: was >= 3
-            return PyObject::from(args->elements()[3]); // FIX: was [1]
-        } else if (kwargs) {
-            if (auto it = kwargs->map().find(String{ "doc" }); it != kwargs->map().end()) {
-                return PyObject::from(it->second);
-            }
-        }
-        return Ok(py_none());
-    }();
-    if (doc.is_err()) { return doc; }
+	auto doc = [&]() -> PyResult<PyObject *> {
+		if (args && args->size() >= 4) {// FIX: was >= 3
+			return PyObject::from(args->elements()[3]);// FIX: was [1]
+		} else if (kwargs) {
+			if (auto it = kwargs->map().find(String{ "doc" }); it != kwargs->map().end()) {
+				return PyObject::from(it->second);
+			}
+		}
+		return Ok(py_none());
+	}();
+	if (doc.is_err()) { return doc; }
 
-    return PyProperty::create(fget.unwrap(), fset.unwrap(), fdel.unwrap(), doc.unwrap());
+	return PyProperty::create(fget.unwrap(), fset.unwrap(), fdel.unwrap(), doc.unwrap());
 }
 
 PyProperty::PyProperty(PyType *type) : PyBaseObject(type) {}
@@ -208,8 +208,10 @@ PyResult<PyObject *> PyProperty::__get__(PyObject *instance, PyObject *) const
 		}
 	}
 
-	return PyTuple::create(instance).and_then(
-		[&](auto *args) { return m_getter->call(args, nullptr); });
+	// return PyTuple::create(instance).and_then(
+	// 	[&](auto *args) { return m_getter->call(args, nullptr); });
+	Value arg = instance;
+	return m_getter->call_raw(std::span<Value>(&arg, 1), nullptr);
 }
 
 PyResult<std::monostate> PyProperty::__set__(PyObject *obj, PyObject *value)

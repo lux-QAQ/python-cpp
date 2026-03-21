@@ -8,7 +8,7 @@
 
 ---
 
-### ✅ 1. 极其优秀且完全符合 Python 3.9 语义的部分
+### 1. 极其优秀且完全符合 Python 3.9 语义的部分
 
 1.  **无限递归防御 (`__repr__`)**：利用 `visited_set` 处理自我引用（如 `a = []; a.append(a); print(a)` 输出 `[[...]]`），这完美契合 CPython 行为。
 2.  **Sort 函数的 Decorate-Sort-Undecorate (Schwartzian transform)**：你在带有 `key` 参数的 `sort` 中，先遍历一遍把 `cmp_list` 生成好，再去排 `indices`，最后做重连。这是**非常正确且高性能**的做法。CPython 的 `list.sort()` 明确保证：**每个元素的 `key` 函数只会被调用且仅调用一次**。如果一边 sort 一边 call，不仅极慢，还会导致有副作用的 key 函数出错。

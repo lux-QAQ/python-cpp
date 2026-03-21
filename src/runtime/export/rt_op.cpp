@@ -56,13 +56,17 @@ py::PyObject *rt_binary_pow(py::PyObject *lhs, py::PyObject *rhs)
 PYLANG_EXPORT_OP("binary_lshift", "obj", "obj,obj")
 py::PyObject *rt_binary_lshift(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return rt_unwrap(py::ensure_box(lhs)->lshift(py::ensure_box(rhs)));
+	// [极致优化]: 拦截位移装箱
+	return py::RtValue::lshift(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs))
+		.as_pyobject_raw();
 }
 
 PYLANG_EXPORT_OP("binary_rshift", "obj", "obj,obj")
 py::PyObject *rt_binary_rshift(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return rt_unwrap(py::ensure_box(lhs)->rshift(py::ensure_box(rhs)));
+	// [极致优化]: 拦截位移装箱
+	return py::RtValue::rshift(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs))
+		.as_pyobject_raw();
 }
 
 PYLANG_EXPORT_OP("binary_and", "obj", "obj,obj")
@@ -240,6 +244,11 @@ py::PyObject *rt_inplace_pow(py::PyObject *lhs, py::PyObject *rhs)
 PYLANG_EXPORT_OP("inplace_lshift", "obj", "obj,obj")
 py::PyObject *rt_inplace_lshift(py::PyObject *lhs, py::PyObject *rhs)
 {
+	auto th_lhs = py::RtValue::flatten(lhs);
+	auto th_rhs = py::RtValue::flatten(rhs);
+	if (th_lhs.is_tagged_int() && th_rhs.is_tagged_int()) {
+		return py::RtValue::lshift(th_lhs, th_rhs).as_pyobject_raw();
+	}
 	auto *b_lhs = py::ensure_box(lhs);
 	auto *b_rhs = py::ensure_box(rhs);
 	if (auto *r = try_inplace_method(b_lhs, b_rhs, "__ilshift__")) { return r; }
@@ -249,6 +258,11 @@ py::PyObject *rt_inplace_lshift(py::PyObject *lhs, py::PyObject *rhs)
 PYLANG_EXPORT_OP("inplace_rshift", "obj", "obj,obj")
 py::PyObject *rt_inplace_rshift(py::PyObject *lhs, py::PyObject *rhs)
 {
+	auto th_lhs = py::RtValue::flatten(lhs);
+	auto th_rhs = py::RtValue::flatten(rhs);
+	if (th_lhs.is_tagged_int() && th_rhs.is_tagged_int()) {
+		return py::RtValue::rshift(th_lhs, th_rhs).as_pyobject_raw();
+	}
 	auto *b_lhs = py::ensure_box(lhs);
 	auto *b_rhs = py::ensure_box(rhs);
 	if (auto *r = try_inplace_method(b_lhs, b_rhs, "__irshift__")) { return r; }

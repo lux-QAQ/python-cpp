@@ -256,7 +256,7 @@ template<typename T> struct GCTracingAllocator
 		return static_cast<T *>(p);
 	}
 
-	// ✅ [核心修复]: 当容器（如 vector 或 ordered_map 桶）扩容释放老内存时，
+	// [核心修复]: 当容器（如 vector 或 ordered_map 桶）扩容释放老内存时，
 	//                 立刻通知 GC_FREE 回收，而不是等 GC 去做全盘清扫！彻底消灭扩容垃圾！
 	void deallocate(T *p, std::size_t) noexcept
 	{

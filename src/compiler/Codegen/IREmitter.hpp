@@ -152,9 +152,22 @@ class IREmitter
 	llvm::Value *
 		call_function(llvm::Value *callable, llvm::Value *args, llvm::Value *kwargs = nullptr);
 
+	// 纯指针数组调用
+	llvm::Value *call_function_raw_ptrs(llvm::Value *callable,
+		llvm::Value *args_ptr,
+		llvm::Value *argc,
+		llvm::Value *kwargs);
+	llvm::Value *call_method_raw_ptrs(llvm::Value *owner,
+		llvm::Value *method_name_cstr,
+		llvm::Value *args_ptr,
+		llvm::Value *argc,
+		llvm::Value *kwargs);
+
 	// ========== Tier 4: 方法调用 ==========
 	llvm::Value *call_load_method(llvm::Value *obj, std::string_view method_name);
-	llvm::Value *call_method_fast(llvm::Value *obj, std::string_view name, llvm::ArrayRef<llvm::Value *> args);
+	llvm::Value *call_method_fast(llvm::Value *obj,
+		std::string_view name,
+		llvm::ArrayRef<llvm::Value *> args);
 
 	// ========== Phase 4+: 快速调用 ==========
 	/// 直接传 C 数组调用，避免 PyTuple 堆分配
@@ -191,6 +204,9 @@ class IREmitter
 	// 快速元组访问 (用于闭包、参数解包)
 	// [Fix] 参数类型改为 llvm::Value* 以匹配 m_builder.getInt32(...)
 	llvm::Value *call_tuple_getitem(llvm::Value *tuple, llvm::Value *index);
+
+	// ✅ 新增：从 Value 数组提取 PyObject*
+	llvm::Value *call_value_array_get(llvm::Value *array_ptr, llvm::Value *index);
 
 	// ========== Tier 4: 函数创建 (Phase 3.2) ==========
 	/// 从 AOT 编译后的原生函数指针创建 Python 可调用对象

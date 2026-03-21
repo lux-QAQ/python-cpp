@@ -44,32 +44,47 @@ std::string PyBoundMethod::to_string() const
 
 PyResult<PyObject *> PyBoundMethod::__repr__() const { return PyString::create(to_string()); }
 
-// PyResult<PyObject *> PyBoundMethod::__call__(PyTuple *args, PyDict *kwargs)
-// {
-// 	// first create new args tuple -> (self, *args)
-// 	std::vector<Value> new_args_vector;
-// 	new_args_vector.reserve(args->size() + 1);
-// 	new_args_vector.push_back(m_self);
-// 	for (const auto &arg : args->elements()) { new_args_vector.push_back(arg); }
-// 	auto args_ = PyTuple::create(new_args_vector);
-// 	if (args_.is_err()) { return args_; }
-// 	return m_method->call(args_.unwrap(), kwargs);
-// }
-
 PyResult<PyObject *> PyBoundMethod::__call__(PyTuple *args, PyDict *kwargs)
 {
-    py::GCVector<Value> new_args_vector;
-    new_args_vector.reserve(args->size() + 1);
-    new_args_vector.push_back(m_self);
-    // 直接批量块状推入
-    if (args->size() > 0) {
-        new_args_vector.insert(new_args_vector.end(), args->elements().begin(), args->elements().end());
-    }
+	// first create new args tuple -> (self, *args)
+	std::vector<Value> new_args_vector;
+	new_args_vector.reserve(args->size() + 1);
+	new_args_vector.push_back(m_self);
+	for (const auto &arg : args->elements()) { new_args_vector.push_back(arg); }
+	auto args_ = PyTuple::create(new_args_vector);
+	if (args_.is_err()) { return args_; }
+	return m_method->call(args_.unwrap(), kwargs);
+}
 
-    // 触发上方写好的零拷贝 create，O(1) 接管
-    auto args_ = PyTuple::create(std::move(new_args_vector));
-    if (args_.is_err()) { return args_; }
-    return m_method->call(args_.unwrap(), kwargs);
+// PyResult<PyObject *> PyBoundMethod::call_raw(std::span<Value> args, PyDict *kwargs)
+// {
+//     // 在栈上准备空间：[self, arg0, arg1, ...]
+//     size_t total_argc = args.size() + 1;
+//     Value* stack_args = static_cast<Value*>(alloca(sizeof(Value) * total_argc));
+
+//     new (&stack_args[0]) Value(m_self);
+//     for (size_t i = 0; i < args.size(); ++i) {
+//         new (&stack_args[i + 1]) Value(args[i]);
+//     }
+
+//     // 穿透调用底层函数的 call_raw
+//     auto result = m_method->call_raw(std::span<Value>(stack_args, total_argc), kwargs);
+
+//     // 析构 Value (使用 std::destroy_at 避免 typedef 解析错误)
+//     for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&stack_args[i]);
+//     return result;
+// }
+
+PyResult<PyObject *> PyBoundMethod::call_raw(std::span<Value> args, PyDict *kwargs)
+{
+    size_t total_argc = args.size() + 1;
+    py::GCVector<Value> new_args;
+    new_args.reserve(total_argc);
+    new_args.push_back(m_self);
+    for(auto& arg : args) new_args.push_back(arg);
+
+    // 透传给底层方法的 call_raw，如果是 AOT 函数将进入快速路径
+    return m_method->call_raw(std::span<Value>(new_args.data(), total_argc), kwargs);
 }
 
 PyType *PyBoundMethod::static_type() const { return types::bound_method(); }

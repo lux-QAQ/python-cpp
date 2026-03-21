@@ -10,48 +10,47 @@ namespace pylang {
 // 核心：通用调用生成器
 // =============================================================================
 llvm::Value *IREmitter::emit_runtime_call(std::string_view name,
-    llvm::ArrayRef<llvm::Value *> args,
-    llvm::BasicBlock *unwind_dest)
+	llvm::ArrayRef<llvm::Value *> args,
+	llvm::BasicBlock *unwind_dest)
 {
-    // 如果调用者没有显式传 unwind_dest，使用当前上下文的
-    if (!unwind_dest) { unwind_dest = m_unwind_dest; }
+	// 如果调用者没有显式传 unwind_dest，使用当前上下文的
+	if (!unwind_dest) { unwind_dest = m_unwind_dest; }
 
-    // Step 1: 从 RuntimeLinker 查找函数元数据
-    auto result = m_linker.get_function(std::string(name));
+	// Step 1: 从 RuntimeLinker 查找函数元数据
+	auto result = m_linker.get_function(std::string(name));
 
-    llvm::Function *func = nullptr;
+	llvm::Function *func = nullptr;
 
-    if (result.has_value()) {
-        auto *rt_func = result.value()->llvm_func;
-        auto mangled_name = rt_func->getName();
-        func = m_module->getFunction(mangled_name);
-        if (!func) {
-            func = llvm::Function::Create(
-                rt_func->getFunctionType(),
-                llvm::Function::ExternalLinkage,
-                mangled_name,
-                m_module);
-            func->setAttributes(rt_func->getAttributes());
-        }
-    } else {
-        func = m_module->getFunction(std::string(name));
-    }
+	if (result.has_value()) {
+		auto *rt_func = result.value()->llvm_func;
+		auto mangled_name = rt_func->getName();
+		func = m_module->getFunction(mangled_name);
+		if (!func) {
+			func = llvm::Function::Create(rt_func->getFunctionType(),
+				llvm::Function::ExternalLinkage,
+				mangled_name,
+				m_module);
+			func->setAttributes(rt_func->getAttributes());
+		}
+	} else {
+		func = m_module->getFunction(std::string(name));
+	}
 
-    if (!func) {
-        log::codegen()->error("Runtime function '{}' not found", name);
-        return nullptr;
-    }
+	if (!func) {
+		log::codegen()->error("Runtime function '{}' not found", name);
+		return nullptr;
+	}
 
-    if (unwind_dest) {
-        auto *current_func = m_builder.GetInsertBlock()->getParent();
-        auto *normal_bb =
-            llvm::BasicBlock::Create(m_builder.getContext(), "invoke.cont", current_func);
-        auto *invoke_inst = m_builder.CreateInvoke(func, normal_bb, unwind_dest, args);
-        m_builder.SetInsertPoint(normal_bb);
-        return invoke_inst;
-    } else {
-        return m_builder.CreateCall(func, args);
-    }
+	if (unwind_dest) {
+		auto *current_func = m_builder.GetInsertBlock()->getParent();
+		auto *normal_bb =
+			llvm::BasicBlock::Create(m_builder.getContext(), "invoke.cont", current_func);
+		auto *invoke_inst = m_builder.CreateInvoke(func, normal_bb, unwind_dest, args);
+		m_builder.SetInsertPoint(normal_bb);
+		return invoke_inst;
+	} else {
+		return m_builder.CreateCall(func, args);
+	}
 }
 
 // void IREmitter::declare_eh_intrinsics()
@@ -79,16 +78,16 @@ llvm::Value *IREmitter::emit_runtime_call(std::string_view name,
 
 void IREmitter::declare_eh_intrinsics()
 {
-    auto *i32_ty = m_builder.getInt32Ty();
+	auto *i32_ty = m_builder.getInt32Ty();
 
-    if (!m_module->getFunction("__gxx_personality_v0")) {
-        auto *personality_ty = llvm::FunctionType::get(i32_ty, /*isVarArg=*/true);
-        llvm::Function::Create(
-            personality_ty, llvm::Function::ExternalLinkage, "__gxx_personality_v0", m_module);
-    }
+	if (!m_module->getFunction("__gxx_personality_v0")) {
+		auto *personality_ty = llvm::FunctionType::get(i32_ty, /*isVarArg=*/true);
+		llvm::Function::Create(
+			personality_ty, llvm::Function::ExternalLinkage, "__gxx_personality_v0", m_module);
+	}
 
-    // 不再伪造定义 _ZTIN2py16PylangExceptionE
-    // 真实 RTTI 会在 runtime.bc 中由编译器带入
+	// 不再伪造定义 _ZTIN2py16PylangExceptionE
+	// 真实 RTTI 会在 runtime.bc 中由编译器带入
 }
 
 // llvm::Constant *IREmitter::get_pylang_exception_typeinfo()
@@ -99,11 +98,11 @@ void IREmitter::declare_eh_intrinsics()
 
 llvm::Constant *IREmitter::get_pylang_exception_typeinfo()
 {
-    declare_eh_intrinsics();
-    // 返回 null 代表生成 `catch ptr null`（等同于 C++ 中 catch (...)）
-    // 避免伪造 TypeInfo 导致 llvm-link 时被重命名造成 undefined symbol。
-    // 在 exception 最终抛出和落地时，由 rt_catch_begin 负责具体的对象解包操作。
-    return llvm::ConstantPointerNull::get(m_builder.getPtrTy());
+	declare_eh_intrinsics();
+	// 返回 null 代表生成 `catch ptr null`（等同于 C++ 中 catch (...)）
+	// 避免伪造 TypeInfo 导致 llvm-link 时被重命名造成 undefined symbol。
+	// 在 exception 最终抛出和落地时，由 rt_catch_begin 负责具体的对象解包操作。
+	return llvm::ConstantPointerNull::get(m_builder.getPtrTy());
 }
 // =============================================================================
 // 辅助：全局字符串常量（带缓存）
@@ -122,14 +121,14 @@ llvm::Constant *IREmitter::create_global_string(std::string_view str)
 
 llvm::Constant *IREmitter::null_pyobject() const
 {
-    return llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+	return llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
 }
 
 llvm::AllocaInst *IREmitter::create_entry_block_alloca(llvm::Type *type, const std::string &name)
 {
-    llvm::Function *func = m_builder.GetInsertBlock()->getParent();
-    llvm::IRBuilder<> tmp_builder(&func->getEntryBlock(), func->getEntryBlock().begin());
-    return tmp_builder.CreateAlloca(type, nullptr, name);
+	llvm::Function *func = m_builder.GetInsertBlock()->getParent();
+	llvm::IRBuilder<> tmp_builder(&func->getEntryBlock(), func->getEntryBlock().begin());
+	return tmp_builder.CreateAlloca(type, nullptr, name);
 }
 
 // =============================================================================
@@ -181,30 +180,30 @@ llvm::Value *IREmitter::create_string(std::string_view str)
 
 llvm::Function *IREmitter::get_personality_function()
 {
-    declare_eh_intrinsics();
-    return m_module->getFunction("__gxx_personality_v0");
+	declare_eh_intrinsics();
+	return m_module->getFunction("__gxx_personality_v0");
 }
 
 llvm::Value *IREmitter::create_tuple(llvm::ArrayRef<llvm::Value *> elements)
 {
-    if (elements.empty()) {
-        return emit_runtime_call("build_tuple",
-            {m_builder.getInt32(0), llvm::ConstantPointerNull::get(m_builder.getPtrTy())});
-    }
+	if (elements.empty()) {
+		return emit_runtime_call("build_tuple",
+			{ m_builder.getInt32(0), llvm::ConstantPointerNull::get(m_builder.getPtrTy()) });
+	}
 
-    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
-    auto *arr = create_entry_block_alloca(arr_type, "tuple_elems");
+	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
+	auto *arr = create_entry_block_alloca(arr_type, "tuple_elems");
 
-    for (size_t i = 0; i < elements.size(); ++i) {
-        auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
-        m_builder.CreateStore(elements[i], gep);
-    }
+	for (size_t i = 0; i < elements.size(); ++i) {
+		auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
+		m_builder.CreateStore(elements[i], gep);
+	}
 
-    auto *count = m_builder.getInt32(static_cast<uint32_t>(elements.size()));
-    // opaque pointer: arr 已经是 ptr，直接传递
-    auto *arr_ptr = m_builder.CreateConstGEP2_32(arr_type, arr, 0, 0, "arr_ptr");
+	auto *count = m_builder.getInt32(static_cast<uint32_t>(elements.size()));
+	// opaque pointer: arr 已经是 ptr，直接传递
+	auto *arr_ptr = m_builder.CreateConstGEP2_32(arr_type, arr, 0, 0, "arr_ptr");
 
-    return emit_runtime_call("build_tuple", {count, arr_ptr});
+	return emit_runtime_call("build_tuple", { count, arr_ptr });
 }
 
 // =============================================================================
@@ -218,9 +217,9 @@ llvm::Value *IREmitter::create_integer(int64_t value)
 
 llvm::Value *IREmitter::create_integer_big(std::string_view decimal_str)
 {
-    // decimal_str 是编译期常量，嵌入 .rodata，运行时只调用一次
-    auto *str_ptr = create_global_string(decimal_str);
-    return emit_runtime_call("integer_from_string", { str_ptr });
+	// decimal_str 是编译期常量，嵌入 .rodata，运行时只调用一次
+	auto *str_ptr = create_global_string(decimal_str);
+	return emit_runtime_call("integer_from_string", { str_ptr });
 }
 
 llvm::Value *IREmitter::create_float(double value)
@@ -231,17 +230,17 @@ llvm::Value *IREmitter::create_float(double value)
 
 llvm::Value *IREmitter::create_list(llvm::ArrayRef<llvm::Value *> elements)
 {
-    if (elements.empty()) {
-        auto *null_ptr =
-            llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
-        return emit_runtime_call("build_list", { m_builder.getInt32(0), null_ptr });
-    }
+	if (elements.empty()) {
+		auto *null_ptr =
+			llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+		return emit_runtime_call("build_list", { m_builder.getInt32(0), null_ptr });
+	}
 
-    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
-    auto *arr = create_entry_block_alloca(arr_type, "list_elems");
+	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
+	auto *arr = create_entry_block_alloca(arr_type, "list_elems");
 
-    for (size_t i = 0; i < elements.size(); ++i) {
-        auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
+	for (size_t i = 0; i < elements.size(); ++i) {
+		auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
 		m_builder.CreateStore(elements[i], gep);
 	}
 
@@ -439,20 +438,28 @@ llvm::Value *IREmitter::call_function(llvm::Value *callable, llvm::Value *args, 
 	return emit_runtime_call("call", { callable, args, kwargs });
 }
 
+llvm::Value *IREmitter::call_function_raw_ptrs(llvm::Value *callable, llvm::Value *args_ptr, llvm::Value *argc, llvm::Value *kwargs) {
+    return emit_runtime_call("call_raw_ptrs", {callable, args_ptr, argc, kwargs});
+}
+
+llvm::Value *IREmitter::call_method_raw_ptrs(llvm::Value *owner, llvm::Value *method_name_cstr, llvm::Value *args_ptr, llvm::Value *argc, llvm::Value *kwargs) {
+    return emit_runtime_call("call_method_raw_ptrs", {owner, method_name_cstr, args_ptr, argc, kwargs});
+}
+
 llvm::Value *IREmitter::call_function_fast(llvm::Value *callable,
-    llvm::ArrayRef<llvm::Value *> args)
+	llvm::ArrayRef<llvm::Value *> args)
 {
-    if (args.empty()) {
-        auto *null_ptr =
-            llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
-        return emit_runtime_call("call_fast", { callable, m_builder.getInt32(0), null_ptr });
-    }
+	if (args.empty()) {
+		auto *null_ptr =
+			llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+		return emit_runtime_call("call_fast", { callable, m_builder.getInt32(0), null_ptr });
+	}
 
-    // 栈上分配参数数组（不需要堆分配 PyTuple）
-    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), args.size());
-    auto *arr = create_entry_block_alloca(arr_type, "call_args");
+	// 栈上分配参数数组（不需要堆分配 PyTuple）
+	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), args.size());
+	auto *arr = create_entry_block_alloca(arr_type, "call_args");
 
-    for (size_t i = 0; i < args.size(); ++i) {
+	for (size_t i = 0; i < args.size(); ++i) {
 		auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
 		m_builder.CreateStore(args[i], gep);
 	}
@@ -463,25 +470,27 @@ llvm::Value *IREmitter::call_function_fast(llvm::Value *callable,
 	return emit_runtime_call("call_fast", { callable, argc, arr_ptr });
 }
 
-llvm::Value *IREmitter::call_method_fast(llvm::Value *obj, std::string_view name, llvm::ArrayRef<llvm::Value *> args)
+llvm::Value *IREmitter::call_method_fast(llvm::Value *obj,
+	std::string_view name,
+	llvm::ArrayRef<llvm::Value *> args)
 {
-    // 1. 在当前函数的 EntryBlock 分配内存（避免在循环中爆栈）
-    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), args.size());
-    auto *arr = create_entry_block_alloca(arr_type, "method_args");
+	// 1. 在当前函数的 EntryBlock 分配内存（避免在循环中爆栈）
+	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), args.size());
+	auto *arr = create_entry_block_alloca(arr_type, "method_args");
 
-    // 2. 填充参数
-    for (size_t i = 0; i < args.size(); ++i) {
-        auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, i);
-        m_builder.SetInsertPoint(m_builder.GetInsertBlock()); // 确保插入点正确
-        m_builder.CreateStore(args[i], gep);
-    }
+	// 2. 填充参数
+	for (size_t i = 0; i < args.size(); ++i) {
+		auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, i);
+		m_builder.SetInsertPoint(m_builder.GetInsertBlock());// 确保插入点正确
+		m_builder.CreateStore(args[i], gep);
+	}
 
-    // 3. 发射对 rt_call_method_raw 的调用
-    auto *name_ptr = create_global_string(name);
-    auto *argc = m_builder.getInt32(args.size());
-    auto *argv = m_builder.CreateConstGEP2_32(arr_type, arr, 0, 0);
+	// 3. 发射对 rt_call_method_raw 的调用
+	auto *name_ptr = create_global_string(name);
+	auto *argc = m_builder.getInt32(args.size());
+	auto *argv = m_builder.CreateConstGEP2_32(arr_type, arr, 0, 0);
 
-    return emit_runtime_call("rt_call_method_raw", { obj, name_ptr, argc, argv });
+	return emit_runtime_call("rt_call_method_raw", { obj, name_ptr, argc, argv });
 }
 
 // =============================================================================
@@ -505,28 +514,28 @@ llvm::Value *IREmitter::call_load_method(llvm::Value *obj, std::string_view meth
 // }
 
 llvm::Value *IREmitter::call_import(std::string_view name,
-    llvm::Value *globals,
-    llvm::Value *fromlist,
-    int level)
+	llvm::Value *globals,
+	llvm::Value *fromlist,
+	int level)
 {
-    auto *name_str = create_global_string(name);
+	auto *name_str = create_global_string(name);
 
-    // globals 默认传 null（AOT 场景下由运行时从当前模块取）
-    if (!globals) { globals = null_pyobject(); }
-    // fromlist 默认 null（等价于 import foo，不是 from foo import bar）
-    if (!fromlist) { fromlist = null_pyobject(); }
-    // locals 在 CPython 语义里和 globals 相同，传 null 即可
-    llvm::Value *locals = null_pyobject();
+	// globals 默认传 null（AOT 场景下由运行时从当前模块取）
+	if (!globals) { globals = null_pyobject(); }
+	// fromlist 默认 null（等价于 import foo，不是 from foo import bar）
+	if (!fromlist) { fromlist = null_pyobject(); }
+	// locals 在 CPython 语义里和 globals 相同，传 null 即可
+	llvm::Value *locals = null_pyobject();
 
-    auto *level_val = m_builder.getInt32(level);
+	auto *level_val = m_builder.getInt32(level);
 
-    return emit_runtime_call("import", { name_str, globals, fromlist, locals, level_val });
+	return emit_runtime_call("import", { name_str, globals, fromlist, locals, level_val });
 }
 
 llvm::Value *IREmitter::call_add_module(std::string_view name)
 {
-    auto *name_str = create_global_string(name);
-    return emit_runtime_call("add_module", { name_str });
+	auto *name_str = create_global_string(name);
+	return emit_runtime_call("add_module", { name_str });
 }
 
 // =============================================================================
@@ -541,12 +550,12 @@ llvm::Value *IREmitter::call_load_assertion_error()
 
 llvm::Value *IREmitter::call_type_of(llvm::Value *obj)
 {
-    return emit_runtime_call("type_of", { obj });
+	return emit_runtime_call("type_of", { obj });
 }
 
 llvm::Value *IREmitter::call_get_traceback(llvm::Value *exc)
 {
-    return emit_runtime_call("get_traceback", { exc });
+	return emit_runtime_call("get_traceback", { exc });
 }
 
 // =============================================================================
@@ -554,28 +563,28 @@ llvm::Value *IREmitter::call_get_traceback(llvm::Value *exc)
 // =============================================================================
 
 llvm::Value *IREmitter::create_dict(llvm::ArrayRef<llvm::Value *> keys,
-    llvm::ArrayRef<llvm::Value *> values)
+	llvm::ArrayRef<llvm::Value *> values)
 {
-    PYLANG_ASSERT(keys.size() == values.size(), "keys and values size mismatch");
+	PYLANG_ASSERT(keys.size() == values.size(), "keys and values size mismatch");
 
-    if (keys.empty()) {
-        auto *null_ptr =
-            llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
-        return emit_runtime_call("build_dict", { m_builder.getInt32(0), null_ptr, null_ptr });
-    }
+	if (keys.empty()) {
+		auto *null_ptr =
+			llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+		return emit_runtime_call("build_dict", { m_builder.getInt32(0), null_ptr, null_ptr });
+	}
 
-    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), keys.size());
+	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), keys.size());
 
-    // 创建 keys 数组
-    auto *keys_arr = create_entry_block_alloca(arr_type, "dict_keys");
-    for (size_t i = 0; i < keys.size(); ++i) {
-        auto *gep = m_builder.CreateConstGEP2_32(arr_type, keys_arr, 0, static_cast<unsigned>(i));
-        m_builder.CreateStore(keys[i], gep);
-    }
+	// 创建 keys 数组
+	auto *keys_arr = create_entry_block_alloca(arr_type, "dict_keys");
+	for (size_t i = 0; i < keys.size(); ++i) {
+		auto *gep = m_builder.CreateConstGEP2_32(arr_type, keys_arr, 0, static_cast<unsigned>(i));
+		m_builder.CreateStore(keys[i], gep);
+	}
 
-    // 创建 values 数组
-    auto *values_arr = create_entry_block_alloca(arr_type, "dict_values");
-    for (size_t i = 0; i < values.size(); ++i) {
+	// 创建 values 数组
+	auto *values_arr = create_entry_block_alloca(arr_type, "dict_values");
+	for (size_t i = 0; i < values.size(); ++i) {
 		auto *gep = m_builder.CreateConstGEP2_32(arr_type, values_arr, 0, static_cast<unsigned>(i));
 		m_builder.CreateStore(values[i], gep);
 	}
@@ -591,16 +600,16 @@ llvm::Value *IREmitter::create_dict(llvm::ArrayRef<llvm::Value *> keys,
 
 llvm::Value *IREmitter::create_set(llvm::ArrayRef<llvm::Value *> elements)
 {
-    if (elements.empty()) {
-        auto *null_ptr =
-            llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
-        return emit_runtime_call("build_set", { m_builder.getInt32(0), null_ptr });
-    }
+	if (elements.empty()) {
+		auto *null_ptr =
+			llvm::ConstantPointerNull::get(llvm::PointerType::getUnqual(m_builder.getContext()));
+		return emit_runtime_call("build_set", { m_builder.getInt32(0), null_ptr });
+	}
 
-    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
-    auto *arr = create_entry_block_alloca(arr_type, "set_elems");
+	auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), elements.size());
+	auto *arr = create_entry_block_alloca(arr_type, "set_elems");
 
-    for (size_t i = 0; i < elements.size(); ++i) {
+	for (size_t i = 0; i < elements.size(); ++i) {
 		auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, static_cast<unsigned>(i));
 		m_builder.CreateStore(elements[i], gep);
 	}
@@ -769,46 +778,50 @@ llvm::Value *IREmitter::call_dict_getitem_str(llvm::Value *dict, std::string_vie
 	return emit_runtime_call("dict_getitem_str", { dict, key_str });
 }
 
-void IREmitter::call_unpack_ex(llvm::Value *iterable, int32_t before, int32_t after, llvm::Value *out_array)
+void IREmitter::call_unpack_ex(llvm::Value *iterable,
+	int32_t before,
+	int32_t after,
+	llvm::Value *out_array)
 {
-    auto *before_val = m_builder.getInt32(before);
-    auto *after_val = m_builder.getInt32(after);
-    emit_runtime_call("unpack_ex", { iterable, before_val, after_val, out_array });
+	auto *before_val = m_builder.getInt32(before);
+	auto *after_val = m_builder.getInt32(after);
+	emit_runtime_call("unpack_ex", { iterable, before_val, after_val, out_array });
 }
 
 llvm::Value *IREmitter::call_tuple_getitem(llvm::Value *tuple, llvm::Value *index)
 {
-    // index 必须是 i32
-    return emit_runtime_call("tuple_getitem", { tuple, index });
+	// index 必须是 i32
+	return emit_runtime_call("tuple_getitem", { tuple, index });
+}
+
+// 发射对 rt_value_array_get 的调用
+llvm::Value *IREmitter::call_value_array_get(llvm::Value *array_ptr, llvm::Value *index)
+{
+	return emit_runtime_call("value_array_get", { array_ptr, index });
 }
 
 llvm::Value *IREmitter::call_tuple_len(llvm::Value *tuple)
 {
-    return emit_runtime_call("tuple_size", { tuple });
+	return emit_runtime_call("tuple_size", { tuple });
 }
-
-
 
 
 llvm::Value *IREmitter::call_catch_begin(llvm::Value *exc_ptr)
 {
-    return emit_runtime_call("catch_begin", { exc_ptr });
+	return emit_runtime_call("catch_begin", { exc_ptr });
 }
 
-void IREmitter::call_catch_end()
-{
-    emit_runtime_call("catch_end", {});
-}
+void IREmitter::call_catch_end() { emit_runtime_call("catch_end", {}); }
 
 void IREmitter::call_print_unhandled_exception(llvm::Value *exc)
 {
-    emit_runtime_call("print_unhandled_exception", { exc });
+	emit_runtime_call("print_unhandled_exception", { exc });
 }
 
 // [Add] Tier 3: 容器转换
 llvm::Value *IREmitter::call_list_to_tuple(llvm::Value *list)
 {
-    return emit_runtime_call("list_to_tuple", { list });
+	return emit_runtime_call("list_to_tuple", { list });
 }
 
 // =============================================================================

@@ -61,7 +61,7 @@ PyTuple::PyTuple(PyType *type) : PyBaseObject(type) {}
 
 PyTuple::PyTuple(PyType *type, std::vector<Value> elements)
 	: PyBaseObject(type), m_elements(std::make_move_iterator(elements.begin()),
-							  std::make_move_iterator(elements.end()))// ✅ 修复迭代移动
+							  std::make_move_iterator(elements.end()))// 修复迭代移动
 {
 	ASSERT(std::all_of(m_elements.begin(), m_elements.end(), [](const auto &el) {
 		if (std::holds_alternative<PyObject *>(el)) return std::get<PyObject *>(el) != nullptr;
@@ -72,7 +72,7 @@ PyTuple::PyTuple(PyType *type, std::vector<Value> elements)
 PyTuple::PyTuple(std::vector<Value> &&elements)
 	: PyBaseObject(types::BuiltinTypes::the().tuple()),
 	  m_elements(std::make_move_iterator(elements.begin()),
-		  std::make_move_iterator(elements.end()))// ✅ 修复迭代移动
+		  std::make_move_iterator(elements.end()))// 修复迭代移动
 {
 	ASSERT(std::all_of(m_elements.begin(), m_elements.end(), [](const auto &el) {
 		if (std::holds_alternative<PyObject *>(el)) return std::get<PyObject *>(el) != nullptr;
@@ -101,7 +101,7 @@ PyResult<PyTuple *> PyTuple::create()
 
 PyResult<PyTuple *> PyTuple::create(py::GCVector<Value> &&elements)
 {
-	// ✅ 如果要创建的是0元素元组，永远复用单例！极大减缓冲击。
+	// 如果要创建的是0元素元组，永远复用单例！极大减缓冲击。
 	if (elements.empty()) {
 		auto *&empty = get_empty_tuple();
 		if (!empty) {
@@ -226,7 +226,7 @@ PyResult<PyObject *> PyTuple::__new__(const PyType *type, PyTuple *args, PyDict 
 
 	if (!value.unwrap_err()->type()->issubclass(stop_iteration()->type())) { return value; }
 
-	// ✅ 修改：用 GCVector 而不是退化到 std::vector 去做临时中转
+	// 修改：用 GCVector 而不是退化到 std::vector 去做临时中转
 	py::GCVector<Value> tmp_vec(std::make_move_iterator(els->elements().begin()),
 		std::make_move_iterator(els->elements().end()));
 	return PyTuple::create(std::move(tmp_vec));
@@ -247,7 +247,7 @@ PyResult<PyObject *> PyTuple::__add__(const PyObject *other) const
 	}
 	if (m_elements.empty()) return Ok(const_cast<PyObject *>(other));
 
-	// ✅ 修改：因为 m_elements 现在是 GCVector，不能直接赋值给 std::vector
+	// 修改：因为 m_elements 现在是 GCVector，不能直接赋值给 std::vector
 	// 通过迭代器区间将其拷贝进普通的 C++ 临时 vector，以便传递给后续操作
 	std::vector<Value> elements(m_elements.begin(), m_elements.end());
 	elements.insert(elements.end(), b->elements().begin(), b->elements().end());

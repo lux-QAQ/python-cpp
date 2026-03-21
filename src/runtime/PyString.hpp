@@ -55,7 +55,7 @@ class PyString
 	// 已有的工厂方法
 	static PyResult<PyString *> create(const std::string &value);
 
-	// ✅ 新增：字符串驻留 (String Interning)
+	// 新增：字符串驻留 (String Interning)
 	// 对同一个字符串内容，永远返回同一个 PyString 对象
 	// 驻留的字符串不会被 GC 回收
 	static PyString *intern(const char *cstr);
@@ -65,7 +65,7 @@ class PyString
 
 	static PyResult<PyString *> create(const Bytes &, const std::string &encoding);
 
-	// ✅ 修改：将实现移到 .cpp，防止访问 incomplete type PyTuple
+	// 修改：将实现移到 .cpp，防止访问 incomplete type PyTuple
 	static PyResult<PyString *> create(PyString *self, PyTuple *args, PyDict *kwargs);
 
 	const std::string &value() const { return m_value; }

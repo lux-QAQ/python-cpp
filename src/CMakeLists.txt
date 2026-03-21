@@ -315,10 +315,10 @@ if(ENABLE_RUNTIME_ARENA)
     # [关键修复]: 手动将 bdwgc 的头文件目录暴露给 python-cpp 及下游目标
     target_include_directories(python-cpp PUBLIC ${bdwgc_SOURCE_DIR}/include)
 
-    # ✅ [全局暴露]: 让 MLIR 等未继承 python-cpp public 依赖的目录也能找到 gc.h
+    # [全局暴露]: 让 MLIR 等未继承 python-cpp public 依赖的目录也能找到 gc.h
     include_directories(${bdwgc_SOURCE_DIR}/include)
 
-    # ✅ [修复]: 增加 GC_THREADS 宏，让 C++ 代码能看到多线程 API
+    # [修复]: 增加 GC_THREADS 宏，让 C++ 代码能看到多线程 API
     target_compile_definitions(python-cpp PUBLIC PYLANG_USE_Boehm_GC GC_THREADS)
   endif()
 endif()
@@ -436,7 +436,7 @@ if(LLVM_FOUND)
   separate_arguments(_pylang_support_llvm_defs NATIVE_COMMAND ${LLVM_DEFINITIONS})
   target_compile_definitions(pylang-support INTERFACE ${_pylang_support_llvm_defs})
 
-  # ✅ 新增 linker 组件（用于 llvm::Linker）
+  # 新增 linker 组件（用于 llvm::Linker）
   llvm_map_components_to_libnames(_pylang_support_llvm_libs
     core
     irreader
@@ -575,7 +575,7 @@ if(LLVM_FOUND)
     endif()
   endif()
 
-  # ✅ [修正]: 增加对 cpptrace::cpptrace 命名空间 Target 的检查
+  # [修正]: 增加对 cpptrace::cpptrace 命名空间 Target 的检查
   if(TARGET cpptrace::cpptrace)
     set(LIB_CPTRACE "$<TARGET_FILE:cpptrace::cpptrace>")
   elseif(TARGET cpptrace)
@@ -584,7 +584,7 @@ if(LLVM_FOUND)
     find_library(LIB_CPTRACE NAMES libcpptrace.a cpptrace)
   endif()
 
-  # ✅ [修复]: 正确解析 libdwarf 静态库路径
+  # [修复]: 正确解析 libdwarf 静态库路径
   if(TARGET libdwarf::dwarf)
     set(LIB_DWARF "$<TARGET_FILE:libdwarf::dwarf>")
   elseif(TARGET dwarf)
@@ -599,7 +599,7 @@ if(LLVM_FOUND)
     endif()
   endif()
 
-  # ✅ [新增] 获取 Boehm GC 静态库路径
+  # [新增] 获取 Boehm GC 静态库路径
   if(TARGET gc)
     set(LIB_GC_STATIC "$<TARGET_FILE:gc>")
     set(GC_EMBED_ARG "LIB_GC=${LIB_GC_STATIC};")
@@ -617,10 +617,10 @@ if(LLVM_FOUND)
       COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/generated"
       COMMAND ${CMAKE_COMMAND}
       -DOUTPUT_HEADER=${EMBEDDED_HEADER}
-      # ✅ [修改] 把 GC_EMBED_ARG 塞进传递给脚本的宏里
+      # [修改] 把 GC_EMBED_ARG 塞进传递给脚本的宏里
       "-DFILES=RUNTIME_BC=${RUNTIME_BC_FILE};LIB_SPDLOG=${LIB_SPDLOG};LIB_GMP=${LIB_GMP_STATIC};LIB_GMPXX=${LIB_GMPXX_STATIC};LIB_ICUUC=${LIB_ICUUC_STATIC};LIB_ICUDATA=${LIB_ICUDATA_STATIC};LIB_CPPTRACE=${LIB_CPTRACE};LIB_DWARF=${LIB_DWARF};${GC_EMBED_ARG}"
       -P ${EMBED_SCRIPT}
-      # ✅ [修改] 把 GC_DEPEND 加入依赖列表
+      # [修改] 把 GC_DEPEND 加入依赖列表
       DEPENDS runtime_bitcode spdlog ${GC_DEPEND} ${LIB_GMP_STATIC} ${EMBED_SCRIPT}
       COMMENT "Embedding runtime libraries and bitcode into pyc header..."
       VERBATIM
