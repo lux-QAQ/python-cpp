@@ -25,7 +25,6 @@
 #include "interpreter/InterpreterCore.hpp"
 #include "runtime/PyTuple.hpp"
 #include "runtime/RuntimeContext.hpp"
-#include "runtime/RuntimeError.hpp"
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
@@ -334,51 +333,8 @@ namespace {
 }// namespace
 
 
-// PyResult<PyObject *> PyType::call_raw(std::span<Value> args, PyDict *kwargs)
-// {
-//     // AOT 路径：Node() 调用直达此处
-//     auto obj_res = new_(nullptr, nullptr); // 通常 __new__ 不处理简单 args
-//     if (obj_res.is_err()) return obj_res;
-//     auto *obj = obj_res.unwrap();
-    
-//     // 0 分配初始化
-//     auto init_res = obj->init_raw(args, kwargs);
-//     if (init_res.is_err()) return Err(init_res.unwrap_err());
-    
-//     return Ok(obj);
-// }
 
-PyResult<PyObject *> PyType::call_raw(std::span<Value> args, PyDict *kwargs)
-{
-    spdlog::debug("[Type::call_raw] Calling __new__ for type: {}", name());
 
-    PyObject *obj = nullptr;
-    // 如果没有参数，走最快路径
-    if (args.empty() && (!kwargs || kwargs->map().empty())) {
-        auto obj_res = new_(nullptr, nullptr); 
-        if (obj_res.is_err()) return obj_res;
-        obj = obj_res.unwrap();
-    } else {
-        // [关键修复]：内置类型如 str(x), int(x) 的逻辑在 __new__ 中。
-        // 必须构造临时元组传递给 new_ 槽位。
-        auto args_tuple_res = PyTuple::create(args);
-        if (args_tuple_res.is_err()) return Err(args_tuple_res.unwrap_err());
-        
-        auto obj_res = new_(args_tuple_res.unwrap(), kwargs);
-        if (obj_res.is_err()) return obj_res;
-        obj = obj_res.unwrap();
-    }
-
-    spdlog::debug("[Type::call_raw] Instance created: {:p} (type: {})", (void*)obj, name());
-    
-    // 遵循 Python 语义：只有当 returned_object 确实是期望的 type 的实例（或其子类）时，才调用 __init__
-    if (obj->type()->issubclass(this)) {
-        auto init_res = obj->init_raw(args, kwargs);
-        if (init_res.is_err()) return Err(init_res.unwrap_err());
-    }
-    
-    return Ok(obj);
-}
 PyResult<PyObject *> PyType::__getattribute__(PyObject *attribute) const
 {
 	auto *name = as<PyString>(attribute);
@@ -423,40 +379,19 @@ PyResult<PyObject *> PyType::__getattribute__(PyObject *attribute) const
 		"type object '{}' has no attribute '{}'", underlying_type().__name__, name->value()));
 }
 
-// std::optional<PyResult<PyObject *>> PyType::lookup(PyObject *name) const
-// {
-// 	auto mro = mro_internal();
-// 	if (mro.is_err()) { return mro; }
-// 	for (const auto &t_ : mro.unwrap()->elements()) {
-// 		ASSERT(std::holds_alternative<PyObject *>(t_));
-// 		auto *t = as<PyType>(std::get<PyObject *>(t_));
-// 		ASSERT(t);
-// 		ASSERT(t->underlying_type().__dict__);
-// 		const auto &dict = t->underlying_type().__dict__->map();
-// 		if (auto it = dict.find(name); it != dict.end()) { return PyObject::from(it->second); }
-// 	}
-// 	return std::nullopt;
-// }
-
 std::optional<PyResult<PyObject *>> PyType::lookup(PyObject *name) const
 {
-    auto mro_res = mro_internal();
-    if (mro_res.is_err()) return std::nullopt;
-    
-    auto* mro = mro_res.unwrap();
-    for (const auto &t_val : mro->elements()) {
-        // [优化]：直接通过指针访问，不走 PyObject::from
-        py::PyObject* t_obj = std::get<PyObject*>(t_val);
-        auto* type = static_cast<PyType*>(t_obj);
-        
-        if (type->m_attributes) {
-            auto it = type->m_attributes->map().find(py::Value(name));
-            if (it != type->m_attributes->map().end()) {
-                return py::PyObject::from(it->second);
-            }
-        }
-    }
-    return std::nullopt;
+	auto mro = mro_internal();
+	if (mro.is_err()) { return mro; }
+	for (const auto &t_ : mro.unwrap()->elements()) {
+		ASSERT(std::holds_alternative<PyObject *>(t_));
+		auto *t = as<PyType>(std::get<PyObject *>(t_));
+		ASSERT(t);
+		ASSERT(t->underlying_type().__dict__);
+		const auto &dict = t->underlying_type().__dict__->map();
+		if (auto it = dict.find(name); it != dict.end()) { return PyObject::from(it->second); }
+	}
+	return std::nullopt;
 }
 
 PyResult<PyObject *> PyType::heap_object_allocation(PyType *type)
@@ -670,9 +605,11 @@ PyResult<std::monostate> PyType::initialize(const std::string &name,
 	if (result.is_err()) { return Err(result.unwrap_err()); }
 
 	fixup_slots();
-	invalidate_all_caches(); 
+
 	return Ok(std::monostate{});
 }
+
+
 static auto &get_slotdefs()
 {
 static std::array slotdefs_inst = {

@@ -103,20 +103,13 @@ py::PyObject *rt_call_fast(py::PyObject *callable, int32_t argc, py::PyObject **
 // =============================================================================
 // Tier 4: make_function
 // =============================================================================
-// PYLANG_EXPORT_FUNC("value_array_get", "obj", "ptr,i32")
-// py::PyObject *rt_value_array_get(const py::Value *args, int32_t index)
-// {
-// 	// 使用 PyObject::from 将 variant 包装或提取为 PyObject*
-// 	auto res = py::PyObject::from(args[index]);
-// 	if (res.is_err()) return nullptr;
-// 	return res.unwrap();
-// }
 PYLANG_EXPORT_FUNC("value_array_get", "obj", "ptr,i32")
 py::PyObject *rt_value_array_get(const py::Value *args, int32_t index)
 {
-    // [极致优化]：直接将底层 Value 恢复为 RtValue 位表示返回
-    // 这样 AOT 编译器拿到的直接就是 Tagged Pointer，零堆分配
-    return py::RtValue::from_value(args[index]).as_pyobject_raw();
+	// 使用 PyObject::from 将 variant 包装或提取为 PyObject*
+	auto res = py::PyObject::from(args[index]);
+	if (res.is_err()) return nullptr;
+	return res.unwrap();
 }
 
 
@@ -227,18 +220,11 @@ py::PyObject *rt_call_raw_ptrs(py::PyObject *callable,
 	py::PyObject *kwargs_dict)
 {
 	py::Value *value_array = nullptr;
-	// if (argc > 0) {
-	// 	value_array = static_cast<py::Value *>(alloca(sizeof(py::Value) * argc));
-	// 	for (int i = 0; i < argc; ++i) {
-	// 		// 必须使用 ensure_box 处理 Tagged Pointer，否则 AOT 传来的整数会崩溃
-	// 		new (&value_array[i]) py::Value(py::ensure_box(args[i]));
-	// 	}
-	// }
 	if (argc > 0) {
 		value_array = static_cast<py::Value *>(alloca(sizeof(py::Value) * argc));
 		for (int i = 0; i < argc; ++i) {
-			// [优化]：不再使用 ensure_box，直接从指针恢复 RtValue 语义
-			new (&value_array[i]) py::Value(py::RtValue::from_ptr(args[i]).to_value());
+			// 必须使用 ensure_box 处理 Tagged Pointer，否则 AOT 传来的整数会崩溃
+			new (&value_array[i]) py::Value(py::ensure_box(args[i]));
 		}
 	}
 
@@ -303,19 +289,12 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 			}
 
 			// AOT 零分配极速绑定调用
-			// size_t total_argc = argc + 1;
-			// auto *value_array = static_cast<py::Value *>(alloca(sizeof(py::Value) * total_argc));
-			// new (&value_array[0]) py::Value(b_owner);
-			// for (int i = 0; i < argc; ++i) {
-			// 	new (&value_array[i + 1]) py::Value(py::ensure_box(args[i]));
-			// }
-            size_t total_argc = argc + 1;
-            auto *value_array = static_cast<py::Value *>(alloca(sizeof(py::Value) * total_argc));
-            new (&value_array[0]) py::Value(b_owner);
-            for (int i = 0; i < argc; ++i) {
-                // [优化]：不再使用 ensure_box
-                new (&value_array[i + 1]) py::Value(py::RtValue::from_ptr(args[i]).to_value());
-            }
+			size_t total_argc = argc + 1;
+			auto *value_array = static_cast<py::Value *>(alloca(sizeof(py::Value) * total_argc));
+			new (&value_array[0]) py::Value(b_owner);
+			for (int i = 0; i < argc; ++i) {
+				new (&value_array[i + 1]) py::Value(py::ensure_box(args[i]));
+			}
 
 			auto result = desc->call_raw(std::span<py::Value>(value_array, total_argc), kwargs);
 			for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&value_array[i]);

@@ -19,10 +19,6 @@ class PyType : public PyBaseObject
 		m_underlying_type;
 
   public:
-	// 全局版本号，任何类型变更（setattr）都会递增此值
-	static inline std::atomic<uint64_t> m_global_version{ 1 };
-	static uint64_t global_version() { return m_global_version.load(); }
-	static void invalidate_all_caches() { m_global_version++; }
 	PyString *__name__{ nullptr };
 	PyString *__qualname__{ nullptr };
 	py::GCVector<PyObject *> __slots__;
@@ -44,7 +40,7 @@ class PyType : public PyBaseObject
 
 	std::string name() const;
 
-	PyResult<PyObject *> call_raw(std::span<Value> args, PyDict *kwargs) override;
+	
 	PyResult<PyObject *> __call__(PyTuple *args, PyDict *kwargs) const;
 	PyResult<PyObject *> __repr__() const;
 	PyResult<PyObject *> __getattribute__(PyObject *attribute) const;

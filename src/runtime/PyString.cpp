@@ -47,7 +47,7 @@ namespace {
 		return table;
 	}
 
-	// 2. 核心救生圈：存放在这里的指针会被 GC 扫描，保证对象不被回收
+	// 2. ✅ 核心救生圈：存放在这里的指针会被 GC 扫描，保证对象不被回收
 	GCVector<PyString *> &intern_roots()
 	{
 		static GCVector<PyString *> roots;
@@ -103,7 +103,7 @@ PyString *PyString::intern(const char *cstr)
 	// 第三级：真正创建并“加冕”为永久对象
 	auto str = PyString::create(cstr).unwrap();
 
-	// 关键：必须放入 GCVector，否则这个 str 会被 GC 瞬间收割
+	// ✅ 关键：必须放入 GCVector，否则这个 str 会被 GC 瞬间收割
 	intern_roots().push_back(str);
 
 	// 此时使用 str->value() 作为 view 的 key 是安全的，因为 str 已经永生了
@@ -291,23 +291,16 @@ PyResult<PyString *> PyString::create(const Bytes &bytes, const std::string &enc
 
 PyResult<PyObject *> PyString::__new__(const PyType *type, PyTuple *args, PyDict *kwargs)
 {
-    // FIXME: this should use either __str__ or __repr__ rather than relying on first arg being a
-    // String
-    // FIXME: handle bytes_or_buffer argument
-    // FIXME: handle encoding argument
-    // FIXME: handle errors argument
-    ASSERT(!kwargs || kwargs->map().size() == 0);
-    
-    // [修复]：允许 args 为空 (str()) 或为 nullptr (来自某些 call_raw 路径)
-    size_t nargs = args ? args->size() : 0;
-    ASSERT(nargs <= 2);
-    ASSERT(type == types::str());
+	// FIXME: this should use either __str__ or __repr__ rather than relying on first arg being a
+	// String
+	// FIXME: handle bytes_or_buffer argument
+	// FIXME: handle encoding argument
+	// FIXME: handle errors argument
+	ASSERT(!kwargs || kwargs->map().size() == 0);
+	ASSERT(args && args->size() <= 2);
+	ASSERT(type == types::str());
 
-    if (nargs == 0) {
-        return PyString::create("");
-    }
-
-    std::string encoding;
+	std::string encoding;
 
 	const auto &string = args->elements()[0];
 	if (args->size() > 1) {
@@ -2093,7 +2086,7 @@ std::function<std::unique_ptr<TypePrototype>()> PyStringIterator::type_factory()
 PyResult<PyString *> PyString::create(PyString *self, PyTuple *args, PyDict *kwargs)
 {
 	ASSERT(self);
-	// 在这里 PyTuple 已经是完整类型，可以调用 size()
+	// ✅ 在这里 PyTuple 已经是完整类型，可以调用 size()
 	ASSERT(!args || (args->size() == 0));
 	ASSERT(!kwargs);
 

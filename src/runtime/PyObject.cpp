@@ -19,8 +19,7 @@
 #include "PyType.hpp"
 #include "StopIteration.hpp"
 #include "TypeError.hpp"
-#include "Value.hpp"
-#include "taggered_pointer/RtValue.hpp"
+#include "runtime/Value.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -676,23 +675,9 @@ PyResult<PyObject *> PyObject::getattribute(PyObject *attribute) const
 
 PyResult<std::monostate> PyObject::setattribute(PyObject *attribute, PyObject *value)
 {
-
-	std::string attr_name = as<PyString>(attribute) ? as<PyString>(attribute)->value() : "unknown";
-	spdlog::debug("[Object::setattr] obj={:p} (type={}), attr='{}', val_ptr={:p}",
-		(void *)this,
-		type()->name(),
-		attr_name,
-		(void *)value);
-		
 	if (!as<PyString>(attribute)) {
 		return Err(
 			type_error("attribute name must be string, not '{}'", attribute->type()->to_string()));
-	}
-
-	if (py::as<PyType>(this)) {
-		spdlog::debug(
-			"[setattribute] Invalidating Cache because Type '{}' was modified", this->to_string());
-		PyType::invalidate_all_caches();
 	}
 
 	if (auto setattr_method = type()->underlying_type().__setattribute__;
@@ -708,9 +693,6 @@ PyResult<std::monostate> PyObject::setattribute(PyObject *attribute, PyObject *v
 			type()->name(),
 			attribute->to_string()));
 	}
-
-
-	return __setattribute__(attribute, value);
 }
 
 PyResult<std::monostate> PyObject::delattribute(PyObject *attribute)
@@ -1198,98 +1180,31 @@ PyResult<PyObject *> PyObject::get(PyObject *instance, PyObject *owner) const
 // {
 //     // 默认实现：回退到打包为 Tuple
 //     auto tuple_res = PyTuple::create(py::GCVector<Value>(args.begin(), args.end()));
-//     if (tuple_res.is_err()) { return Err(tuple_res.unwrap_err()); }
-
-//     return call(tuple_res.unwrap(), kwargs);
-// }
-
-// PyResult<PyObject *> PyObject::call_raw(std::span<Value> args, PyDict *kwargs)
-// {
-//     // [关键修复]：使用静态全局单例，彻底消灭 `Node()` 构造时的堆分配
-//     if (args.empty()) {
-//         static PyTuple* empty_tuple_cache = nullptr;
-//         if (!empty_tuple_cache) {
-//             empty_tuple_cache = PyTuple::create({}).unwrap();
-//             // 注意：作为静态变量，它会被 GC 视为 Root，永不释放
-//         }
-//         return call(empty_tuple_cache, kwargs);
-//     }
-
-//     // 默认实现：回退到打包为 Tuple
-//     auto tuple_res = PyTuple::create(py::GCVector<Value>(args.begin(), args.end()));
-//     if (tuple_res.is_err()) { return Err(tuple_res.unwrap_err()); }
-
+//     if (tuple_res.is_err()) { return Err(tuple_res.unwrap_err()); } 
+    
 //     return call(tuple_res.unwrap(), kwargs);
 // }
 
 PyResult<PyObject *> PyObject::call_raw(std::span<Value> args, PyDict *kwargs)
 {
-	// 使用单例缓存减小空调用开销
-	if (args.empty() && (!kwargs || kwargs->map().empty())) {
-		static PyTuple *empty_cache = nullptr;
-		if (!empty_cache) empty_cache = PyTuple::create({}).unwrap();
-		return call(empty_cache, kwargs);
-	}
-
-	// [编译修复]：显式构造 GCVector
-	auto tuple_res = PyTuple::create(args);
-	if (tuple_res.is_err()) return Err(tuple_res.unwrap_err());
-	return call(tuple_res.unwrap(), kwargs);
-}
-
-// PyResult<int32_t> PyObject::init_raw(std::span<Value> args, PyDict *kwargs)
-// {
-// 	// 如果没有参数，走最快路径
-// 	if (args.empty() && (!kwargs || kwargs->map().empty())) { return __init__(nullptr, nullptr); }
-
-// 	// 如果有参数，必须构造元组以兼容标准的 __init__(self, *args, **kwargs)
-// 	auto tuple_res = PyTuple::create(args);
-// 	if (tuple_res.is_err()) return Err(tuple_res.unwrap_err());
-// 	return __init__(tuple_res.unwrap(), kwargs);
-// }
-
-PyResult<int32_t> PyObject::init_raw(std::span<Value> args, PyDict *kwargs)
-{
-    spdlog::debug("[Object::init_raw] ENTRY: obj={:p} (type={}), argc={}", (void *)this, type()->name(), args.size());
-    auto *init_str = PyString::intern("__init__");
-    
-    // 追踪 lookup_attribute 的具体行为
-    auto [res, found] = type()->lookup_attribute(init_str);
-
-    spdlog::debug("[Object::init_raw] Lookup finished: found={}, is_err={}", 
-        found == LookupAttrResult::FOUND, res.is_err());
-
-    if (found == LookupAttrResult::FOUND) {
-        if (res.is_err()) {
-            spdlog::error("[Object::init_raw] __init__ lookup returned error: {}", (void*)res.unwrap_err());
-            return Err(res.unwrap_err());
+    // [极致优化]：全局静态缓存空元组单例。
+    // 彻底消灭诸如 `Node()` 这类无参调用时疯狂产生空 PyTuple 的现象！
+    if (args.empty()) {
+        static PyTuple* empty_tuple = nullptr;
+        if (!empty_tuple) {
+            auto res = PyTuple::create(py::GCVector<Value>{});
+            if (res.is_err()) return Err(res.unwrap_err());
+            empty_tuple = res.unwrap();
         }
-        auto *init_method = res.unwrap();
-
-        spdlog::debug("[Object::init_raw] Calling __init__ method: {:p} (type={})",
-            (void *)init_method, init_method->type()->name());
-
-        // 准备参数：[self, ...args]
-        size_t total_argc = args.size() + 1;
-        py::GCVector<Value> new_args;
-        new_args.reserve(total_argc);
-        new_args.push_back(this);
-        for (auto &arg : args) new_args.push_back(arg);
-
-        auto call_res = init_method->call_raw(std::span<Value>(new_args.data(), total_argc), kwargs);
-
-        if (call_res.is_err()) {
-            spdlog::debug("[Object::init_raw] __init__ call failed");
-            return Err(call_res.unwrap_err());
-        }
-        spdlog::debug("[Object::init_raw] __init__ SUCCESSFUL");
-        return Ok(0);
+        return call(empty_tuple, kwargs);
     }
 
-    spdlog::debug("[Object::init_raw] No __init__ found in MRO, skipping");
-    return Ok(0);
+    // 默认实现：回退到打包为 Tuple
+    auto tuple_res = PyTuple::create(py::GCVector<Value>(args.begin(), args.end()));
+    if (tuple_res.is_err()) { return Err(tuple_res.unwrap_err()); }
+    
+    return call(tuple_res.unwrap(), kwargs);
 }
-
 PyResult<PyObject *> PyObject::new_(PyTuple *args, PyDict *kwargs) const
 {
 	if (!as<PyType>(this)) {
@@ -1725,11 +1640,12 @@ std::string PyObject::to_string() const
 
 PyType *PyObject::type() const
 {
-
-	if (RtValue::from_ptr(this).is_tagged_int()) {// 检查不是tagged_int
-		return types::integer();
-	}
-	// if (!addr) return nullptr;
+    // 直接通过地址特征判断 Tagged Pointer 类型，跳过 variant 访问
+    uintptr_t addr = reinterpret_cast<uintptr_t>(this);
+    if (addr & 1) {
+        return types::integer(); // Tagged Integer 永远是 int 类型
+    }
+    if (!addr) return nullptr;
 	if (std::holds_alternative<std::reference_wrapper<const TypePrototype>>(m_type)) {
 		return static_type();
 	} else {
