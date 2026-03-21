@@ -6,3 +6,5 @@ CMakeFiles/*
 vtune/*
 
 *.ll
+
+.history/*
