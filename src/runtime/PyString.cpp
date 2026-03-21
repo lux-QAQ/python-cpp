@@ -10,6 +10,7 @@
 #include "PyList.hpp"
 #include "PyNone.hpp"
 #include "PySlice.hpp"
+#include "PyTuple.hpp"
 #include "StopIteration.hpp"
 #include "TypeError.hpp"
 #include "ValueError.hpp"
@@ -39,43 +40,76 @@
 namespace py {
 
 namespace {
-
-	// 驻留池：string_view → PyString*
-	//
-	// 为什么用 std::string 做 key 而不是 string_view？
-	//   因为 string_view 不拥有数据，如果原始 const char* 来自动态内存，
-	//   可能在 key 存活期间被释放。用 std::string 做 key 保证生命周期安全。
-	//
-	// 为什么用 GCVector 做 roots？
-	//   驻留的 PyString* 必须对 GC 可达，否则会被回收。
-	//   GCVector 的 buffer 在 GC 堆上，GC 扫描时能看到里面的指针。
-	std::unordered_map<std::string, PyString *> &intern_table()
+	// 1. 结构化索引：确保内容相同的字符串映射到同一个对象
+	std::unordered_map<std::string_view, PyString *> &intern_table()
 	{
-		static std::unordered_map<std::string, PyString *> table;
+		static std::unordered_map<std::string_view, PyString *> table;
 		return table;
 	}
 
+	// 2. ✅ 核心救生圈：存放在这里的指针会被 GC 扫描，保证对象不被回收
 	GCVector<PyString *> &intern_roots()
 	{
 		static GCVector<PyString *> roots;
 		return roots;
 	}
 
+	// 3. 指针级索引：针对 LLVM AOT 常量字符串指针的极致优化
+	std::unordered_map<const char *, PyString *> &ptr_table()
+	{
+		static std::unordered_map<const char *, PyString *> table;
+		return table;
+	}
+
+	std::array<PyString *, 256> &get_char_cache()
+	{
+		static std::array<PyString *, 256> cache{ nullptr };
+		return cache;
+	}
 }// namespace
+
+// PyString *PyString::intern(const char *cstr)
+// {
+// 	auto &table = intern_table();
+// 	auto it = table.find(cstr);
+// 	if (it != table.end()) return it->second;
+
+// 	// 首次见到：创建并驻留
+// 	auto result = PyString::create(std::string(cstr));
+// 	ASSERT(result.is_ok());
+// 	auto *str = result.unwrap();
+
+// 	table[str->value()] = str;
+// 	intern_roots().push_back(str);// GC root，永不回收
+// 	return str;
+// }
 
 PyString *PyString::intern(const char *cstr)
 {
-	auto &table = intern_table();
-	auto it = table.find(cstr);
-	if (it != table.end()) return it->second;
+	if (!cstr) return nullptr;
 
-	// 首次见到：创建并驻留
-	auto result = PyString::create(std::string(cstr));
-	ASSERT(result.is_ok());
-	auto *str = result.unwrap();
+	// 第一级：指针地址直接命中 (AOT 路径)
+	auto &p_table = ptr_table();
+	if (auto it = p_table.find(cstr); it != p_table.end()) { return it->second; }
 
-	table[str->value()] = str;
-	intern_roots().push_back(str);// GC root，永不回收
+	// 第二级：字符串内容命中
+	auto &i_table = intern_table();
+	std::string_view sv(cstr);
+	if (auto it = i_table.find(sv); it != i_table.end()) {
+		p_table[cstr] = it->second;// 顺便填入一级缓存
+		return it->second;
+	}
+
+	// 第三级：真正创建并“加冕”为永久对象
+	auto str = PyString::create(cstr).unwrap();
+
+	// ✅ 关键：必须放入 GCVector，否则这个 str 会被 GC 瞬间收割
+	intern_roots().push_back(str);
+
+	// 此时使用 str->value() 作为 view 的 key 是安全的，因为 str 已经永生了
+	i_table[str->value()] = str;
+	p_table[cstr] = str;
+
 	return str;
 }
 
@@ -168,8 +202,25 @@ namespace utf8 {
 
 PyString::PyString(PyType *type) : PyBaseObject(type) {}
 
+
 PyResult<PyString *> PyString::create(const std::string &value)
 {
+
+	// 单字符缓存
+	if (value.length() == 1) {
+		auto &cache = get_char_cache();
+		uint8_t c = static_cast<uint8_t>(value[0]);
+
+		if (cache[c] != nullptr) { return Ok(cache[c]); }
+
+		auto *result = PYLANG_ALLOC(PyString, value);
+		if (!result) return Err(memory_error(sizeof(PyString)));
+
+		cache[c] = result;
+		// 仍然要钉在根上，否则GC发现根里没它，下次 GC 就直接扬了
+		intern_roots().push_back(result);
+		return Ok(result);
+	}
 
 	auto *result = PYLANG_ALLOC(PyString, value);
 	if (!result) { return Err(memory_error(sizeof(PyString))); }
@@ -2030,6 +2081,16 @@ std::function<std::unique_ptr<TypePrototype>()> PyStringIterator::type_factory()
 		std::call_once(str_iterator_flag, []() { type = register_str_iterator(); });
 		return std::move(type);
 	};
+}
+
+PyResult<PyString *> PyString::create(PyString *self, PyTuple *args, PyDict *kwargs)
+{
+	ASSERT(self);
+	// ✅ 在这里 PyTuple 已经是完整类型，可以调用 size()
+	ASSERT(!args || (args->size() == 0));
+	ASSERT(!kwargs);
+
+	return Ok(self);
 }
 
 }// namespace py

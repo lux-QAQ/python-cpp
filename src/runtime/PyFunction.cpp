@@ -64,16 +64,7 @@ PyFunction::PyFunction(std::vector<Value> defaults,
 // AOT 编译器支持
 // =============================================================================
 
-/// AOT 编译后的函数指针类型（无闭包）
-/// 签名: PyObject*(PyObject* module, PyTuple* args, PyDict* kwargs)
-using AOTFuncPtr = py::PyObject *(*)(py::PyObject *, py::PyTuple *, py::PyDict *);
 
-/// AOT 编译后的函数指针类型（有闭包）
-/// 签名: PyObject*(PyObject* module, PyObject* closure, PyTuple* args, PyDict* kwargs)
-using AOTClosureFuncPtr = py::PyObject *(*)(py::PyObject *,
-	py::PyObject *,
-	py::PyTuple *,
-	py::PyDict *);
 
 
 PyResult<PyNativeFunction *> PyNativeFunction::create_aot(std::string name,
@@ -191,6 +182,25 @@ PyResult<PyObject *> PyFunction::call_with_frame(PyObject *ns, PyTuple *args, Py
 		m_name);
 }
 
+PyResult<PyObject *> PyNativeFunction::call_raw(std::span<Value> args, PyDict *kwargs)
+{
+    // 如果这个 NativeFunction 是通过 create_aot 创建的，它会携带原始函数指针
+    // 我们在 m_captures 或特定的成员中存储这个原始指针（假设我们将其存入了 variant 的 target）
+    // 为了演示简洁，我们假设 AOT 模式下 operator() 已经被适配或通过 target 获取
+    
+    // 核心逻辑：直接解包 std::function 的 target 到 AOTRawFuncPtr
+    if (auto* raw_ptr = m_function.target<AOTRawFuncPtr>()) {
+        auto* result = (*raw_ptr)(m_module_ref, m_closure, args.data(), static_cast<int32_t>(args.size()), kwargs);
+        if (!result) return Err(runtime_error("AOT call returned NULL"));
+        return Ok(result);
+    }
+
+    // 回退：如果不是 AOT 函数，则不得不打包 Tuple（保证向后兼容）
+    auto args_tuple = PyTuple::create(GCVector<Value>(args.begin(), args.end()));
+    if (args_tuple.is_err()) return Err(args_tuple.unwrap_err());
+    return __call__(args_tuple.unwrap(), kwargs);
+}
+
 PyResult<PyObject *> PyFunction::__call__(PyTuple *args, PyDict *kwargs)
 {
 	auto function_locals = PyDict::create();
@@ -297,34 +307,48 @@ PyResult<PyObject *> PyNativeFunction::__call__(PyTuple *args, PyDict *kwargs)
 
 PyResult<PyObject *> PyNativeFunction::__repr__() const { return PyString::create(to_string()); }
 
+// PyResult<PyObject *> PyNativeFunction::__get__(PyObject *instance, PyObject * /*owner*/) const
+// {
+// 	// Python 3.9 描述符协议:
+// 	//   Class.method      → instance=None  → 返回未绑定函数
+// 	//   obj.method         → instance=obj   → 返回绑定方法
+// 	//
+// 	// CPython 中 builtin_function_or_method 的 __get__ 返回 PyMethod (bound method)
+// 	// 我们用 PyNativeFunction 闭包模拟同样的效果
+// 	if (!instance || instance == py_none()) { return Ok(const_cast<PyNativeFunction *>(this)); }
+
+// 	// 创建绑定方法: 将 instance 前置到参数列表
+// 	auto *self_func = const_cast<PyNativeFunction *>(this);
+// 	return PyNativeFunction::create(
+// 		m_name,
+// 		[self_func, instance](PyTuple *args, PyDict *kwargs) -> PyResult<PyObject *> {
+// 			std::vector<Value> new_args;
+// 			new_args.reserve((args ? args->size() : 0) + 1);
+// 			new_args.push_back(instance);
+// 			if (args) {
+// 				new_args.insert(new_args.end(), args->elements().begin(), args->elements().end());
+// 			}
+// 			auto bound_args = PyTuple::create(new_args);
+// 			if (bound_args.is_err()) { return Err(bound_args.unwrap_err()); }
+// 			return self_func->__call__(bound_args.unwrap(), kwargs);
+// 		},
+// 		self_func,// GC: 追踪原函数
+// 		instance// GC: 追踪绑定实例
+// 	);
+// }
+
 PyResult<PyObject *> PyNativeFunction::__get__(PyObject *instance, PyObject * /*owner*/) const
 {
-	// Python 3.9 描述符协议:
-	//   Class.method      → instance=None  → 返回未绑定函数
-	//   obj.method         → instance=obj   → 返回绑定方法
-	//
-	// CPython 中 builtin_function_or_method 的 __get__ 返回 PyMethod (bound method)
-	// 我们用 PyNativeFunction 闭包模拟同样的效果
-	if (!instance || instance == py_none()) { return Ok(const_cast<PyNativeFunction *>(this)); }
+    // Python 3.9 描述符协议:
+    //   Class.method      → instance=None  → 返回未绑定函数
+    //   obj.method         → instance=obj   → 返回绑定方法
+    if (!instance || instance == py_none()) { return Ok(const_cast<PyNativeFunction *>(this)); }
 
-	// 创建绑定方法: 将 instance 前置到参数列表
-	auto *self_func = const_cast<PyNativeFunction *>(this);
-	return PyNativeFunction::create(
-		m_name,
-		[self_func, instance](PyTuple *args, PyDict *kwargs) -> PyResult<PyObject *> {
-			std::vector<Value> new_args;
-			new_args.reserve((args ? args->size() : 0) + 1);
-			new_args.push_back(instance);
-			if (args) {
-				new_args.insert(new_args.end(), args->elements().begin(), args->elements().end());
-			}
-			auto bound_args = PyTuple::create(new_args);
-			if (bound_args.is_err()) { return Err(bound_args.unwrap_err()); }
-			return self_func->__call__(bound_args.unwrap(), kwargs);
-		},
-		self_func,// GC: 追踪原函数
-		instance// GC: 追踪绑定实例
-	);
+    // [修复极度致命的性能结节]：
+    // 不要去创建新的 PyNativeFunction + std::function(malloc) 闭包！
+    // std::function 内部状态分配极慢，且阻碍了 GC。
+    // 直接生成轻巧的 PyBoundMethod 进行实例绑定，立减亿级堆分配！
+    return PyBoundMethod::create(instance, const_cast<PyNativeFunction *>(this));
 }
 
 void PyNativeFunction::visit_graph(Visitor &visitor)

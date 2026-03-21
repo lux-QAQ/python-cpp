@@ -10,11 +10,12 @@ namespace py {
 
 PyBoundMethod::PyBoundMethod(PyType *type) : PyBaseObject(type) {}
 
-PyBoundMethod::PyBoundMethod(PyObject *self, PyFunction *method)
+// [修改]：兼容 PyObject
+PyBoundMethod::PyBoundMethod(PyObject *self, PyObject *method)
 	: PyBaseObject(types::BuiltinTypes::the().bound_method()), m_self(self), m_method(method)
 {}
 
-PyResult<PyBoundMethod *> PyBoundMethod::create(PyObject *self, PyFunction *method)
+PyResult<PyBoundMethod *> PyBoundMethod::create(PyObject *self, PyObject *method)
 {
 	auto *result = PYLANG_ALLOC(PyBoundMethod, self, method);
 	if (!result) { return Err(memory_error(sizeof(PyBoundMethod))); }
@@ -33,23 +34,42 @@ std::string PyBoundMethod::to_string() const
 	auto qualname_str = PyString::create("__qualname__");
 	if (qualname_str.is_err()) { TODO(); }
 	auto self_qualname = m_self->getattribute(qualname_str.unwrap());
-	if (self_qualname.is_err()) { TODO(); }
+	if (self_qualname.is_err()) {
+		// [容错]: Native Function 可能没有 __qualname__
+		return fmt::format("<bound method of '{}'>", m_method->to_string());
+	}
 	return fmt::format(
 		"<bound method '{}' of '{}'>", m_method->to_string(), self_qualname.unwrap()->to_string());
 }
 
 PyResult<PyObject *> PyBoundMethod::__repr__() const { return PyString::create(to_string()); }
 
+// PyResult<PyObject *> PyBoundMethod::__call__(PyTuple *args, PyDict *kwargs)
+// {
+// 	// first create new args tuple -> (self, *args)
+// 	std::vector<Value> new_args_vector;
+// 	new_args_vector.reserve(args->size() + 1);
+// 	new_args_vector.push_back(m_self);
+// 	for (const auto &arg : args->elements()) { new_args_vector.push_back(arg); }
+// 	auto args_ = PyTuple::create(new_args_vector);
+// 	if (args_.is_err()) { return args_; }
+// 	return m_method->call(args_.unwrap(), kwargs);
+// }
+
 PyResult<PyObject *> PyBoundMethod::__call__(PyTuple *args, PyDict *kwargs)
 {
-	// first create new args tuple -> (self, *args)
-	std::vector<Value> new_args_vector;
-	new_args_vector.reserve(args->size() + 1);
-	new_args_vector.push_back(m_self);
-	for (const auto &arg : args->elements()) { new_args_vector.push_back(arg); }
-	auto args_ = PyTuple::create(new_args_vector);
-	if (args_.is_err()) { return args_; }
-	return m_method->call(args_.unwrap(), kwargs);
+    py::GCVector<Value> new_args_vector;
+    new_args_vector.reserve(args->size() + 1);
+    new_args_vector.push_back(m_self);
+    // 直接批量块状推入
+    if (args->size() > 0) {
+        new_args_vector.insert(new_args_vector.end(), args->elements().begin(), args->elements().end());
+    }
+
+    // 触发上方写好的零拷贝 create，O(1) 接管
+    auto args_ = PyTuple::create(std::move(new_args_vector));
+    if (args_.is_err()) { return args_; }
+    return m_method->call(args_.unwrap(), kwargs);
 }
 
 PyType *PyBoundMethod::static_type() const { return types::bound_method(); }

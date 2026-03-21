@@ -100,6 +100,22 @@ class PyNativeFunction : public PyBaseObject
 	}
 
   public:
+	/// AOT 编译后的函数指针类型（无闭包）
+	/// 签名: PyObject*(PyObject* module, PyTuple* args, PyDict* kwargs)
+	using AOTFuncPtr = py::PyObject *(*)(py::PyObject *, py::PyTuple *, py::PyDict *);
+
+	/// AOT 编译后的函数指针类型（有闭包）
+	/// 签名: PyObject*(PyObject* module, PyObject* closure, PyTuple* args, PyDict* kwargs)
+	using AOTClosureFuncPtr = py::PyObject *(*)(py::PyObject *,
+		py::PyObject *,
+		py::PyTuple *,
+		py::PyDict *);
+
+	// 签名: PyObject*(PyObject* module, PyObject* closure, const Value* args, int32_t argc, PyDict*
+	// kwargs)
+	using AOTRawFuncPtr =
+		py::PyObject *(*)(py::PyObject *, py::PyObject *, const py::Value *, int32_t, py::PyDict *);
+
 	template<typename... Args>
 	static PyResult<PyNativeFunction *>
 		create(std::string name, FreeFunctionType function, Args &&...args)

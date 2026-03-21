@@ -1125,26 +1125,26 @@ PyResult<bool> PyObject::true_()
 
 PyResult<size_t> PyObject::len() const
 {
-    auto *self = const_cast<PyObject *>(this);
+	auto *self = const_cast<PyObject *>(this);
 
-    // 1. 优先 mapping 协议 (与 CPython PyObject_Size 一致)
-    if (type_prototype().mapping_type_protocol.has_value()
-        && type_prototype().mapping_type_protocol->__len__.has_value()) {
-        return self->as_mapping().unwrap().len();
-    }
+	// 1. 优先 mapping 协议 (与 CPython PyObject_Size 一致)
+	if (type_prototype().mapping_type_protocol.has_value()
+		&& type_prototype().mapping_type_protocol->__len__.has_value()) {
+		return self->as_mapping().unwrap().len();
+	}
 
-    // 2. 回退 sequence 协议
-    if (type_prototype().sequence_type_protocol.has_value()
-        && type_prototype().sequence_type_protocol->__len__.has_value()) {
-        return self->as_sequence().unwrap().len();
-    }
+	// 2. 回退 sequence 协议
+	if (type_prototype().sequence_type_protocol.has_value()
+		&& type_prototype().sequence_type_protocol->__len__.has_value()) {
+		return self->as_sequence().unwrap().len();
+	}
 
-    return Err(type_error("object of type '{}' has no len()", type()->name()));
+	return Err(type_error("object of type '{}' has no len()", type()->name()));
 }
 
 PyResult<PyObject *> PyObject::iter() const
 {
-	//spdlog::error("iter called on {}", type()->name());
+	// spdlog::error("iter called on {}", type()->name());
 	if (type_prototype().__iter__.has_value()) {
 		return call_slot(*type_prototype().__iter__, this);
 	}
@@ -1173,7 +1173,13 @@ PyResult<PyObject *> PyObject::get(PyObject *instance, PyObject *owner) const
 	}
 	TODO();
 }
-
+PyResult<PyObject *> PyObject::call_raw(std::span<Value> args, PyDict *kwargs)
+{
+	// 默认实现：回退到打包为 Tuple
+	auto tuple_res = PyTuple::create(py::GCVector<Value>(args.begin(), args.end()));
+	if (tuple_res.is_err()) return Err(tuple_res.unwrap_err());
+	return call(tuple_res.unwrap(), kwargs);
+}
 PyResult<PyObject *> PyObject::new_(PyTuple *args, PyDict *kwargs) const
 {
 	if (!as<PyType>(this)) {
@@ -1623,6 +1629,7 @@ PyType *PyObject::static_type() const
 		std::holds_alternative<PyType *>(m_type) && "Static types should overload PyObject::type!");
 	return std::get<PyType *>(m_type);
 }
+
 
 namespace {
 

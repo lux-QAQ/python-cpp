@@ -40,6 +40,12 @@ namespace {
 		return result;
 	}
 
+	PyTuple *&get_empty_tuple()
+	{
+		static PyTuple *empty = nullptr;
+		return empty;
+	}
+
 	std::vector<Value> make_value_vector(std::vector<PyObject *> &&elements)
 	{
 		ASSERT(std::all_of(
@@ -74,6 +80,10 @@ PyTuple::PyTuple(std::vector<Value> &&elements)
 	}));
 }
 
+PyTuple::PyTuple(py::GCVector<Value> &&elements)
+	: PyBaseObject(types::BuiltinTypes::the().tuple()), m_elements(std::move(elements))
+{}
+
 PyTuple::PyTuple() : PyTuple(std::vector<Value>{}) {}
 
 PyTuple::PyTuple(const std::vector<PyObject *> &elements) : PyTuple(make_value_vector(elements)) {}
@@ -89,11 +99,30 @@ PyResult<PyTuple *> PyTuple::create()
 	return Err(memory_error(sizeof(PyTuple)));
 }
 
+PyResult<PyTuple *> PyTuple::create(py::GCVector<Value> &&elements)
+{
+	// ✅ 如果要创建的是0元素元组，永远复用单例！极大减缓冲击。
+	if (elements.empty()) {
+		auto *&empty = get_empty_tuple();
+		if (!empty) {
+			empty = PYLANG_ALLOC(PyTuple, std::move(elements));
+			// 注：由于空元组没有子指针，也不怕被收，或者在 lifecycle 顶层保活。
+			// 保险起见加进去内部的永久根机制（如果是必须），但Boehm通常对空指针对象也无伤大雅。
+			// 这里是可以允许原子分配的?
+		}
+		return Ok(empty);
+	}
+
+	auto *obj = PYLANG_ALLOC(PyTuple, std::move(elements));
+	if (!obj) return Err(memory_error(sizeof(PyTuple)));
+	return Ok(obj);
+}
+
 PyResult<PyTuple *> PyTuple::create(std::vector<Value> &&elements)
 {
-
-	if (auto *obj = PYLANG_ALLOC(PyTuple, std::move(elements))) { return Ok(obj); }
-	return Err(memory_error(sizeof(PyTuple)));
+	py::GCVector<Value> tmp(
+		std::make_move_iterator(elements.begin()), std::make_move_iterator(elements.end()));
+	return PyTuple::create(std::move(tmp));
 }
 
 PyResult<PyTuple *> PyTuple::create(PyType *type, std::vector<Value> elements)
@@ -197,10 +226,10 @@ PyResult<PyObject *> PyTuple::__new__(const PyType *type, PyTuple *args, PyDict 
 
 	if (!value.unwrap_err()->type()->issubclass(stop_iteration()->type())) { return value; }
 
-	// ✅ 修改：使用迭代器范围拷贝将 GCVector 导出回普通的 C++ vector 传递给 create 函数
-	return PyTuple::create(const_cast<PyType *>(type),
-		std::vector<Value>(std::make_move_iterator(els->elements().begin()),
-			std::make_move_iterator(els->elements().end())));
+	// ✅ 修改：用 GCVector 而不是退化到 std::vector 去做临时中转
+	py::GCVector<Value> tmp_vec(std::make_move_iterator(els->elements().begin()),
+		std::make_move_iterator(els->elements().end()));
+	return PyTuple::create(std::move(tmp_vec));
 }
 
 PyResult<PyObject *> PyTuple::__repr__() const { return PyString::create(to_string()); }

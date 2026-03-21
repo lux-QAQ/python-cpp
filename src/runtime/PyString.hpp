@@ -65,15 +65,8 @@ class PyString
 
 	static PyResult<PyString *> create(const Bytes &, const std::string &encoding);
 
-	static PyResult<PyString *> create(PyString *self, PyTuple *args, PyDict *kwargs)
-	{
-		// FIXME with proper error handling
-		ASSERT(self);
-		ASSERT(!args || (args->size() == 0));
-		ASSERT(!kwargs);
-
-		return Ok(self);
-	}
+	// ✅ 修改：将实现移到 .cpp，防止访问 incomplete type PyTuple
+	static PyResult<PyString *> create(PyString *self, PyTuple *args, PyDict *kwargs);
 
 	const std::string &value() const { return m_value; }
 	std::vector<uint32_t> codepoints() const;

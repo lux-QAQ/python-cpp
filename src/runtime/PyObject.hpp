@@ -285,9 +285,7 @@ struct TypePrototype
 	size_t basicsize;
 
 	PyType *__base__{ nullptr };
-	std::vector<PyType *> __bases__{
-		nullptr
-	};
+	std::vector<PyType *> __bases__{ nullptr };
 
 	std::function<PyResult<PyObject *>(PyType *)> __alloc__;
 	std::optional<std::variant<NewSlotFunctionType, PyObject *>> __new__;
@@ -494,6 +492,11 @@ class PyObject : public Cell
 	PyResult<size_t> len() const;
 
 	PyResult<PyObject *> call(PyTuple *args, PyDict *kwargs);
+
+	// ✅ 新增：接受原始 Value 序列的调用接口
+	virtual PyResult<PyObject *> call_raw(std::span<Value> args, PyDict *kwargs);
+
+
 	virtual PyResult<PyObject *> new_(PyTuple *args, PyDict *kwargs) const;
 	PyResult<int32_t> init(PyTuple *args, PyDict *kwargs);
 

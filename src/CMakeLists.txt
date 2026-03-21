@@ -290,6 +290,7 @@ include_directories(
 # 如果开启了 Boehm GC，也要全局暴露 gc.h
 if(ENABLE_BOEHM_GC)
   include_directories(SYSTEM PUBLIC ${bdwgc_SOURCE_DIR}/include)
+  include_directories(SYSTEM ${cpptrace_SOURCE_DIR}/include)
 endif()
 
 add_library(
@@ -310,7 +311,7 @@ if(ENABLE_RUNTIME_ARENA)
   target_compile_definitions(python-cpp PUBLIC PYLANG_USE_ARENA)
   # [新增链接]
   if(ENABLE_BOEHM_GC)
-    target_link_libraries(python-cpp PUBLIC gc)
+    target_link_libraries(python-cpp PUBLIC gc cpptrace::cpptrace)
     # [关键修复]: 手动将 bdwgc 的头文件目录暴露给 python-cpp 及下游目标
     target_include_directories(python-cpp PUBLIC ${bdwgc_SOURCE_DIR}/include)
 
@@ -334,6 +335,8 @@ target_link_libraries(python-cpp
   ${GMPXX_LIBRARIES}
   ${GMP_LIBRARIES}
   tsl::ordered_map
+  spdlog::spdlog
+  cpptrace::cpptrace
 )
 
 # [关键修复]: 将 ylt 的路径放入 PUBLIC，这样 integration 目录链接 python-cpp 时就能自动继承这些路径！
@@ -550,10 +553,50 @@ if(LLVM_FOUND)
   find_library(LIB_ICUDATA_STATIC NAMES libicudata.a icudata)
 
   # 获取 spdlog 静态文件路径
-  if(TARGET spdlog)
+  if(TARGET spdlog::spdlog)
+    set(LIB_SPDLOG "$<TARGET_FILE:spdlog::spdlog>")
+  elseif(TARGET spdlog)
     set(LIB_SPDLOG "$<TARGET_FILE:spdlog>")
   else()
     find_library(LIB_SPDLOG NAMES libspdlog.a spdlog)
+  endif()
+
+  if(TARGET libdwarf::dwarf)
+    set(LIB_DWARF "$<TARGET_FILE:libdwarf::dwarf>")
+  elseif(TARGET dwarf)
+    set(LIB_DWARF "$<TARGET_FILE:dwarf>")
+  else()
+    # 如果找不到 Target，则尝试在系统路径查找
+    find_library(LIB_DWARF_PATH NAMES libdwarf.a dwarf)
+    if(LIB_DWARF_PATH)
+      set(LIB_DWARF "${LIB_DWARF_PATH}")
+    else()
+      set(LIB_DWARF "LIB_DWARF-NOTFOUND")
+    endif()
+  endif()
+
+  # ✅ [修正]: 增加对 cpptrace::cpptrace 命名空间 Target 的检查
+  if(TARGET cpptrace::cpptrace)
+    set(LIB_CPTRACE "$<TARGET_FILE:cpptrace::cpptrace>")
+  elseif(TARGET cpptrace)
+    set(LIB_CPTRACE "$<TARGET_FILE:cpptrace>")
+  else()
+    find_library(LIB_CPTRACE NAMES libcpptrace.a cpptrace)
+  endif()
+
+  # ✅ [修复]: 正确解析 libdwarf 静态库路径
+  if(TARGET libdwarf::dwarf)
+    set(LIB_DWARF "$<TARGET_FILE:libdwarf::dwarf>")
+  elseif(TARGET dwarf)
+    set(LIB_DWARF "$<TARGET_FILE:dwarf>")
+  else()
+    # 如果找不到 Target，则尝试在系统路径查找
+    find_library(LIB_DWARF_PATH NAMES libdwarf.a dwarf)
+    if(LIB_DWARF_PATH)
+      set(LIB_DWARF "${LIB_DWARF_PATH}")
+    else()
+      set(LIB_DWARF "LIB_DWARF-NOTFOUND")
+    endif()
   endif()
 
   # ✅ [新增] 获取 Boehm GC 静态库路径
@@ -575,13 +618,14 @@ if(LLVM_FOUND)
       COMMAND ${CMAKE_COMMAND}
       -DOUTPUT_HEADER=${EMBEDDED_HEADER}
       # ✅ [修改] 把 GC_EMBED_ARG 塞进传递给脚本的宏里
-      "-DFILES=RUNTIME_BC=${RUNTIME_BC_FILE};LIB_SPDLOG=${LIB_SPDLOG};LIB_GMP=${LIB_GMP_STATIC};LIB_GMPXX=${LIB_GMPXX_STATIC};LIB_ICUUC=${LIB_ICUUC_STATIC};LIB_ICUDATA=${LIB_ICUDATA_STATIC};${GC_EMBED_ARG}"
+      "-DFILES=RUNTIME_BC=${RUNTIME_BC_FILE};LIB_SPDLOG=${LIB_SPDLOG};LIB_GMP=${LIB_GMP_STATIC};LIB_GMPXX=${LIB_GMPXX_STATIC};LIB_ICUUC=${LIB_ICUUC_STATIC};LIB_ICUDATA=${LIB_ICUDATA_STATIC};LIB_CPPTRACE=${LIB_CPTRACE};LIB_DWARF=${LIB_DWARF};${GC_EMBED_ARG}"
       -P ${EMBED_SCRIPT}
       # ✅ [修改] 把 GC_DEPEND 加入依赖列表
       DEPENDS runtime_bitcode spdlog ${GC_DEPEND} ${LIB_GMP_STATIC} ${EMBED_SCRIPT}
       COMMENT "Embedding runtime libraries and bitcode into pyc header..."
       VERBATIM
     )
+
 
     add_library(pyc_resources INTERFACE)
     target_include_directories(pyc_resources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/generated)

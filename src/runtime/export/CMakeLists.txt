@@ -89,6 +89,12 @@ if(DEFINED bdwgc_SOURCE_DIR)
   list(APPEND BC_INC "-isystem" "${bdwgc_SOURCE_DIR}/include")
 endif()
 
+# ✅ [新增]: 将 cpptrace 的 include 路径暴露给 wllvm
+if(DEFINED cpptrace_SOURCE_DIR)
+  list(APPEND BC_INC "-isystem" "${cpptrace_SOURCE_DIR}/include")
+endif()
+
+
 # ✅ [新增]: 将 yalantinglibs 的编译期反射库暴露给 wllvm
 if(DEFINED yalantinglibs_SOURCE_DIR)
   list(APPEND BC_INC "-isystem" "${yalantinglibs_SOURCE_DIR}/include")
@@ -104,6 +110,11 @@ endif()
 # Compile definitions
 # ---------------------------------------------------------------------------
 set(BC_DEFS "-DSPDLOG_COMPILED_LIB")
+# ✅ 显式同步 Debug 宏，确保 compat.hpp 逻辑正确
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+  list(APPEND BC_DEFS "-DDEBUG")
+endif()
+
 # AOT 模式：排除解释器专用代码路径（Parser, BytecodeProgram, VM 等）
 list(APPEND BC_DEFS "-DPYLANG_AOT_MODE")
 if(ENABLE_RUNTIME_ARENA)

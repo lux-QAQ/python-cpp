@@ -9,6 +9,12 @@
 #include "runtime/PyTuple.hpp"
 #include "runtime/RuntimeError.hpp"
 #include "runtime/taggered_pointer/RtValue.hpp"
+#include "runtime/types/api.hpp"
+#include "runtime/types/builtin.hpp"
+#include <alloca.h>
+#include <span>
+
+py::PyObject *rt_getattr(py::PyObject *obj, const char *name);
 
 // =============================================================================
 // Tier 0: 函数调用
@@ -130,4 +136,63 @@ py::PyObject *rt_get_closure(py::PyObject *func)
 	}
 
 	return rt_unwrap(py::PyTuple::create());
+}
+
+PYLANG_EXPORT_FUNC("rt_call_method_raw", "obj", "obj,str,i32,ptr")
+py::PyObject *rt_call_method_raw(py::PyObject *obj, const char *name, int32_t argc, py::PyObject **argv)
+{
+    auto *b_obj = py::ensure_box(obj);
+    auto *attr_name = py::PyString::intern(name);
+    auto *type = b_obj->type();
+
+    py::PyObject *self = nullptr;
+    py::PyObject *method = nullptr;
+
+    // 3.9 语义查找
+    auto descr_lookup = type->lookup(attr_name);
+    py::PyObject *descr = (descr_lookup.has_value() && descr_lookup->is_ok()) ? descr_lookup->unwrap() : nullptr;
+
+    if (descr) {
+        // 如果是数据描述符（如 property），必须走标准 getattr 流程（会创建 BoundMethod）
+        if (py::descriptor_is_data(descr)) {
+            method = rt_getattr(b_obj, name);
+        } else {
+            // 检查实例字典
+            if (auto* inst_dict = b_obj->attributes()) {
+                if (auto it = inst_dict->map().find(attr_name); it != inst_dict->map().end()) {
+                    method = py::PyObject::from(it->second).unwrap();
+                }
+            }
+            // 如果实例没覆盖，且 descr 是函数，命中 Fast Path
+            if (!method) {
+                if (descr->type() == py::types::native_function() || descr->type() == py::types::function()) {
+                    method = descr;
+                    self = b_obj; // 标记需要传入 self
+                } else {
+                    method = rt_getattr(b_obj, name);
+                }
+            }
+        }
+    } else {
+        method = rt_getattr(b_obj, name);
+    }
+
+    // 零堆分配参数准备
+    size_t total_argc = argc + (self ? 1 : 0);
+    auto *stack_args = static_cast<py::Value *>(alloca(sizeof(py::Value) * total_argc));
+
+    if (self) {
+        new (&stack_args[0]) py::Value(self);
+        for (int i = 0; i < argc; ++i) new (&stack_args[i + 1]) py::Value(py::ensure_box(argv[i]));
+    } else {
+        for (int i = 0; i < argc; ++i) new (&stack_args[i]) py::Value(py::ensure_box(argv[i]));
+    }
+
+    // ✅ 调用 call_raw 接口（此时 PyNativeFunction 内部已不再创建 Tuple）
+    auto result = method->call_raw(std::span<py::Value>(stack_args, total_argc), nullptr);
+    
+    // 析构 Value（清理 tagged 指针不需要，但为了安全一致性）
+    for (size_t i = 0; i < total_argc; ++i) stack_args[i].~Value();
+
+    return rt_unwrap(result);
 }

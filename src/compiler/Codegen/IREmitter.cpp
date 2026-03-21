@@ -463,6 +463,27 @@ llvm::Value *IREmitter::call_function_fast(llvm::Value *callable,
 	return emit_runtime_call("call_fast", { callable, argc, arr_ptr });
 }
 
+llvm::Value *IREmitter::call_method_fast(llvm::Value *obj, std::string_view name, llvm::ArrayRef<llvm::Value *> args)
+{
+    // 1. 在当前函数的 EntryBlock 分配内存（避免在循环中爆栈）
+    auto *arr_type = llvm::ArrayType::get(pyobject_ptr_type(), args.size());
+    auto *arr = create_entry_block_alloca(arr_type, "method_args");
+
+    // 2. 填充参数
+    for (size_t i = 0; i < args.size(); ++i) {
+        auto *gep = m_builder.CreateConstGEP2_32(arr_type, arr, 0, i);
+        m_builder.SetInsertPoint(m_builder.GetInsertBlock()); // 确保插入点正确
+        m_builder.CreateStore(args[i], gep);
+    }
+
+    // 3. 发射对 rt_call_method_raw 的调用
+    auto *name_ptr = create_global_string(name);
+    auto *argc = m_builder.getInt32(args.size());
+    auto *argv = m_builder.CreateConstGEP2_32(arr_type, arr, 0, 0);
+
+    return emit_runtime_call("rt_call_method_raw", { obj, name_ptr, argc, argv });
+}
+
 // =============================================================================
 // Tier 4: 方法调用
 // =============================================================================

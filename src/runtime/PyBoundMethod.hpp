@@ -11,17 +11,17 @@ class PyBoundMethod : public PyBaseObject
 #endif
 	friend class ::py::Arena;
 	PyObject *m_self;
-	PyFunction *m_method;
+	PyObject *m_method;
 
-	PyBoundMethod(PyObject *self, PyFunction *method);
+	PyBoundMethod(PyObject *self, PyObject *method);
 
 	PyBoundMethod(PyType *);
 
   public:
-	static PyResult<PyBoundMethod *> create(PyObject *self, PyFunction *method);
+	static PyResult<PyBoundMethod *> create(PyObject *self, PyObject *method);
 
 	PyObject *self() { return m_self; }
-	PyFunction *method() { return m_method; }
+	PyObject *method() { return m_method; }
 
 	std::string to_string() const override;
 

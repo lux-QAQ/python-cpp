@@ -1,6 +1,8 @@
 #include "executable/Program.hpp"
 #include "executable/bytecode/Bytecode.hpp"
 #include "interpreter/Interpreter.hpp"
+#include "memory/GCTracingAllocator.hpp"
+
 #include "parser/Parser.hpp"
 #include "runtime/PyDict.hpp"
 #include "runtime/PyFrame.hpp"
