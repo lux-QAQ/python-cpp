@@ -1,6 +1,7 @@
 #include "rt_common.hpp"
 
 #include "runtime/PyBool.hpp"
+#include "runtime/PyByteArray.hpp"
 #include "runtime/PyBytes.hpp"
 #include "runtime/PyDict.hpp"
 #include "runtime/PyList.hpp"
@@ -8,7 +9,6 @@
 #include "runtime/PySet.hpp"
 #include "runtime/PyString.hpp"
 #include "runtime/PyTuple.hpp"
-#include "runtime/PyByteArray.hpp"
 #include "runtime/StopIteration.hpp"
 #include "runtime/ValueError.hpp"
 #include "runtime/taggered_pointer/RtValue.hpp"
@@ -107,17 +107,33 @@ py::PyObject *rt_getitem(py::PyObject *obj, py::PyObject *key)
 			}
 		}
 		// List/Tuple
+		// else if (type == py::types::list()) {
+		// 	auto *list = static_cast<py::PyList *>(b_obj);
+		// 	int64_t sz = static_cast<int64_t>(list->elements().size());
+		// 	if (index < 0) { index += sz; }
+		// 	if (index >= 0 && index < sz) { return rt_unwrap(list->__getitem__(index)); }
+		// 	// 越界则下降交由底层标准方法报错
+		// } else if (b_obj->type() == py::types::tuple()) {
+		// 	auto *tuple = static_cast<py::PyTuple *>(b_obj);
+		// 	int64_t sz = static_cast<int64_t>(tuple->size());
+		// 	if (index < 0) { index += sz; }
+		// 	if (index >= 0 && index < sz) { return rt_unwrap(tuple->__getitem__(index)); }
+		// }
 		else if (type == py::types::list()) {
 			auto *list = static_cast<py::PyList *>(b_obj);
 			int64_t sz = static_cast<int64_t>(list->elements().size());
 			if (index < 0) { index += sz; }
-			if (index >= 0 && index < sz) { return rt_unwrap(list->__getitem__(index)); }
-			// 越界则下降交由底层标准方法报错
+			if (index >= 0 && index < sz) {
+				// [优化]：直接从 Value 恢复为 RtValue，避免 __getitem__ 的装箱
+				return py::RtValue::from_value(list->elements()[index]).as_pyobject_raw();
+			}
 		} else if (b_obj->type() == py::types::tuple()) {
 			auto *tuple = static_cast<py::PyTuple *>(b_obj);
 			int64_t sz = static_cast<int64_t>(tuple->size());
 			if (index < 0) { index += sz; }
-			if (index >= 0 && index < sz) { return rt_unwrap(tuple->__getitem__(index)); }
+			if (index >= 0 && index < sz) {
+				return py::RtValue::from_value(tuple->elements()[index]).as_pyobject_raw();
+			}
 		}
 	}
 	return rt_unwrap(b_obj->getitem(r_key.box()));
@@ -159,16 +175,16 @@ void rt_delitem(py::PyObject *obj, py::PyObject *key)
 PYLANG_EXPORT_SUBSCR("list_append", "void", "obj,obj")
 void rt_list_append(py::PyObject *list, py::PyObject *value)
 {
-    auto *b_list = static_cast<py::PyList *>(py::ensure_box(list));
-    auto rt_val = py::RtValue::flatten(value);
+	auto *b_list = static_cast<py::PyList *>(py::ensure_box(list));
+	auto rt_val = py::RtValue::flatten(value);
 
-    if (rt_val.is_tagged_int()) {
-        // [核心修复]：如果是 Tagged Integer，转存为 Value 的 Number 分支
-        // 这样既消灭了 PyInteger 对象分配，又保证了 ValueEq 的类型安全
-        b_list->elements().push_back(py::Value(py::Number(rt_val.as_int())));
-    } else {
-        b_list->elements().push_back(py::Value(value));
-    }
+	if (rt_val.is_tagged_int()) {
+		// [核心修复]：如果是 Tagged Integer，转存为 Value 的 Number 分支
+		// 这样既消灭了 PyInteger 对象分配，又保证了 ValueEq 的类型安全
+		b_list->elements().push_back(py::Value(py::Number(rt_val.as_int())));
+	} else {
+		b_list->elements().push_back(py::Value(value));
+	}
 }
 
 PYLANG_EXPORT_SUBSCR("set_add", "void", "obj,obj")

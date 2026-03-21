@@ -423,19 +423,40 @@ PyResult<PyObject *> PyType::__getattribute__(PyObject *attribute) const
 		"type object '{}' has no attribute '{}'", underlying_type().__name__, name->value()));
 }
 
+// std::optional<PyResult<PyObject *>> PyType::lookup(PyObject *name) const
+// {
+// 	auto mro = mro_internal();
+// 	if (mro.is_err()) { return mro; }
+// 	for (const auto &t_ : mro.unwrap()->elements()) {
+// 		ASSERT(std::holds_alternative<PyObject *>(t_));
+// 		auto *t = as<PyType>(std::get<PyObject *>(t_));
+// 		ASSERT(t);
+// 		ASSERT(t->underlying_type().__dict__);
+// 		const auto &dict = t->underlying_type().__dict__->map();
+// 		if (auto it = dict.find(name); it != dict.end()) { return PyObject::from(it->second); }
+// 	}
+// 	return std::nullopt;
+// }
+
 std::optional<PyResult<PyObject *>> PyType::lookup(PyObject *name) const
 {
-	auto mro = mro_internal();
-	if (mro.is_err()) { return mro; }
-	for (const auto &t_ : mro.unwrap()->elements()) {
-		ASSERT(std::holds_alternative<PyObject *>(t_));
-		auto *t = as<PyType>(std::get<PyObject *>(t_));
-		ASSERT(t);
-		ASSERT(t->underlying_type().__dict__);
-		const auto &dict = t->underlying_type().__dict__->map();
-		if (auto it = dict.find(name); it != dict.end()) { return PyObject::from(it->second); }
-	}
-	return std::nullopt;
+    auto mro_res = mro_internal();
+    if (mro_res.is_err()) return std::nullopt;
+    
+    auto* mro = mro_res.unwrap();
+    for (const auto &t_val : mro->elements()) {
+        // [优化]：直接通过指针访问，不走 PyObject::from
+        py::PyObject* t_obj = std::get<PyObject*>(t_val);
+        auto* type = static_cast<PyType*>(t_obj);
+        
+        if (type->m_attributes) {
+            auto it = type->m_attributes->map().find(py::Value(name));
+            if (it != type->m_attributes->map().end()) {
+                return py::PyObject::from(it->second);
+            }
+        }
+    }
+    return std::nullopt;
 }
 
 PyResult<PyObject *> PyType::heap_object_allocation(PyType *type)

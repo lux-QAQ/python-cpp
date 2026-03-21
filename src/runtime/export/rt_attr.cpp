@@ -83,56 +83,50 @@
 PYLANG_EXPORT_ATTR("getattr", "obj", "obj,str")
 py::PyObject *rt_getattr(py::PyObject *obj, const char *name)
 {
-	auto rt_obj = py::RtValue::from_ptr(obj);
-	if (rt_obj.is_tagged_int()) {
-		return rt_unwrap(rt_obj.box()->getattribute(py::PyString::intern(name)));
-	}
-	spdlog::debug("[rt_getattr] Searching '{}' on obj={:p} (type={})",
-		name,
-		(void *)obj,
-		obj->type()->name());
-	auto &cache = py::AttributeCache::instance();
-	uint64_t gv = py::PyType::global_version();
-
-	// 1. 实例属性查找 (Instance Dict) - 优先级最高，且绝不进入 Cache，确保实例隔离
-    if (obj->attributes()) {
-        spdlog::trace("[rt_getattr] Instance dict exists for {:p}, size={}", (void*)obj, obj->attributes()->map().size());
-        auto it = obj->attributes()->map().find(py::String{ name });
-        if (it != obj->attributes()->map().end()) {
-            spdlog::debug("[rt_getattr] Found in instance dict: '{}'", name);
-            return py::RtValue::from_value(it->second).box();
-        }
-    } else {
-        spdlog::trace("[rt_getattr] No instance dict for {:p}", (void*)obj);
+    // 1. Tagged Pointer 防火墙
+    auto rt_obj = py::RtValue::from_ptr(obj);
+    if (rt_obj.is_tagged_int()) {
+        return rt_unwrap(rt_obj.box()->getattribute(py::PyString::intern(name)));
     }
-	spdlog::debug("[rt_getattr] Entry: obj={:p} (type={}), attr='{}'",
-		(void *)obj,
-		obj->type()->name(),
-		name);
-	// 2. 缓存查找 (仅针对类层级的 Method 或 Static 属性)
+
+    auto &cache = py::AttributeCache::instance();
+    uint64_t gv = py::PyType::global_version();
+
+    // 2. 高速缓存查找
     if (auto *cached = cache.lookup(obj, name, gv)) {
-        spdlog::trace("[rt_getattr] Cache hit for '{}' on {:p}", name, (void*)obj);
         return rt_unwrap(cached->get(obj, obj->type()));
     }
 
-	// 3. MRO 查找 (从类和基类中寻找)
-	auto *interned = py::PyString::intern(name);
-	auto [res, found] = obj->type()->lookup_attribute(interned);
+    auto *interned = py::PyString::intern(name);
+    
+    // 3. 优先级 A: MRO 查找数据描述符 (Property)
+    auto [mro_res, found] = obj->type()->lookup_attribute(interned);
+    py::PyObject *descr = nullptr;
+    if (found == py::LookupAttrResult::FOUND) {
+        descr = rt_unwrap(mro_res);
+        if (descr && py::descriptor_is_data(descr)) {
+            return rt_unwrap(descr->get(obj, obj->type()));
+        }
+    }
 
-	if (found == py::LookupAttrResult::FOUND) {
-		auto *val = rt_unwrap(res);
-		// [缓存策略]：只有在类层级找到且不是 Data Descriptor 时才缓存
-		// 这样下次访问同一类型的不同实例时，可以快速命中该方法
-		if (val) cache.update(obj, name, val, gv);
-		return rt_unwrap(val->get(obj, obj->type()));
-	}
-	spdlog::warn("[rt_getattr] NOT FOUND: '{}' on obj={:p} (Type: {}). Dict size: {}",
-		name,
-		(void *)obj,
-		obj->type()->name(),
-		obj->attributes() ? obj->attributes()->map().size() : 0);
-	// 4. 回退到 __getattribute__ 或报错
-	return rt_unwrap(obj->getattribute(interned));
+    // 4. 优先级 B: 实例字典查找 (Instance Dict)
+    if (auto *attrs = obj->attributes()) {
+        auto it = attrs->map().find(py::Value(interned));
+        if (it != attrs->map().end()) {
+            // [关键优化]：不再调用 .box()，直接返回位表示
+            // 这让 self.limit 在 AOT 循环中访问是零开销的
+            return py::RtValue::from_value(it->second).as_pyobject_raw();
+        }
+    }
+
+    // 5. 优先级 C: 非数据描述符 (方法)
+    if (found == py::LookupAttrResult::FOUND && descr) {
+        cache.update(obj, name, descr, gv);
+        return rt_unwrap(descr->get(obj, obj->type()));
+    }
+
+    // 6. Fallback
+    return rt_unwrap(obj->getattribute(interned));
 }
 
 PYLANG_EXPORT_ATTR("load_global", "obj", "obj,str")

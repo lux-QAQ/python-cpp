@@ -24,163 +24,859 @@ Actual: [2, 23, 29]
 Starting main calculation (UPPER_BOUND = 5000000 )
 Sieve initialized with limit: 5000000
 Starting sieve calculation...
-[2026-03-21 20:33:46.571] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      20000
-[2026-03-21 20:33:46.586] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      40000
-[2026-03-21 20:33:46.602] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      60000
-[2026-03-21 20:33:46.618] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      80000
-[2026-03-21 20:33:46.842] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     100000
+[2026-03-21 20:45:40.451] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      20000
+[2026-03-21 20:45:40.455] [error] [DEBUG_ALLOC] Type: PyString             | Total:      20000
+[2026-03-21 20:45:40.462] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      20000
+[2026-03-21 20:45:40.463] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:      20000
+[2026-03-21 20:45:40.484] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      40000
+[2026-03-21 20:45:40.500] [error] [DEBUG_ALLOC] Type: PyString             | Total:      40000
+[2026-03-21 20:45:40.507] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      40000
+[2026-03-21 20:45:40.507] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:      40000
+[2026-03-21 20:45:40.515] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      60000
+[2026-03-21 20:45:40.544] [error] [DEBUG_ALLOC] Type: PyString             | Total:      60000
+[2026-03-21 20:45:40.545] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      80000
+[2026-03-21 20:45:40.551] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      60000
+[2026-03-21 20:45:40.552] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:      60000
+[2026-03-21 20:45:40.814]  Type: PyInteger            | Total:     100000
 Stack trace (most recent call first):
-#0  0x000055e8ab458618 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
 #1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#2  0x000055e8ab2168eb in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#3  0x000055e8ab21687f in py::PyInteger::create(long) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:50:9
-#4  0x000055e8ab0f4bf7 in py::RtValue::box() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/taggered_pointer/RtValue.cpp:31:17
-#5  0x000055e8ab0e82ca in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:103:56
-#6  0x000055e8ab0e65f4 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
-#7  0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#8  0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#9  0x000055e8ab0e682f in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
-#10 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#11 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#12 0x000055e8ab0e68e7 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
-#13 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#14 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#15 0x000055e8ab0e6df0 in test.<module>.0:0.find.86:0 at /tmp/test
-#16 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#17 0x000055e8ab0edb2f in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:236:29
-#18 0x000055e8ab0e56ee in PyInit_test at /tmp/test
-#19 0x000055e8ab0e7c6a in main at /tmp/test
-#20 0x00007ff86f82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#21 0x00007ff86f82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#22 0x000055e8ab0e5364 in _start at /tmp/test
-[2026-03-21 20:33:46.858] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     120000
-[2026-03-21 20:33:46.874] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     140000
-[2026-03-21 20:33:46.890] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     160000
-[2026-03-21 20:33:46.905] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     180000
-[2026-03-21 20:33:46.925] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     200000
+#2  0x00005576f8586a2b in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#3  0x00005576f85c582a in py::PyNumber::create(py::Number const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyNumber.cpp:285:10
+#4  (inlined)          in py::PyResult<py::PyObject*> py::PyObject::from<py::Number>(py::Number const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:390:9
+#5  (inlined)          in auto py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0::operator()<py::Number>(py::Number const&) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:432:47
+#6  (inlined)          in py::PyResult<py::PyObject*> std::__invoke_impl<py::PyResult<py::PyObject*>, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>(std::__invoke_other, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, py::Number const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:61:14
+#7  (inlined)          in std::__invoke_result<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>::type std::__invoke<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, py::Number const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:96:14
+#8  (inlined)          in std::__detail::__variant::__gen_vtable_impl<std::__detail::__variant::_Multi_array<std::__detail::__variant::__deduce_visit_result<py::PyResult<py::PyObject*> > (*)(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)>, std::integer_sequence<unsigned long, 0ul> >::__visit_invoke(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1060:11
+#9  (inlined)          in decltype(auto) std::__do_visit<std::__detail::__variant::__deduce_visit_result<py::PyResult<py::PyObject*> >, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1815:5
+#10 (inlined)          in std::invoke_result<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::__conditional<is_lvalue_reference_v<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&> >::type<std::variant_alternative<0ul, std::remove_reference<decltype (__variant::__as((std::declval<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>)()))>::type>::type&, std::variant_alternative<0ul, std::remove_reference<decltype (__variant::__as((std::declval<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>)()))>::type>::type&&> >::type std::visit<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1878:13
+#11 0x00005576f85d0770 in py::PyResult<py::PyObject*> py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:432:9
+#12 0x00005576f845cdc5 in rt_value_array_get(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const*, int) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:110:13
+#13 0x00005576f8456dd1 in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
+#14 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#15 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#16 0x00005576f84571fa in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#17 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#18 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#19 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#20 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#21 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#22 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#23 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#24 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#25 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#26 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#27 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#28 0x00005576f845626e in PyInit_test at /tmp/test
+#29 0x00005576f84587ea in main at /tmp/test
+#30 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#31 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#32 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:40.825] [error] [DEBUG_ALLOC] Type: PyString             | Total:      80000
+[2026-03-21 20:45:40.832] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      80000
+[2026-03-21 20:45:40.833] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:      80000
+[2026-03-21 20:45:40.844] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     120000
+[2026-03-21 20:45:40.959]  Type: PyString             | Total:     100000
 Stack trace (most recent call first):
-#0  0x000055e8ab458618 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#2  0x00005576f86219ea in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#3  0x00005576f8a36f60 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:41:13
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8456e3b in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84571fa in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#24 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#25 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#26 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#27 0x00005576f845626e in PyInit_test at /tmp/test
+#28 0x00005576f84587ea in main at /tmp/test
+#29 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#30 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#31 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:40.967] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     140000
+[2026-03-21 20:45:40.979]  Type: PyTuple              | Total:     100000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#2  0x00005576f8659943 in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#3  0x00005576f87c8371 in py::PyResult<py::PyTuple*> py::PyTuple::create<py::PyString*&>(py::PyString*&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.hpp:82:10
+#4  0x00005576f8a372b0 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:43:20
+#5  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#6  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#7  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#8  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#9  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#10 (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#11 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#12 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#13 0x00005576f8456d44 in test.<module>.0:0.Sieve.8:0.step1.33:4 at /tmp/test
+#14 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#15 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#16 0x00005576f84571c6 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#17 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#18 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#19 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#20 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#21 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#22 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#23 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#24 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#25 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#26 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#27 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#28 0x00005576f845626e in PyInit_test at /tmp/test
+#29 0x00005576f84587ea in main at /tmp/test
+#30 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#31 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#32 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:40.984]  Type: AttributeError       | Total:     100000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::AttributeError::create(py::PyTuple*)::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#2  0x00005576f88efafb in py::AttributeError::create(py::PyTuple*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#3  0x00005576f8a37491 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:45:9
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8456eec in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84571fa in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#24 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#25 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#26 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#27 0x00005576f845626e in PyInit_test at /tmp/test
+#28 0x00005576f84587ea in main at /tmp/test
+#29 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#30 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#31 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.012] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     160000
+[2026-03-21 20:45:41.019] [error] [DEBUG_ALLOC] Type: PyString             | Total:     120000
+[2026-03-21 20:45:41.026] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     120000
+[2026-03-21 20:45:41.027] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     120000
+[2026-03-21 20:45:41.044] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     180000
+[2026-03-21 20:45:41.064] [error] [DEBUG_ALLOC] Type: PyString             | Total:     140000
+[2026-03-21 20:45:41.072] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     140000
+[2026-03-21 20:45:41.073] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     140000
+[2026-03-21 20:45:41.081]  Type: PyInteger            | Total:     200000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
 #1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#2  0x000055e8ab2168eb in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#3  0x000055e8ab21687f in py::PyInteger::create(long) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:50:9
-#4  0x000055e8ab0f4bf7 in py::RtValue::box() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/taggered_pointer/RtValue.cpp:31:17
-#5  0x000055e8ab0e82ca in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:103:56
-#6  0x000055e8ab0e60b4 in test.<module>.0:0.Sieve.8:0.step1.33:4 at /tmp/test
-#7  0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#8  0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#9  0x000055e8ab0e6646 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
-#10 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#11 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#12 0x000055e8ab0e682f in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
-#13 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#14 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#15 0x000055e8ab0e68e7 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
-#16 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#17 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#18 0x000055e8ab0e6df0 in test.<module>.0:0.find.86:0 at /tmp/test
-#19 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#20 0x000055e8ab0edb2f in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:236:29
-#21 0x000055e8ab0e56ee in PyInit_test at /tmp/test
-#22 0x000055e8ab0e7c6a in main at /tmp/test
-#23 0x00007ff86f82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#24 0x00007ff86f82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#25 0x000055e8ab0e5364 in _start at /tmp/test
-[2026-03-21 20:33:46.943] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     220000
-[2026-03-21 20:33:46.960] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     240000
-[2026-03-21 20:33:46.975] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     260000
-[2026-03-21 20:33:46.992] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     280000
-[2026-03-21 20:33:47.011] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     300000
+#2  0x00005576f8586a2b in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#3  0x00005576f85c582a in py::PyNumber::create(py::Number const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyNumber.cpp:285:10
+#4  (inlined)          in py::PyResult<py::PyObject*> py::PyObject::from<py::Number>(py::Number const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:390:9
+#5  (inlined)          in auto py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0::operator()<py::Number>(py::Number const&) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:432:47
+#6  (inlined)          in py::PyResult<py::PyObject*> std::__invoke_impl<py::PyResult<py::PyObject*>, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>(std::__invoke_other, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, py::Number const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:61:14
+#7  (inlined)          in std::__invoke_result<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>::type std::__invoke<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, py::Number const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:96:14
+#8  (inlined)          in std::__detail::__variant::__gen_vtable_impl<std::__detail::__variant::_Multi_array<std::__detail::__variant::__deduce_visit_result<py::PyResult<py::PyObject*> > (*)(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)>, std::integer_sequence<unsigned long, 0ul> >::__visit_invoke(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1060:11
+#9  (inlined)          in decltype(auto) std::__do_visit<std::__detail::__variant::__deduce_visit_result<py::PyResult<py::PyObject*> >, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1815:5
+#10 (inlined)          in std::invoke_result<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::__conditional<is_lvalue_reference_v<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&> >::type<std::variant_alternative<0ul, std::remove_reference<decltype (__variant::__as((std::declval<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>)()))>::type>::type&, std::variant_alternative<0ul, std::remove_reference<decltype (__variant::__as((std::declval<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>)()))>::type>::type&&> >::type std::visit<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1878:13
+#11 0x00005576f85d0770 in py::PyResult<py::PyObject*> py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:432:9
+#12 0x00005576f845cdc5 in rt_value_array_get(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const*, int) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:110:13
+#13 0x00005576f8456f81 in test.<module>.0:0.Sieve.8:0.step3.43:4 at /tmp/test
+#14 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#15 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#16 0x00005576f845722e in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#17 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#18 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#19 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#20 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#21 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#22 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#23 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#24 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#25 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#26 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#27 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#28 0x00005576f845626e in PyInit_test at /tmp/test
+#29 0x00005576f84587ea in main at /tmp/test
+#30 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#31 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#32 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.113] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     220000
+[2026-03-21 20:45:41.115] [error] [DEBUG_ALLOC] Type: PyString             | Total:     160000
+[2026-03-21 20:45:41.122] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     160000
+[2026-03-21 20:45:41.123] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     160000
+[2026-03-21 20:45:41.145] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     240000
+[2026-03-21 20:45:41.160] [error] [DEBUG_ALLOC] Type: PyString             | Total:     180000
+[2026-03-21 20:45:41.168] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     180000
+[2026-03-21 20:45:41.168] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     180000
+[2026-03-21 20:45:41.178] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     260000
+[2026-03-21 20:45:41.211]  Type: PyString             | Total:     200000
 Stack trace (most recent call first):
-#0  0x000055e8ab458618 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#2  0x00005576f86219ea in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#3  0x00005576f8a36f60 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:41:13
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8456e3b in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84571fa in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#24 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#25 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#26 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#27 0x00005576f845626e in PyInit_test at /tmp/test
+#28 0x00005576f84587ea in main at /tmp/test
+#29 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#30 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#31 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.216] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     280000
+[2026-03-21 20:45:41.224]  Type: PyTuple              | Total:     200000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#2  0x00005576f8659943 in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#3  0x00005576f87c8371 in py::PyResult<py::PyTuple*> py::PyTuple::create<py::PyString*&>(py::PyString*&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.hpp:82:10
+#4  0x00005576f8a372b0 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:43:20
+#5  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#6  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#7  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#8  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#9  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#10 (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#11 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#12 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#13 0x00005576f8456e3b in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
+#14 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#15 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#16 0x00005576f84571fa in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#17 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#18 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#19 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#20 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#21 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#22 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#23 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#24 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#25 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#26 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#27 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#28 0x00005576f845626e in PyInit_test at /tmp/test
+#29 0x00005576f84587ea in main at /tmp/test
+#30 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#31 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#32 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.228]  Type: AttributeError       | Total:     200000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::AttributeError::create(py::PyTuple*)::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#2  0x00005576f88efafb in py::AttributeError::create(py::PyTuple*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#3  0x00005576f8a37491 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:45:9
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8457174 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#24 0x00005576f845626e in PyInit_test at /tmp/test
+#25 0x00005576f84587ea in main at /tmp/test
+#26 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#27 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#28 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.262]  Type: PyInteger            | Total:     300000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
 #1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#2  0x000055e8ab2168eb in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#3  0x000055e8ab21687f in py::PyInteger::create(long) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:50:9
-#4  0x000055e8ab0f4bf7 in py::RtValue::box() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/taggered_pointer/RtValue.cpp:31:17
-#5  0x000055e8ab0e82ca in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:103:56
-#6  0x000055e8ab0e62bb in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
-#7  0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#8  0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#9  0x000055e8ab0e667a in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
-#10 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#11 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#12 0x000055e8ab0e682f in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
-#13 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#14 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#15 0x000055e8ab0e68e7 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
-#16 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#17 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#18 0x000055e8ab0e6df0 in test.<module>.0:0.find.86:0 at /tmp/test
-#19 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#20 0x000055e8ab0edb2f in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:236:29
-#21 0x000055e8ab0e56ee in PyInit_test at /tmp/test
-#22 0x000055e8ab0e7c6a in main at /tmp/test
-#23 0x00007ff86f82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#24 0x00007ff86f82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#25 0x000055e8ab0e5364 in _start at /tmp/test
-[2026-03-21 20:33:47.027] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     320000
-[2026-03-21 20:33:47.043] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     340000
-[2026-03-21 20:33:47.059] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     360000
-[2026-03-21 20:33:47.074] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     380000
-[2026-03-21 20:33:47.093] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     400000
+#2  0x00005576f8586a2b in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#3  0x00005576f85c582a in py::PyNumber::create(py::Number const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyNumber.cpp:285:10
+#4  (inlined)          in py::PyResult<py::PyObject*> py::PyObject::from<py::Number>(py::Number const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:390:9
+#5  (inlined)          in auto py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0::operator()<py::Number>(py::Number const&) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:432:47
+#6  (inlined)          in py::PyResult<py::PyObject*> std::__invoke_impl<py::PyResult<py::PyObject*>, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>(std::__invoke_other, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, py::Number const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:61:14
+#7  (inlined)          in std::__invoke_result<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>::type std::__invoke<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, py::Number const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:96:14
+#8  (inlined)          in std::__detail::__variant::__gen_vtable_impl<std::__detail::__variant::_Multi_array<std::__detail::__variant::__deduce_visit_result<py::PyResult<py::PyObject*> > (*)(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)>, std::integer_sequence<unsigned long, 0ul> >::__visit_invoke(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1060:11
+#9  (inlined)          in decltype(auto) std::__do_visit<std::__detail::__variant::__deduce_visit_result<py::PyResult<py::PyObject*> >, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1815:5
+#10 (inlined)          in std::invoke_result<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::__conditional<is_lvalue_reference_v<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&> >::type<std::variant_alternative<0ul, std::remove_reference<decltype (__variant::__as((std::declval<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>)()))>::type>::type&, std::variant_alternative<0ul, std::remove_reference<decltype (__variant::__as((std::declval<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>)()))>::type>::type&&> >::type std::visit<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1878:13
+#11 0x00005576f85d0770 in py::PyResult<py::PyObject*> py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:432:9
+#12 0x00005576f845cdc5 in rt_value_array_get(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const*, int) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:110:13
+#13 0x00005576f8456f81 in test.<module>.0:0.Sieve.8:0.step3.43:4 at /tmp/test
+#14 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#15 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#16 0x00005576f845722e in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#17 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#18 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#19 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#20 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#21 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#22 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#23 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#24 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#25 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#26 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#27 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#28 0x00005576f845626e in PyInit_test at /tmp/test
+#29 0x00005576f84587ea in main at /tmp/test
+#30 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#31 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#32 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.273] [error] [DEBUG_ALLOC] Type: PyString             | Total:     220000
+[2026-03-21 20:45:41.282] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     220000
+[2026-03-21 20:45:41.283] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     220000
+[2026-03-21 20:45:41.298] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     320000
+[2026-03-21 20:45:41.322] [error] [DEBUG_ALLOC] Type: PyString             | Total:     240000
+[2026-03-21 20:45:41.330] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     240000
+[2026-03-21 20:45:41.330] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     240000
+[2026-03-21 20:45:41.332] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     340000
+[2026-03-21 20:45:41.365] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     360000
+[2026-03-21 20:45:41.370] [error] [DEBUG_ALLOC] Type: PyString             | Total:     260000
+[2026-03-21 20:45:41.378] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     260000
+[2026-03-21 20:45:41.379] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     260000
+[2026-03-21 20:45:41.399] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     380000
+[2026-03-21 20:45:41.417] [error] [DEBUG_ALLOC] Type: PyString             | Total:     280000
+[2026-03-21 20:45:41.424] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     280000
+[2026-03-21 20:45:41.425] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     280000
+[2026-03-21 20:45:41.437]  Type: PyInteger            | Total:     400000
 Stack trace (most recent call first):
-#0  0x000055e8ab458618 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
 #1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#2  0x000055e8ab2168eb in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#3  0x000055e8ab21687f in py::PyInteger::create(long) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:50:9
-#4  0x000055e8ab0f4bf7 in py::RtValue::box() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/taggered_pointer/RtValue.cpp:31:17
-#5  0x000055e8ab0e82ca in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:103:56
-#6  0x000055e8ab0e65f4 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
-#7  0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#8  0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#9  0x000055e8ab0e682f in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
-#10 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#11 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#12 0x000055e8ab0e68e7 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
-#13 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#14 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#15 0x000055e8ab0e6df0 in test.<module>.0:0.find.86:0 at /tmp/test
-#16 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#17 0x000055e8ab0edb2f in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:236:29
-#18 0x000055e8ab0e56ee in PyInit_test at /tmp/test
-#19 0x000055e8ab0e7c6a in main at /tmp/test
-#20 0x00007ff86f82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#21 0x00007ff86f82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#22 0x000055e8ab0e5364 in _start at /tmp/test
-[2026-03-21 20:33:47.109] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     420000
-[2026-03-21 20:33:47.125] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     440000
-[2026-03-21 20:33:47.141] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     460000
-[2026-03-21 20:33:47.157] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     480000
-[2026-03-21 20:33:47.176] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     500000
+#2  0x00005576f8586a2b in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#3  0x00005576f85869bf in py::PyInteger::create(long) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:50:9
+#4  0x00005576f8464d37 in py::RtValue::box() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/taggered_pointer/RtValue.cpp:31:17
+#5  0x00005576f8458ba1 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:122:56
+#6  0x00005576f8456e3b in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
+#7  0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#8  0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#9  0x00005576f84571fa in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#10 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#11 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#12 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#21 0x00005576f845626e in PyInit_test at /tmp/test
+#22 0x00005576f84587ea in main at /tmp/test
+#23 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#24 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#25 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.475]  Type: PyString             | Total:     300000
 Stack trace (most recent call first):
-#0  0x000055e8ab458618 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#2  0x00005576f86219ea in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#3  0x00005576f8a36f60 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:41:13
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8457174 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#24 0x00005576f845626e in PyInit_test at /tmp/test
+#25 0x00005576f84587ea in main at /tmp/test
+#26 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#27 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#28 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.478] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     420000
+[2026-03-21 20:45:41.489]  Type: PyTuple              | Total:     300000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#2  0x00005576f8659943 in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#3  0x00005576f87c8371 in py::PyResult<py::PyTuple*> py::PyTuple::create<py::PyString*&>(py::PyString*&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.hpp:82:10
+#4  0x00005576f8a372b0 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:43:20
+#5  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#6  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#7  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#8  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#9  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#10 (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#11 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#12 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#13 0x00005576f8456e3b in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
+#14 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#15 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#16 0x00005576f84571fa in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#17 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#18 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#19 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#20 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#21 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#22 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#23 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#24 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#25 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#26 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#27 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#28 0x00005576f845626e in PyInit_test at /tmp/test
+#29 0x00005576f84587ea in main at /tmp/test
+#30 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#31 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#32 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.493]  Type: AttributeError       | Total:     300000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::AttributeError::create(py::PyTuple*)::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#2  0x00005576f88efafb in py::AttributeError::create(py::PyTuple*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#3  0x00005576f8a37491 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:45:9
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8456d1a in test.<module>.0:0.Sieve.8:0.step1.33:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84571c6 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#24 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#25 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#26 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#27 0x00005576f845626e in PyInit_test at /tmp/test
+#28 0x00005576f84587ea in main at /tmp/test
+#29 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#30 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#31 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.520] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     440000
+[2026-03-21 20:45:41.533] [error] [DEBUG_ALLOC] Type: PyString             | Total:     320000
+[2026-03-21 20:45:41.541] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     320000
+[2026-03-21 20:45:41.542] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     320000
+[2026-03-21 20:45:41.554] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     460000
+[2026-03-21 20:45:41.584] [error] [DEBUG_ALLOC] Type: PyString             | Total:     340000
+[2026-03-21 20:45:41.591] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     480000
+[2026-03-21 20:45:41.593] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     340000
+[2026-03-21 20:45:41.594] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     340000
+[2026-03-21 20:45:41.634]  Type: PyInteger            | Total:     500000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
 #1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#2  0x000055e8ab2168eb in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
-#3  0x000055e8ab21687f in py::PyInteger::create(long) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:50:9
-#4  0x000055e8ab0f4bf7 in py::RtValue::box() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/taggered_pointer/RtValue.cpp:31:17
-#5  0x000055e8ab0e82ca in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:103:56
-#6  0x000055e8ab0e62bb in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
-#7  0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#8  0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#9  0x000055e8ab0e667a in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
-#10 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#11 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#12 0x000055e8ab0e682f in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
-#13 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#14 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#15 0x000055e8ab0e68e7 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
-#16 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#17 0x000055e8ab0ee23e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:299:24
-#18 0x000055e8ab0e6df0 in test.<module>.0:0.find.86:0 at /tmp/test
-#19 0x000055e8ab20e132 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
-#20 0x000055e8ab0edb2f in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:236:29
-#21 0x000055e8ab0e56ee in PyInit_test at /tmp/test
-#22 0x000055e8ab0e7c6a in main at /tmp/test
-#23 0x00007ff86f82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#24 0x00007ff86f82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#25 0x000055e8ab0e5364 in _start at /tmp/test
-[2026-03-21 20:33:47.192] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     520000
-[2026-03-21 20:33:47.208] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     540000
-[2026-03-21 20:33:47.224] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     560000
-[2026-03-21 20:33:47.241] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     580000
-[2026-03-21 20:33:47.260] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     600000
+#2  0x00005576f8586a2b in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#3  0x00005576f85869bf in py::PyInteger::create(long) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:50:9
+#4  0x00005576f8464d37 in py::RtValue::box() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/taggered_pointer/RtValue.cpp:31:17
+#5  0x00005576f8458ba1 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:122:56
+#6  0x00005576f8456e3b in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
+#7  0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#8  0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#9  0x00005576f84571fa in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#10 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#11 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#12 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#21 0x00005576f845626e in PyInit_test at /tmp/test
+#22 0x00005576f84587ea in main at /tmp/test
+#23 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#24 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#25 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.642] [error] [DEBUG_ALLOC] Type: PyString             | Total:     360000
+[2026-03-21 20:45:41.650] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     360000
+[2026-03-21 20:45:41.651] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     360000
+[2026-03-21 20:45:41.671] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     520000
+[2026-03-21 20:45:41.694] [error] [DEBUG_ALLOC] Type: PyString             | Total:     380000
+[2026-03-21 20:45:41.703] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     380000
+[2026-03-21 20:45:41.704] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     380000
+[2026-03-21 20:45:41.708] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     540000
+[2026-03-21 20:45:41.745] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     560000
+[2026-03-21 20:45:41.752]  Type: PyString             | Total:     400000
 Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#2  0x00005576f86219ea in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#3  0x00005576f8a36f60 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:41:13
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8457174 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#24 0x00005576f845626e in PyInit_test at /tmp/test
+#25 0x00005576f84587ea in main at /tmp/test
+#26 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#27 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#28 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.765]  Type: PyTuple              | Total:     400000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#2  0x00005576f8659943 in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#3  0x00005576f87c8371 in py::PyResult<py::PyTuple*> py::PyTuple::create<py::PyString*&>(py::PyString*&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.hpp:82:10
+#4  0x00005576f8a372b0 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:43:20
+#5  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#6  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#7  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#8  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#9  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#10 (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#11 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#12 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#13 0x00005576f8457174 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#14 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#15 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#16 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#17 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#18 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#19 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#20 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#21 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#22 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#23 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#24 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#25 0x00005576f845626e in PyInit_test at /tmp/test
+#26 0x00005576f84587ea in main at /tmp/test
+#27 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#28 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#29 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.769]  Type: AttributeError       | Total:     400000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::AttributeError::create(py::PyTuple*)::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#2  0x00005576f88efafb in py::AttributeError::create(py::PyTuple*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#3  0x00005576f8a37491 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:45:9
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8456c34 in test.<module>.0:0.Sieve.8:0.step1.33:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84571c6 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#24 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#25 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#26 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#27 0x00005576f845626e in PyInit_test at /tmp/test
+#28 0x00005576f84587ea in main at /tmp/test
+#29 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#30 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#31 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.797] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     580000
+[2026-03-21 20:45:41.813] [error] [DEBUG_ALLOC] Type: PyString             | Total:     420000
+[2026-03-21 20:45:41.822] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     420000
+[2026-03-21 20:45:41.822] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     420000
+[2026-03-21 20:45:41.837]  Type: PyInteger            | Total:     600000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#2  0x00005576f8586a2b in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#3  0x00005576f85869bf in py::PyInteger::create(long) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:50:9
+#4  0x00005576f8464d37 in py::RtValue::box() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/taggered_pointer/RtValue.cpp:31:17
+#5  0x00005576f8458ba1 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:122:56
+#6  0x00005576f8457174 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#7  0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#8  0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#9  0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#10 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#11 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#12 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#18 0x00005576f845626e in PyInit_test at /tmp/test
+#19 0x00005576f84587ea in main at /tmp/test
+#20 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#21 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#22 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:41.870] [error] [DEBUG_ALLOC] Type: PyString             | Total:     440000
+[2026-03-21 20:45:41.874] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     620000
+[2026-03-21 20:45:41.879] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     440000
+[2026-03-21 20:45:41.879] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     440000
+[2026-03-21 20:45:41.913] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     640000
+[2026-03-21 20:45:41.926] [error] [DEBUG_ALLOC] Type: PyString             | Total:     460000
+[2026-03-21 20:45:41.936] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     460000
+[2026-03-21 20:45:41.936] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     460000
+[2026-03-21 20:45:41.955] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     660000
+[2026-03-21 20:45:41.980] [error] [DEBUG_ALLOC] Type: PyString             | Total:     480000
+[2026-03-21 20:45:41.988] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     480000
+[2026-03-21 20:45:41.989] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     480000
+[2026-03-21 20:45:41.992] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     680000
+[2026-03-21 20:45:42.033]  Type: PyInteger            | Total:     700000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#2  0x00005576f8586a2b in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#3  0x00005576f85869bf in py::PyInteger::create(long) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:50:9
+#4  0x00005576f8464d37 in py::RtValue::box() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/taggered_pointer/RtValue.cpp:31:17
+#5  0x00005576f8458ba1 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:122:56
+#6  0x00005576f8457174 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#7  0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#8  0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#9  0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#10 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#11 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#12 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#18 0x00005576f845626e in PyInit_test at /tmp/test
+#19 0x00005576f84587ea in main at /tmp/test
+#20 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#21 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#22 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:42.043]  Type: PyString             | Total:     500000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#2  0x00005576f86219ea in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:225:17
+#3  0x00005576f8a36f60 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:41:13
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8456d44 in test.<module>.0:0.Sieve.8:0.step1.33:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84571c6 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#24 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#25 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#26 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#27 0x00005576f845626e in PyInit_test at /tmp/test
+#28 0x00005576f84587ea in main at /tmp/test
+#29 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#30 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#31 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:42.057]  Type: PyTuple              | Total:     500000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#2  0x00005576f8659943 in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:116:14
+#3  0x00005576f87c8371 in py::PyResult<py::PyTuple*> py::PyTuple::create<py::PyString*&>(py::PyString*&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.hpp:82:10
+#4  0x00005576f8a372b0 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:43:20
+#5  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#6  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#7  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#8  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#9  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#10 (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#11 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#12 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#13 0x00005576f8456d1a in test.<module>.0:0.Sieve.8:0.step1.33:4 at /tmp/test
+#14 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#15 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#16 0x00005576f84571c6 in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#17 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#18 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#19 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#20 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#21 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#22 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#23 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#24 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#25 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#26 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#27 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#28 0x00005576f845626e in PyInit_test at /tmp/test
+#29 0x00005576f84587ea in main at /tmp/test
+#30 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#31 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#32 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:42.062]  Type: AttributeError       | Total:     500000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::AttributeError::create(py::PyTuple*)::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#2  0x00005576f88efafb in py::AttributeError::create(py::PyTuple*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:25:56
+#3  0x00005576f8a37491 in py::BaseException* py::attribute_error<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/AttributeError.hpp:45:9
+#4  0x00005576f86aa290 in py::PyType::__getattribute__(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:422:13
+#5  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>::operator()(py::PyObject const*, py::PyObject*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#6  0x00005576f85d3086 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyResult<py::PyObject*>, py::PyObject const*, py::PyObject*&>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*, py::PyObject*)>, py::PyObject*> const&, py::PyObject const*&&, py::PyObject*&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:169:11
+#7  (inlined)          in py::PyObject::getattribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:672:10
+#8  0x00005576f85d2aeb in py::PyObject::get_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1498:42
+#9  (inlined)          in py::PyObject::lookup_attribute(py::PyObject*) const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1517:13
+#10 0x00005576f85d211b in py::PyObject::lookup_attribute(py::PyObject*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1506:16
+#11 0x00005576f8458a06 in rt_getattr(py::PyObject*, char const*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_attr.cpp:107:42
+#12 0x00005576f8456ec1 in test.<module>.0:0.Sieve.8:0.step2.38:4 at /tmp/test
+#13 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#14 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#15 0x00005576f84571fa in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#16 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#17 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#18 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#19 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#20 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#21 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#22 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#23 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#24 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#25 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#26 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#27 0x00005576f845626e in PyInit_test at /tmp/test
+#28 0x00005576f84587ea in main at /tmp/test
+#29 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#30 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#31 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:42.088] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     720000
+[2026-03-21 20:45:42.109] [error] [DEBUG_ALLOC] Type: PyString             | Total:     520000
+[2026-03-21 20:45:42.117] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     520000
+[2026-03-21 20:45:42.118] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     520000
+[2026-03-21 20:45:42.127] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     740000
+[2026-03-21 20:45:42.162] [error] [DEBUG_ALLOC] Type: PyString             | Total:     540000
+[2026-03-21 20:45:42.165] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     760000
+[2026-03-21 20:45:42.171] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     540000
+[2026-03-21 20:45:42.172] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     540000
+[2026-03-21 20:45:42.202] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     780000
+[2026-03-21 20:45:42.216] [error] [DEBUG_ALLOC] Type: PyString             | Total:     560000
+[2026-03-21 20:45:42.224] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     560000
+[2026-03-21 20:45:42.225] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     560000
+[2026-03-21 20:45:42.244]  Type: PyInteger            | Total:     800000
+Stack trace (most recent call first):
+#0  0x00005576f87c8758 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:34:22
+#1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#2  0x00005576f8586a2b in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
+#3  0x00005576f85c582a in py::PyNumber::create(py::Number const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyNumber.cpp:285:10
+#4  (inlined)          in py::PyResult<py::PyObject*> py::PyObject::from<py::Number>(py::Number const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:390:9
+#5  (inlined)          in auto py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0::operator()<py::Number>(py::Number const&) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:432:47
+#6  (inlined)          in py::PyResult<py::PyObject*> std::__invoke_impl<py::PyResult<py::PyObject*>, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>(std::__invoke_other, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, py::Number const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:61:14
+#7  (inlined)          in std::__invoke_result<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>::type std::__invoke<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, py::Number const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, py::Number const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:96:14
+#8  (inlined)          in std::__detail::__variant::__gen_vtable_impl<std::__detail::__variant::_Multi_array<std::__detail::__variant::__deduce_visit_result<py::PyResult<py::PyObject*> > (*)(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)>, std::integer_sequence<unsigned long, 0ul> >::__visit_invoke(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1060:11
+#9  (inlined)          in decltype(auto) std::__do_visit<std::__detail::__variant::__deduce_visit_result<py::PyResult<py::PyObject*> >, py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1815:5
+#10 (inlined)          in std::invoke_result<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::__conditional<is_lvalue_reference_v<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&> >::type<std::variant_alternative<0ul, std::remove_reference<decltype (__variant::__as((std::declval<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>)()))>::type>::type&, std::variant_alternative<0ul, std::remove_reference<decltype (__variant::__as((std::declval<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>)()))>::type>::type&&> >::type std::visit<py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&>(py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&)::$_0&&, std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1878:13
+#11 0x00005576f85d0770 in py::PyResult<py::PyObject*> py::PyObject::from<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> >(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:432:9
+#12 0x00005576f845cdc5 in rt_value_array_get(std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> const*, int) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:110:13
+#13 0x00005576f8456f81 in test.<module>.0:0.Sieve.8:0.step3.43:4 at /tmp/test
+#14 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#15 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#16 0x00005576f845722e in test.<module>.0:0.Sieve.8:0.loop_y.48:4 at /tmp/test
+#17 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#18 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#19 0x00005576f84573af in test.<module>.0:0.Sieve.8:0.loop_x.56:4 at /tmp/test
+#20 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#21 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#22 0x00005576f8457467 in test.<module>.0:0.Sieve.8:0.calc.64:4 at /tmp/test
+#23 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#24 0x00005576f845e38e in rt_call_method_raw_ptrs(py::PyObject*, char const*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:313:24
+#25 0x00005576f8457970 in test.<module>.0:0.find.86:0 at /tmp/test
+#26 0x00005576f857e272 in py::PyNativeFunction::call_raw(std::span<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, 18446744073709551615ul>, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:304:15
+#27 0x00005576f845dc89 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:243:29
+#28 0x00005576f845626e in PyInit_test at /tmp/test
+#29 0x00005576f84587ea in main at /tmp/test
+#30 0x00007ff59e82a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#31 0x00007ff59e82a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#32 0x00005576f8455ee4 in _start at /tmp/test
+[2026-03-21 20:45:42.273] [error] [DEBUG_ALLOC] Type: PyString             | Total:     580000
+[2026-03-21 20:45:42.282] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     580000
+[2026-03-21 20:45:42.283] [error] [DEBUG_ALLOC] Type: AttributeError       | Total:     580000
+[2026-03-21 20:45:42.283] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     820000
+[2026-03-21 20:45:42.321] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     840000
+[2026-03-21 20:45:42.332]  Type: PyString             | Total:     600000
