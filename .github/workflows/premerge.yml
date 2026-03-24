@@ -51,6 +51,7 @@ jobs:
 
     - name: Configure CMake
       run: |
+        export CXXFLAGS="-Wno-deprecated-declarations -Wno-ambiguous-reversed-operator"
         cmake --preset ${{env.CMAKE_PRESET}}
 
     - name: Build
