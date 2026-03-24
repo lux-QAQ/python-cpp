@@ -13,7 +13,7 @@ namespace sre {
 #ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
 #endif
-	friend class ::py::Arena;
+		friend class ::py::Arena;
 
 		size_t m_groups;
 		PyDict *m_groupindex{ nullptr };

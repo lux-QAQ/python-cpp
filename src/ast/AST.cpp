@@ -38,7 +38,7 @@ AST_NODE_TYPES
 
 Constant::~Constant() = default;
 
-//Constant::Constant(double value, SourceLocation source_location);
+// Constant::Constant(double value, SourceLocation source_location);
 
 void NodeVisitor::visit(Constant *) {}
 

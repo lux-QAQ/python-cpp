@@ -21,7 +21,6 @@ namespace types {
 	void register_type(const TypePrototype *proto, PyType *type);
 
 
-	
 	class BuiltinTypes
 	{
 		using Type = std::variant<std::function<std::unique_ptr<TypePrototype>()>,

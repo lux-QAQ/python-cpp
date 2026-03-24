@@ -60,24 +60,22 @@ class RuntimeLinkerTest : public ::testing::Test
 		s_loader.reset();
 	}
 
-    void SetUp() override
-    {
-        if (!s_skip_reason.empty()) { GTEST_SKIP() << s_skip_reason; }
-        if (!s_linker) { GTEST_SKIP() << "linker not initialized"; }
-        // 确保开启缓存进行测试
-        s_linker->options().enable_function_cache = true;
-    }
+	void SetUp() override
+	{
+		if (!s_skip_reason.empty()) { GTEST_SKIP() << s_skip_reason; }
+		if (!s_linker) { GTEST_SKIP() << "linker not initialized"; }
+		// 确保开启缓存进行测试
+		s_linker->options().enable_function_cache = true;
+	}
 	void TearDown() override
-    {
-        // [CRITICAL FIX]
-        // 测试用例会在栈上创建 llvm::Module (如 user_module)。
-        // 下一个测试可能会在相同的内存地址创建新 Module。
-        // 如果不清除缓存，s_linker 会持有指向旧 Module 内部 Function 的悬垂指针，
-        // 导致下一个测试由于地址命中缓存而拿到无效指针。
-        if (s_linker) {
-            s_linker->clear_cache();
-        }
-    }
+	{
+		// [CRITICAL FIX]
+		// 测试用例会在栈上创建 llvm::Module (如 user_module)。
+		// 下一个测试可能会在相同的内存地址创建新 Module。
+		// 如果不清除缓存，s_linker 会持有指向旧 Module 内部 Function 的悬垂指针，
+		// 导致下一个测试由于地址命中缓存而拿到无效指针。
+		if (s_linker) { s_linker->clear_cache(); }
+	}
 
 	// 便捷访问
 	static RuntimeLinker &linker() { return *s_linker; }
@@ -301,35 +299,34 @@ TEST_F(RuntimeLinkerTest, ConcurrentAccess)
 
 TEST_F(RuntimeLinkerTest, CacheBehavior)
 {
-    llvm::Module mod1("mod1", s_ctx);
-    llvm::Module mod2("mod2", s_ctx);
+	llvm::Module mod1("mod1", s_ctx);
+	llvm::Module mod2("mod2", s_ctx);
 
-    // 1. 首次声明，缓存未命中
-    auto *f1 = linker().declare_in(&mod1, "binary_add");
-    EXPECT_NE(f1, nullptr);
+	// 1. 首次声明，缓存未命中
+	auto *f1 = linker().declare_in(&mod1, "binary_add");
+	EXPECT_NE(f1, nullptr);
 
-    // 2. 再次声明（相同模块），应命中缓存
-    auto *f2 = linker().declare_in(&mod1, "binary_add");
-    EXPECT_EQ(f1, f2) << "应该是同一个指针（缓存命中）";
+	// 2. 再次声明（相同模块），应命中缓存
+	auto *f2 = linker().declare_in(&mod1, "binary_add");
+	EXPECT_EQ(f1, f2) << "应该是同一个指针（缓存命中）";
 
-    // 3. 不同模块，应该是新指针
-    auto *f3 = linker().declare_in(&mod2, "binary_add");
-    EXPECT_NE(f1, f3);
+	// 3. 不同模块，应该是新指针
+	auto *f3 = linker().declare_in(&mod2, "binary_add");
+	EXPECT_NE(f1, f3);
 
-    // 4. 清除特定模块缓存后，重新声明应通过 LLVM 符号表找到同一个 Function
-    linker().forget_module(&mod1);
-    auto *f4 = linker().declare_in(&mod1, "binary_add");
-    EXPECT_EQ(f4, f1) << "Function 仍在 Module 中，通过符号表找到";
+	// 4. 清除特定模块缓存后，重新声明应通过 LLVM 符号表找到同一个 Function
+	linker().forget_module(&mod1);
+	auto *f4 = linker().declare_in(&mod1, "binary_add");
+	EXPECT_EQ(f4, f1) << "Function 仍在 Module 中，通过符号表找到";
 
-    // 5. 测试 forget_module 确实清除了缓存
-    //    通过验证 forget 后 declare_in 走了 slow path（间接验证）
-    linker().forget_module(&mod2);
-    auto *f5 = linker().declare_in(&mod2, "binary_add");
-    EXPECT_EQ(f5, f3) << "Function 仍在 Module 中，通过符号表找到";
+	// 5. 测试 forget_module 确实清除了缓存
+	//    通过验证 forget 后 declare_in 走了 slow path（间接验证）
+	linker().forget_module(&mod2);
+	auto *f5 = linker().declare_in(&mod2, "binary_add");
+	EXPECT_EQ(f5, f3) << "Function 仍在 Module 中，通过符号表找到";
 
-    // 6. 测试 clear_cache
-    linker().clear_cache();
-    auto *f6 = linker().declare_in(&mod1, "binary_add");
-    EXPECT_EQ(f6, f1) << "clear_cache 后仍能通过符号表找到";
+	// 6. 测试 clear_cache
+	linker().clear_cache();
+	auto *f6 = linker().declare_in(&mod1, "binary_add");
+	EXPECT_EQ(f6, f1) << "clear_cache 后仍能通过符号表找到";
 }
-

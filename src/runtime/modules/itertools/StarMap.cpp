@@ -2,8 +2,8 @@
 #include "runtime/MemoryError.hpp"
 #include "runtime/PyList.hpp"
 #include "runtime/StopIteration.hpp"
-#include "runtime/types/api.hpp"
 #include "runtime/compat.hpp"
+#include "runtime/types/api.hpp"
 
 namespace py {
 namespace {

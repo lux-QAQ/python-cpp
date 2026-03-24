@@ -3,12 +3,12 @@
 #include "executable/Function.hpp"
 #include "executable/Mangler.hpp"
 #include "interpreter/InterpreterSession.hpp"
-#include "runtime/compat.hpp"
 #include "runtime/PyCode.hpp"
 #include "runtime/PyFrame.hpp"
 #include "runtime/PyFunction.hpp"
 #include "runtime/PyTraceback.hpp"
 #include "runtime/PyTuple.hpp"
+#include "runtime/compat.hpp"
 
 #include <memory>
 
@@ -173,7 +173,8 @@ PyObject *BytecodeProgram::as_pyfunction(const std::string &function_name,
 			});
 		it != m_functions.end()) {
 		auto *code = *it;
-		return PYLANG_ALLOC(PyFunction, default_values,
+		return PYLANG_ALLOC(PyFunction,
+			default_values,
 			kw_default_values,
 			code,
 			closure,

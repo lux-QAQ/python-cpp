@@ -10,7 +10,7 @@ namespace itertools {
 #ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
 #endif
-	friend class ::py::Arena;
+		friend class ::py::Arena;
 
 		PyList *m_pools{ nullptr };
 		size_t m_repeat;

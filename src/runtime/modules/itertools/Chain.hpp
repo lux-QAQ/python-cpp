@@ -7,7 +7,7 @@ namespace itertools {
 #ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
 #endif
-	friend class ::py::Arena;
+		friend class ::py::Arena;
 
 		PyObject *m_iterable_objects_iterator{ nullptr };
 		PyObject *m_current_iterator{ nullptr };

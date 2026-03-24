@@ -111,4 +111,4 @@ class Interpreter
 		std::shared_ptr<Program> &&);
 };
 
-//void initialize_types();
+// void initialize_types();

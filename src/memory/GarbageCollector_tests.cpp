@@ -81,4 +81,4 @@ TEST_F(TestHeap, GarbageCollectorDeallocatesGCPointersWhenStackFrameIsPopped)
 	ASSERT_EQ(g_counter, 5);
 }
 
-#endif // PYLANG_USE_ARENA
+#endif// PYLANG_USE_ARENA

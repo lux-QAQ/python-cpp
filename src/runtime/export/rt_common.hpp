@@ -44,4 +44,3 @@ template<typename T> inline void rt_unwrap_void(py::PyResult<T> result)
 {
 	if (result.is_err()) { rt_raise(result.unwrap_err()); }
 }
-

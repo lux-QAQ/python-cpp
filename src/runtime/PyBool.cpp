@@ -84,27 +84,27 @@ PyResult<PyBool *> PyBool::create(bool value)
 // }
 PyObject *py_true()
 {
-    static PyObject *value = nullptr;
-    if (!value) {
-        // 纵深防御：确保分配在 program_arena
-        Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;
-        Arena::set_current(&ArenaManager::program_arena());
-        value = PyBool::create(true).unwrap();
-        if (saved) Arena::set_current(saved);
-    }
-    return value;
+	static PyObject *value = nullptr;
+	if (!value) {
+		// 纵深防御：确保分配在 program_arena
+		Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;
+		Arena::set_current(&ArenaManager::program_arena());
+		value = PyBool::create(true).unwrap();
+		if (saved) Arena::set_current(saved);
+	}
+	return value;
 }
 
 PyObject *py_false()
 {
-    static PyObject *value = nullptr;
-    if (!value) {
-        Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;
-        Arena::set_current(&ArenaManager::program_arena());
-        value = PyBool::create(false).unwrap();
-        if (saved) Arena::set_current(saved);
-    }
-    return value;
+	static PyObject *value = nullptr;
+	if (!value) {
+		Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;
+		Arena::set_current(&ArenaManager::program_arena());
+		value = PyBool::create(false).unwrap();
+		if (saved) Arena::set_current(saved);
+	}
+	return value;
 }
 
 namespace {

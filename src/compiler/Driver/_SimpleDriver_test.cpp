@@ -56,7 +56,7 @@ class SimpleDriverTest : public ::testing::Test
 			"-ldwarf",
 			"-lzstd",
 			"-lz"
-			 
+
 		};
 		if (std::system("ld.lld --version > /dev/null 2>&1") == 0) {
 			opts.linker_cmd = "clang++";// 使用 clang 驱动程序

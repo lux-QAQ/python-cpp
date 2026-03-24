@@ -74,7 +74,7 @@
 
 // 内部拼接宏 —— 不要直接使用
 #define PYLANG_EXPORT_IMPL_(cat, name, ret, params) \
-    __attribute__((annotate("pylang_export:" cat ":" name ":" ret ":" params)))
+	__attribute__((annotate("pylang_export:" cat ":" name ":" ret ":" params)))
 
 // =============================================================================
 // 分类体系 (Category)
@@ -85,77 +85,65 @@
 
 /// 二元/一元运算
 /// 逻辑名: binary_add, binary_sub, binary_mul, unary_neg, inplace_add, ...
-#define PYLANG_EXPORT_OP(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("op", name, ret, params)
+#define PYLANG_EXPORT_OP(name, ret, params) PYLANG_EXPORT_IMPL_("op", name, ret, params)
 
 /// 比较操作
 /// 逻辑名: compare_eq, compare_lt, compare_is, compare_in, ...
-#define PYLANG_EXPORT_CMP(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("cmp", name, ret, params)
+#define PYLANG_EXPORT_CMP(name, ret, params) PYLANG_EXPORT_IMPL_("cmp", name, ret, params)
 
 /// 对象创建
 /// 逻辑名: integer_from_i64, string_from_cstr, float_from_f64,
 ///         build_list, build_tuple, build_dict, build_set, build_slice, ...
-#define PYLANG_EXPORT_CREATE(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("create", name, ret, params)
+#define PYLANG_EXPORT_CREATE(name, ret, params) PYLANG_EXPORT_IMPL_("create", name, ret, params)
 
 /// 内置函数
 /// 逻辑名: print, len, isinstance, type, hasattr, ...
-#define PYLANG_EXPORT_BUILTIN(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("builtin", name, ret, params)
+#define PYLANG_EXPORT_BUILTIN(name, ret, params) PYLANG_EXPORT_IMPL_("builtin", name, ret, params)
 
 /// 属性访问
 /// 逻辑名: getattr, setattr, delattr, load_global, store_global, load_name, store_name
-#define PYLANG_EXPORT_ATTR(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("attr", name, ret, params)
+#define PYLANG_EXPORT_ATTR(name, ret, params) PYLANG_EXPORT_IMPL_("attr", name, ret, params)
 
 /// 下标 / 容器操作
 /// 逻辑名: getitem, setitem, delitem, get_iter, iter_next,
 ///         list_append, list_extend, dict_merge, set_add, unpack_sequence, ...
-#define PYLANG_EXPORT_SUBSCR(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("subscr", name, ret, params)
+#define PYLANG_EXPORT_SUBSCR(name, ret, params) PYLANG_EXPORT_IMPL_("subscr", name, ret, params)
 
 /// 类型转换 / 检查
 /// 逻辑名: is_true, to_int, to_float, list_to_tuple, ...
-#define PYLANG_EXPORT_CONVERT(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("convert", name, ret, params)
+#define PYLANG_EXPORT_CONVERT(name, ret, params) PYLANG_EXPORT_IMPL_("convert", name, ret, params)
 
 /// 模块操作
 /// 逻辑名: import, import_from, import_star
-#define PYLANG_EXPORT_MODULE(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("module", name, ret, params)
+#define PYLANG_EXPORT_MODULE(name, ret, params) PYLANG_EXPORT_IMPL_("module", name, ret, params)
 
 /// 运行时生命周期
 /// 逻辑名: init, shutdown
 #define PYLANG_EXPORT_LIFECYCLE(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("lifecycle", name, ret, params)
+	PYLANG_EXPORT_IMPL_("lifecycle", name, ret, params)
 
 /// 全局单例
 /// 逻辑名: true, false, none, ellipsis, not_implemented
 #define PYLANG_EXPORT_SINGLETON(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("singleton", name, ret, params)
+	PYLANG_EXPORT_IMPL_("singleton", name, ret, params)
 
 /// 异常 / 错误处理
 /// 逻辑名: raise, reraise, check_exception_match, setup_except, leave_except,
 ///         load_assertion_error
-#define PYLANG_EXPORT_ERROR(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("error", name, ret, params)
+#define PYLANG_EXPORT_ERROR(name, ret, params) PYLANG_EXPORT_IMPL_("error", name, ret, params)
 
 /// 函数 / 闭包操作
 /// 逻辑名: make_function, call, call_ex, call_with_kwargs,
 ///         load_closure, load_deref, store_deref, create_cell, cell_get, cell_set,
 ///         get_closure, load_method, method_call
-#define PYLANG_EXPORT_FUNC(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("func", name, ret, params)
+#define PYLANG_EXPORT_FUNC(name, ret, params) PYLANG_EXPORT_IMPL_("func", name, ret, params)
 
 /// 类创建 / 继承
 /// 逻辑名: load_build_class
-#define PYLANG_EXPORT_CLASS(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("class", name, ret, params)
+#define PYLANG_EXPORT_CLASS(name, ret, params) PYLANG_EXPORT_IMPL_("class", name, ret, params)
 
 /// 通用导出 (不属于以上分类时的兜底)
-#define PYLANG_EXPORT(name, ret, params) \
-    PYLANG_EXPORT_IMPL_("general", name, ret, params)
+#define PYLANG_EXPORT(name, ret, params) PYLANG_EXPORT_IMPL_("general", name, ret, params)
 
 // =============================================================================
 // 类型标记约定 (用于 ret / params 字段)
@@ -185,7 +173,6 @@
 // =============================================================================
 
 
-
 //=============================================================================
 // PYLANG_INIT — 用户模块初始化函数标记
 //
@@ -210,5 +197,4 @@
 //   }
 // =============================================================================
 
-#define PYLANG_INIT(name) \
-    __attribute__((annotate("pylang_init_func:" name)))
+#define PYLANG_INIT(name) __attribute__((annotate("pylang_init_func:" name)))

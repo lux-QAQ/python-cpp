@@ -88,20 +88,18 @@ PyModule *imp_module()
 				}
 
 #ifndef PYLANG_AOT_MODE
-                if (auto frozen_module = find_frozen(as<PyString>(arg0.unwrap()))) {
-                    std::shared_ptr<Program> program =
-                        BytecodeProgram::deserialize(frozen_module->get().code);
-                    return PyCode::create(program);
-                } else {
-                    return Err(import_error(
-                        "No such frozen object named {}", as<PyString>(arg0.unwrap())->value()));
-                }
+				if (auto frozen_module = find_frozen(as<PyString>(arg0.unwrap()))) {
+					std::shared_ptr<Program> program =
+						BytecodeProgram::deserialize(frozen_module->get().code);
+					return PyCode::create(program);
+				} else {
+					return Err(import_error(
+						"No such frozen object named {}", as<PyString>(arg0.unwrap())->value()));
+				}
 #else
                 return Err(import_error(
                     "get_frozen_object() not available in AOT mode"));
 #endif
-
-
 			})
 			.unwrap());
 

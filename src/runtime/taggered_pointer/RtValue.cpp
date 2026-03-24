@@ -46,20 +46,20 @@ py::Value RtValue::to_value() const
 
 RtValue RtValue::from_value(const py::Value &v)
 {
-    return std::visit(overloaded{
-                          [](const py::Number &n) -> RtValue {
-                              // [核心修复]：Number 内部 variant 不含 int64_t，需从 mpz_class 提取
-                              if (std::holds_alternative<mpz_class>(n.value)) {
-                                  const auto &gmp_val = std::get<mpz_class>(n.value);
-                                  if (gmp_val.fits_slong_p()) {
-                                      long raw_val = gmp_val.get_si();
-                                      if (fits_tagged_int(raw_val)) return from_int(raw_val);
-                                  }
-                              }
-                              // 否则（是 double 或超大整数）必须装箱
-                              return flatten(PyObject::from(n).unwrap());
-                          },
-                          [](PyObject *obj) -> RtValue { return flatten(obj); },
+	return std::visit(overloaded{
+						  [](const py::Number &n) -> RtValue {
+							  // [核心修复]：Number 内部 variant 不含 int64_t，需从 mpz_class 提取
+							  if (std::holds_alternative<mpz_class>(n.value)) {
+								  const auto &gmp_val = std::get<mpz_class>(n.value);
+								  if (gmp_val.fits_slong_p()) {
+									  long raw_val = gmp_val.get_si();
+									  if (fits_tagged_int(raw_val)) return from_int(raw_val);
+								  }
+							  }
+							  // 否则（是 double 或超大整数）必须装箱
+							  return flatten(PyObject::from(n).unwrap());
+						  },
+						  [](PyObject *obj) -> RtValue { return flatten(obj); },
 						  [](const auto &other) -> RtValue {
 							  // 处理 String, Tuple, Bytes 等其他 variant 分支
 							  return flatten(PyObject::from(other).unwrap());
@@ -181,25 +181,19 @@ RtValue RtValue::mod(RtValue lhs, RtValue rhs)
 
 RtValue RtValue::bit_and(RtValue lhs, RtValue rhs)
 {
-	if (RtValue::are_both_tagged_int(lhs, rhs)) {
-		return from_int(lhs.as_int() & rhs.as_int());
-	}
+	if (RtValue::are_both_tagged_int(lhs, rhs)) { return from_int(lhs.as_int() & rhs.as_int()); }
 	return from_ptr(lhs.box()->and_(rhs.box()).unwrap());
 }
 
 RtValue RtValue::bit_or(RtValue lhs, RtValue rhs)
 {
-	if (RtValue::are_both_tagged_int(lhs, rhs)) {
-		return from_int(lhs.as_int() | rhs.as_int());
-	}
+	if (RtValue::are_both_tagged_int(lhs, rhs)) { return from_int(lhs.as_int() | rhs.as_int()); }
 	return from_ptr(lhs.box()->or_(rhs.box()).unwrap());
 }
 
 RtValue RtValue::bit_xor(RtValue lhs, RtValue rhs)
 {
-	if (RtValue::are_both_tagged_int(lhs, rhs)) {
-		return from_int(lhs.as_int() ^ rhs.as_int());
-	}
+	if (RtValue::are_both_tagged_int(lhs, rhs)) { return from_int(lhs.as_int() ^ rhs.as_int()); }
 	return from_ptr(lhs.box()->xor_(rhs.box()).unwrap());
 }
 

@@ -38,9 +38,7 @@ template<> const PyDict *as(const PyObject *obj)
 	return nullptr;
 }
 
-PyDict::PyDict(MapType &&map)
-    : PyBaseObject(types::dict()), m_map(std::move(map))
-{}
+PyDict::PyDict(MapType &&map) : PyBaseObject(types::dict()), m_map(std::move(map)) {}
 
 PyDict::PyDict(const MapType &map) : PyBaseObject(types::dict()), m_map(map) {}
 

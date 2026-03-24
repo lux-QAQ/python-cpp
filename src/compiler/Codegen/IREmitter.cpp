@@ -419,18 +419,18 @@ llvm::Value *IREmitter::get_interned_string_obj(std::string_view name)
 
 void IREmitter::emit_interned_strings_initialization()
 {
-    // 遍历当前模块记录的所有属性名常量
-    for (auto &[name, gvar] : m_interned_string_objects) {
-        auto *str_ptr = create_global_string(name);
-        auto *len = m_builder.getInt64(name.size());
-        
-        // 调用 rt_string_from_cstr。内部 PyString::create 会调用 intern，
-        // 确保跨模块的同名字符串指向同一个真正的 PyString 实例。
-        auto *py_str = emit_runtime_call("string_from_cstr", { str_ptr, len });
-        
-        // 将获取到的 PyObject* 存入该模块私有的全局变量槽位
-        m_builder.CreateStore(py_str, gvar);
-    }
+	// 遍历当前模块记录的所有属性名常量
+	for (auto &[name, gvar] : m_interned_string_objects) {
+		auto *str_ptr = create_global_string(name);
+		auto *len = m_builder.getInt64(name.size());
+
+		// 调用 rt_string_from_cstr。内部 PyString::create 会调用 intern，
+		// 确保跨模块的同名字符串指向同一个真正的 PyString 实例。
+		auto *py_str = emit_runtime_call("string_from_cstr", { str_ptr, len });
+
+		// 将获取到的 PyObject* 存入该模块私有的全局变量槽位
+		m_builder.CreateStore(py_str, gvar);
+	}
 }
 
 llvm::Value *IREmitter::call_getattr(llvm::Value *obj, std::string_view name)

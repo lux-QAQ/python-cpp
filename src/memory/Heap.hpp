@@ -442,4 +442,4 @@ class Heap
 	Heap();
 };
 
-#endif // PYLANG_USE_ARENA
+#endif// PYLANG_USE_ARENA

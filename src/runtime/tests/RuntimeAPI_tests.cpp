@@ -18,10 +18,10 @@
 #include "runtime/RuntimeContext.hpp"
 #include "runtime/StopIteration.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/builtinTypeInit.hpp"
 #include "runtime/modules/Modules.hpp"
 #include "runtime/modules/config.hpp"
 #include "runtime/types/builtin.hpp"
-#include "runtime/builtinTypeInit.hpp"
 
 #include <gtest/gtest.h>
 

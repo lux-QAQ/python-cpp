@@ -107,4 +107,4 @@ TEST_F(TestHeap, ResetCallsDestructorOfAllHeapAllocatecObjects)
 	ASSERT_EQ(counter, n_chunks * chunk_size);
 }
 
-#endif // PYLANG_USE_ARENA
+#endif// PYLANG_USE_ARENA

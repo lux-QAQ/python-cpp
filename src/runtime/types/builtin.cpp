@@ -74,16 +74,15 @@ namespace py::types {
 
 static void register_builtintype(PyType *type, const TypePrototype &proto)
 {
-    ASSERT(type);
-    get_proto_map()[&proto] = type;
+	ASSERT(type);
+	get_proto_map()[&proto] = type;
 }
-
 
 
 ProtoMap &get_proto_map()
 {
-    static ProtoMap map;
-    return map;
+	static ProtoMap map;
+	return map;
 }
 
 PyType *lookup_type_by_prototype(const TypePrototype *proto)
@@ -93,10 +92,7 @@ PyType *lookup_type_by_prototype(const TypePrototype *proto)
 	return it == map.end() ? nullptr : it->second;
 }
 
-void register_type(const TypePrototype *proto, PyType *type)
-{
-    get_proto_map()[proto] = type;
-}
+void register_type(const TypePrototype *proto, PyType *type) { get_proto_map()[proto] = type; }
 
 
 BuiltinTypes::BuiltinTypes()
@@ -193,19 +189,20 @@ BuiltinTypes::BuiltinTypes()
 
 
 #ifdef PYLANG_USE_ARENA
-#define INITIALIZE_TYPE(TYPENAME)                                              \
-PyType *TYPENAME() {                                                           \
-    static PyType *t = nullptr;                                                \
-    if (t) return t;                                                           \
-    Arena *saved = Arena::has_current() ? &Arena::current() : nullptr;         \
-    Arena::set_current(&ArenaManager::program_arena());                        \
-    auto &proto = BuiltinTypes::the().TYPENAME();                             \
-    t = PYLANG_ALLOC(PyType, proto);                                           \
-    ASSERT(t);                                                                 \
-    register_builtintype(t, proto);                                            \
-    if (saved) Arena::set_current(saved);                                      \
-    return t;                                                                  \
-}
+#define INITIALIZE_TYPE(TYPENAME)                                          \
+	PyType *TYPENAME()                                                     \
+	{                                                                      \
+		static PyType *t = nullptr;                                        \
+		if (t) return t;                                                   \
+		Arena *saved = Arena::has_current() ? &Arena::current() : nullptr; \
+		Arena::set_current(&ArenaManager::program_arena());                \
+		auto &proto = BuiltinTypes::the().TYPENAME();                      \
+		t = PYLANG_ALLOC(PyType, proto);                                   \
+		ASSERT(t);                                                         \
+		register_builtintype(t, proto);                                    \
+		if (saved) Arena::set_current(saved);                              \
+		return t;                                                          \
+	}
 #else
 #define INITIALIZE_TYPE(TYPENAME)                                                         \
 	PyType *TYPENAME()                                                                    \

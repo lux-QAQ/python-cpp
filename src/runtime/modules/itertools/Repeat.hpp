@@ -7,7 +7,7 @@ namespace itertools {
 #ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
 #endif
-	friend class ::py::Arena;
+		friend class ::py::Arena;
 
 		PyObject *m_object{ nullptr };
 		std::optional<BigIntType> m_times_remaining;

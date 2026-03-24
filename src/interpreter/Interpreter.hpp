@@ -13,14 +13,14 @@ template<typename PyObjectType, typename... Args>
 py::PyObject *Interpreter::allocate_object(const std::string &name, Args &&...args)
 {
 #ifdef PYLANG_USE_ARENA
-    if (auto obj = py::Arena::current().allocate<PyObjectType>(std::forward<Args>(args)...)) {
+	if (auto obj = py::Arena::current().allocate<PyObjectType>(std::forward<Args>(args)...)) {
 #else
-    auto &heap = VirtualMachine::the().heap();
-    if (auto obj = heap.allocate<PyObjectType>(std::forward<Args>(args)...)) {
+	auto &heap = VirtualMachine::the().heap();
+	if (auto obj = heap.allocate<PyObjectType>(std::forward<Args>(args)...)) {
 #endif
-        store_object(name, obj);
-        return obj;
-    } else {
-        return nullptr;
-    }
+		store_object(name, obj);
+		return obj;
+	} else {
+		return nullptr;
+	}
 }

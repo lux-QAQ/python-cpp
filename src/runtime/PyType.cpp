@@ -282,11 +282,11 @@ std::string PyType::name() const
 
 PyType *PyType::initialize(TypePrototype &type_prototype)
 {
-    auto *type = PYLANG_ALLOC(PyType, type_prototype);
-    py::types::register_type(&type_prototype, type);
-    auto result = type->ready();
-    ASSERT(result.is_ok());
-    return type;
+	auto *type = PYLANG_ALLOC(PyType, type_prototype);
+	py::types::register_type(&type_prototype, type);
+	auto result = type->ready();
+	ASSERT(result.is_ok());
+	return type;
 }
 
 PyType *PyType::initialize(std::unique_ptr<TypePrototype> &&type_prototype)
@@ -1654,17 +1654,17 @@ PyResult<PyType *> PyType::build_type(const PyType *metatype,
 		}
 	}
 
-    return PyType::create(const_cast<PyType *>(metatype)).and_then([&](PyType *type) {
-        type->underlying_type().is_heaptype = true;
-        type->__mro__ = nullptr;
-        type->initialize(type_name->value(), base, std::move(bases), ns);
+	return PyType::create(const_cast<PyType *>(metatype)).and_then([&](PyType *type) {
+		type->underlying_type().is_heaptype = true;
+		type->__mro__ = nullptr;
+		type->initialize(type_name->value(), base, std::move(bases), ns);
 
-        // 关键：新类型也要进 protobuf map
-        py::types::register_type(&type->underlying_type(), type);
+		// 关键：新类型也要进 protobuf map
+		py::types::register_type(&type->underlying_type(), type);
 
-        spdlog::trace("Created type@{} #{}", (void *)type, type->name());
-        return Ok(type);
-    });
+		spdlog::trace("Created type@{} #{}", (void *)type, type->name());
+		return Ok(type);
+	});
 }
 
 PyResult<const PyType *> PyType::calculate_metaclass(const PyType *type_,

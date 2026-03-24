@@ -13,7 +13,7 @@ namespace collections {
 #ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
 #endif
-	friend class ::py::Arena;
+		friend class ::py::Arena;
 
 		std::deque<Value> m_deque;
 		std::optional<size_t> m_maxlength;

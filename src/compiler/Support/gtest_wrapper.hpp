@@ -17,10 +17,8 @@
 // 既然我们吃掉了整个头文件，必须手动把这个函数的声明喂给它。
 // 这就是标准库提供这个函数的原型。
 namespace abi {
-    extern "C" char* __cxa_demangle(const char* mangled_name,
-                                    char* output_buffer, 
-                                    size_t* length, 
-                                    int* status);
+extern "C" char *
+	__cxa_demangle(const char *mangled_name, char *output_buffer, size_t *length, int *status);
 }
 
 // 在屏蔽宏和替代声明下，包含 gtest

@@ -348,20 +348,20 @@ PyResult<PyObject *>
 
 PyResult<PyObject *> globals(const PyTuple *, const PyDict *)
 {
-    auto *g = RuntimeContext::current().current_globals();
-    if (!g) { return Err(runtime_error("no current globals")); }
-    return Ok(static_cast<PyObject *>(g));
+	auto *g = RuntimeContext::current().current_globals();
+	if (!g) { return Err(runtime_error("no current globals")); }
+	return Ok(static_cast<PyObject *>(g));
 }
 
 
 PyResult<PyObject *> locals(const PyTuple *, const PyDict *)
 {
-    // RuntimeContext 可扩展 locals_provider
-    if (RuntimeContext::current().has_interpreter()) {
-        return Ok(RuntimeContext::current().interpreter()->execution_frame()->locals());
-    }
-    // 编译器路径: 由编译器生成的代码提供 locals
-    return Err(runtime_error("locals() not available in compiled mode"));
+	// RuntimeContext 可扩展 locals_provider
+	if (RuntimeContext::current().has_interpreter()) {
+		return Ok(RuntimeContext::current().interpreter()->execution_frame()->locals());
+	}
+	// 编译器路径: 由编译器生成的代码提供 locals
+	return Err(runtime_error("locals() not available in compiled mode"));
 }
 
 

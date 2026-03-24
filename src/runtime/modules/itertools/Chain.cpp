@@ -1,8 +1,8 @@
 #include "Chain.hpp"
 #include "runtime/MemoryError.hpp"
 #include "runtime/StopIteration.hpp"
-#include "runtime/types/api.hpp"
 #include "runtime/compat.hpp"
+#include "runtime/types/api.hpp"
 
 namespace py {
 namespace {
@@ -20,8 +20,7 @@ namespace itertools {
 		if (iterable_objects_iterator.is_err()) {
 			return Err(iterable_objects_iterator.unwrap_err());
 		}
-		auto *obj =
-			PYLANG_ALLOC(Chain, iterable_objects_iterator.unwrap());
+		auto *obj = PYLANG_ALLOC(Chain, iterable_objects_iterator.unwrap());
 		if (!obj) { return Err(memory_error(sizeof(Chain))); }
 		return Ok(obj);
 	}
@@ -32,8 +31,7 @@ namespace itertools {
 		if (iterable_objects_iterator.is_err()) {
 			return Err(iterable_objects_iterator.unwrap_err());
 		}
-		auto *obj =
-			PYLANG_ALLOC(Chain, iterable_objects_iterator.unwrap());
+		auto *obj = PYLANG_ALLOC(Chain, iterable_objects_iterator.unwrap());
 		if (!obj) { return Err(memory_error(sizeof(Chain))); }
 		return Ok(obj);
 	}

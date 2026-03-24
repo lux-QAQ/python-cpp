@@ -42,7 +42,6 @@
 #include "runtime/types/builtin.hpp"
 #include "runtime/warnings/ImportWarning.hpp"
 #include "runtime/warnings/Warning.hpp"
-#include "runtime/compat.hpp"
 
 #ifndef PYLANG_AOT_MODE
 #include "executable/Mangler.hpp"
@@ -57,16 +56,14 @@
 #include "interpreter/InterpreterCore.hpp"
 
 
-
 #include "memory/GarbageCollector.hpp"
-
 
 
 #include "utilities.hpp"
 #include <algorithm>
-#include <variant>
 #include <iostream>
 #include <numeric>
+#include <variant>
 
 
 using namespace py;
@@ -335,12 +332,12 @@ PyResult<PyObject *> build_class(const PyTuple *args, const PyDict *kwargs)
 #else
 PyResult<PyObject *> build_class(const PyTuple *, const PyDict *)
 {
-    // AOT 模式：类定义由编译器直接生成 rt_build_class_aot() 调用，
-    // 不经过 builtins["__build_class__"]。
-    // 此 stub 仅为满足 builtins 表注册的编译需求。
-    return Err(runtime_error(
-        "__build_class__() is not available in AOT mode. "
-        "Use the compiler-generated rt_build_class_aot() path instead."));
+	// AOT 模式：类定义由编译器直接生成 rt_build_class_aot() 调用，
+	// 不经过 builtins["__build_class__"]。
+	// 此 stub 仅为满足 builtins 表注册的编译需求。
+	return Err(
+		runtime_error("__build_class__() is not available in AOT mode. "
+					  "Use the compiler-generated rt_build_class_aot() path instead."));
 }
 #endif
 PyResult<PyObject *> globals(const PyTuple *, const PyDict *)
@@ -365,18 +362,18 @@ PyResult<PyObject *> locals(const PyTuple *, const PyDict *)
 
 PyResult<PyObject *> len(const PyTuple *args, const PyDict *kwargs)
 {
-    if (args->size() != 1) {
-        return Err(type_error("len() takes exactly one argument ({} given)", args->size()));
-    }
-    if (kwargs && !kwargs->map().empty()) {
-        return Err(type_error("len() takes no keyword arguments"));
-    }
+	if (args->size() != 1) {
+		return Err(type_error("len() takes exactly one argument ({} given)", args->size()));
+	}
+	if (kwargs && !kwargs->map().empty()) {
+		return Err(type_error("len() takes no keyword arguments"));
+	}
 
-    return PyObject::from(args->elements()[0]).and_then([](PyObject *o) -> PyResult<PyObject *> {
-        return o->len().and_then([](size_t length) -> PyResult<PyObject *> {
-            return PyInteger::create(static_cast<int64_t>(length));
-        });
-    });
+	return PyObject::from(args->elements()[0]).and_then([](PyObject *o) -> PyResult<PyObject *> {
+		return o->len().and_then([](size_t length) -> PyResult<PyObject *> {
+			return PyInteger::create(static_cast<int64_t>(length));
+		});
+	});
 }
 
 PyResult<PyObject *> id(const PyTuple *args, const PyDict *)
@@ -947,7 +944,7 @@ PyResult<PyObject *> exec(const PyTuple *args, const PyDict *)
 #else
 PyResult<PyObject *> exec(const PyTuple *, const PyDict *)
 {
-    return Err(runtime_error("exec() is not available in AOT-compiled binaries"));
+	return Err(runtime_error("exec() is not available in AOT-compiled binaries"));
 }
 #endif
 #ifndef PYLANG_AOT_MODE
@@ -1023,7 +1020,7 @@ PyResult<PyObject *> eval(PyTuple *args, PyDict *kwargs)
 #else
 PyResult<PyObject *> eval(PyTuple *, PyDict *)
 {
-    return Err(runtime_error("eval() is not available in AOT-compiled binaries"));
+	return Err(runtime_error("eval() is not available in AOT-compiled binaries"));
 }
 #endif
 
@@ -1118,7 +1115,7 @@ PyResult<PyObject *> compile(const PyTuple *args, const PyDict *)
 #else
 PyResult<PyObject *> compile(const PyTuple *, const PyDict *)
 {
-    return Err(runtime_error("compile() is not available in AOT-compiled binaries"));
+	return Err(runtime_error("compile() is not available in AOT-compiled binaries"));
 }
 #endif
 

@@ -39,7 +39,7 @@ TEST(Import, FindFrozenNonExistent)
 
 TEST(Import, CreateBuiltinWithRegisteredModule)
 {
-	
+
 	register_all_builtins();
 
 	auto *builtins = ModuleRegistry::instance().find("builtins");

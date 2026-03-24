@@ -93,41 +93,40 @@ SimpleDriver::SimpleDriver(Options opts,
 {}
 
 Result<std::filesystem::path> SimpleDriver::precompile_runtime_module(
-    const std::filesystem::path &bc_path,
-    llvm::LLVMContext &ctx,
-    llvm::TargetMachine &tm)
+	const std::filesystem::path &bc_path,
+	llvm::LLVMContext &ctx,
+	llvm::TargetMachine &tm)
 {
-    // 简单的缓存策略：如果 /tmp/pylang_runtime.o 存在且较新，直接复用
-    // 实际生产环境应更严谨地处理版本和哈希
-    auto cache_path = std::filesystem::temp_directory_path() / "pylang_runtime_cache.o";
+	// 简单的缓存策略：如果 /tmp/pylang_runtime.o 存在且较新，直接复用
+	// 实际生产环境应更严谨地处理版本和哈希
+	auto cache_path = std::filesystem::temp_directory_path() / "pylang_runtime_cache.o";
 
-    // [Fix] 检查时间戳：只有当缓存文件存在且修改时间晚于等于源 BC 文件时才复用
-    bool use_cache = false;
-    std::error_code ec;
+	// [Fix] 检查时间戳：只有当缓存文件存在且修改时间晚于等于源 BC 文件时才复用
+	bool use_cache = false;
+	std::error_code ec;
 
-    if (std::filesystem::exists(cache_path, ec) && std::filesystem::file_size(cache_path, ec) > 0) {
-        if (std::filesystem::exists(bc_path, ec)) {
-            auto bc_time = std::filesystem::last_write_time(bc_path, ec);
-            if (!ec) {
-                auto cache_time = std::filesystem::last_write_time(cache_path, ec);
-                // 只有缓存时间戳 >= 源文件时间戳才有效
-                if (!ec && cache_time >= bc_time) {
-                    use_cache = true;
-                } else {
-                    log::compiler()->info("Runtime module updated (cache outdated), recompiling...");
-                }
-            }
-        }
-    }
+	if (std::filesystem::exists(cache_path, ec) && std::filesystem::file_size(cache_path, ec) > 0) {
+		if (std::filesystem::exists(bc_path, ec)) {
+			auto bc_time = std::filesystem::last_write_time(bc_path, ec);
+			if (!ec) {
+				auto cache_time = std::filesystem::last_write_time(cache_path, ec);
+				// 只有缓存时间戳 >= 源文件时间戳才有效
+				if (!ec && cache_time >= bc_time) {
+					use_cache = true;
+				} else {
+					log::compiler()->info(
+						"Runtime module updated (cache outdated), recompiling...");
+				}
+			}
+		}
+	}
 
-    if (use_cache) {
-        return cache_path;
-    }
+	if (use_cache) { return cache_path; }
 
-    PYLANG_TIMER_INFO("precompile_runtime");
-    log::compiler()->info("Pre-compiling runtime to object file: {}", cache_path.string());
+	PYLANG_TIMER_INFO("precompile_runtime");
+	log::compiler()->info("Pre-compiling runtime to object file: {}", cache_path.string());
 
-    llvm::SMDiagnostic err;
+	llvm::SMDiagnostic err;
 	auto mod = llvm::parseIRFile(bc_path.string(), err, ctx);
 	if (!mod) {
 		return MAKE_ERROR(ErrorKind::IOError,
@@ -138,7 +137,7 @@ Result<std::filesystem::path> SimpleDriver::precompile_runtime_module(
 	mod->setDataLayout(tm.createDataLayout());
 	mod->setTargetTriple(tm.getTargetTriple().str());
 
-	//std::error_code ec;
+	// std::error_code ec;
 	llvm::raw_fd_ostream dest(cache_path.string(), ec, llvm::sys::fs::OF_None);
 	if (ec) { return MAKE_ERROR(ErrorKind::IOError, "Cannot open cache file: {}", ec.message()); }
 
@@ -361,7 +360,7 @@ Result<std::filesystem::path> SimpleDriver::stage_link_executable(
 	}
 
 	// 添加必要的系统库
-	//cmd += " -lstdc++ -lm -lpthread";
+	// cmd += " -lstdc++ -lm -lpthread";
 
 	// 添加用户指定的额外链接参数
 	for (const auto &flag : m_opts.extra_link_flags) { cmd += " " + flag; }

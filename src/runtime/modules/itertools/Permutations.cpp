@@ -7,10 +7,10 @@
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
 
+#include "runtime/compat.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <numeric>
-#include "runtime/compat.hpp"
 
 namespace py {
 namespace {
@@ -52,8 +52,7 @@ namespace itertools {
 			}
 
 
-			auto *obj = PYLANG_ALLOC(Permutations, 
-				pool, length.value_or(pool->elements().size()));
+			auto *obj = PYLANG_ALLOC(Permutations, pool, length.value_or(pool->elements().size()));
 			if (!obj) { return Err(memory_error(sizeof(Permutations))); }
 			return Ok(obj);
 		});

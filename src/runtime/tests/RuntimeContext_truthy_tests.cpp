@@ -33,7 +33,7 @@ TEST_F(RuntimeContextTruthyTest, EmptyList)
 TEST_F(RuntimeContextTruthyTest, NonEmptyList)
 {
 	auto *l = PyList::create().unwrap();
-	l->append(py_none() );
+	l->append(py_none());
 	EXPECT_TRUE(ctx.is_true(l));
 }
 

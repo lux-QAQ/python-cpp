@@ -7,7 +7,9 @@
 #include <string>
 
 // 前置声明: Arena 类, 供 friend class ::py::Arena 使用
-namespace py { class Arena; }
+namespace py {
+class Arena;
+}
 
 // =============================================================================
 // Arena 模式下, GarbageCollected / Cell / MarkSweepGC 全部禁用。
@@ -108,7 +110,7 @@ class MarkSweepGC : public GarbageCollector
 	bool m_pause{ false };
 };
 
-#else // PYLANG_USE_ARENA
+#else// PYLANG_USE_ARENA
 
 // =============================================================================
 // Arena 模式: Cell 替代品
@@ -139,4 +141,4 @@ class Cell
 	virtual bool is_pyobject() const { return false; }
 };
 
-#endif // PYLANG_USE_ARENA
+#endif// PYLANG_USE_ARENA

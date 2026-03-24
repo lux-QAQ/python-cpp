@@ -4,9 +4,9 @@
 #include "runtime/PyModule.hpp"
 #include "runtime/PyNone.hpp"
 #include "runtime/PyString.hpp"
+#include "runtime/builtinTypeInit.hpp"
 #include "runtime/modules/Modules.hpp"
 #include "runtime/modules/config.hpp"
-#include "runtime/builtinTypeInit.hpp"
 
 #include <gtest/gtest.h>
 #include <string>

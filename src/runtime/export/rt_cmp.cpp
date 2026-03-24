@@ -1,10 +1,10 @@
 #include "rt_common.hpp"
 
 #include "runtime/PyBool.hpp"
-#include "runtime/PyDict.hpp"    // <-- 新增
-#include "runtime/PyList.hpp"    // <-- 新增
-#include "runtime/types/builtin.hpp" // <-- 新增
+#include "runtime/PyDict.hpp"// <-- 新增
+#include "runtime/PyList.hpp"// <-- 新增
 #include "runtime/taggered_pointer/RtValue.hpp"
+#include "runtime/types/builtin.hpp"// <-- 新增
 
 // =============================================================================
 // Tier 2: 比较操作
@@ -67,58 +67,60 @@ py::PyObject *rt_compare_is_not(py::PyObject *lhs, py::PyObject *rhs)
 PYLANG_EXPORT_CMP("compare_in", "obj", "obj,obj")
 py::PyObject *rt_compare_in(py::PyObject *value, py::PyObject *container)
 {
-    auto *b_container = py::ensure_box(container);
-    py::RtValue r_val = py::RtValue::flatten(value);
+	auto *b_container = py::ensure_box(container);
+	py::RtValue r_val = py::RtValue::flatten(value);
 
-    // [极致优化]：Dict Fast Path (O(1))
-    if (b_container->type() == py::types::dict()) {
-        auto *dict = static_cast<py::PyDict *>(b_container);
-        // Value(r_val) 会正确根据类型放入 variant
-        bool found = dict->map().find(r_val.to_value()) != dict->map().end();
-        return found ? py::py_true() : py::py_false();
-    }
+	// [极致优化]：Dict Fast Path (O(1))
+	if (b_container->type() == py::types::dict()) {
+		auto *dict = static_cast<py::PyDict *>(b_container);
+		// Value(r_val) 会正确根据类型放入 variant
+		bool found = dict->map().find(r_val.to_value()) != dict->map().end();
+		return found ? py::py_true() : py::py_false();
+	}
 
-    // [极致优化]：List Fast Path (安全版)
-    if (b_container->type() == py::types::list()) {
-        auto *list = static_cast<py::PyList *>(b_container);
-        bool found = false;
-        for (const auto& item : list->elements()) {
-            // [核心修复]：使用 RtValue::compare_eq 屏蔽底层 variant 的解引用风险
-            if (py::RtValue::compare_eq(py::RtValue::from_value(item), r_val).is_truthy()) {
-                found = true; break;
-            }
-        }
-        return found ? py::py_true() : py::py_false();
-    }
+	// [极致优化]：List Fast Path (安全版)
+	if (b_container->type() == py::types::list()) {
+		auto *list = static_cast<py::PyList *>(b_container);
+		bool found = false;
+		for (const auto &item : list->elements()) {
+			// [核心修复]：使用 RtValue::compare_eq 屏蔽底层 variant 的解引用风险
+			if (py::RtValue::compare_eq(py::RtValue::from_value(item), r_val).is_truthy()) {
+				found = true;
+				break;
+			}
+		}
+		return found ? py::py_true() : py::py_false();
+	}
 
-    bool result = rt_unwrap(b_container->contains(py::ensure_box(value)));
-    return result ? py::py_true() : py::py_false();
+	bool result = rt_unwrap(b_container->contains(py::ensure_box(value)));
+	return result ? py::py_true() : py::py_false();
 }
 
 PYLANG_EXPORT_CMP("compare_not_in", "obj", "obj,obj")
 py::PyObject *rt_compare_not_in(py::PyObject *value, py::PyObject *container)
 {
-    // 逻辑同上，仅返回值取反
-    auto *b_container = py::ensure_box(container);
-    py::RtValue r_val = py::RtValue::flatten(value);
+	// 逻辑同上，仅返回值取反
+	auto *b_container = py::ensure_box(container);
+	py::RtValue r_val = py::RtValue::flatten(value);
 
-    if (b_container->type() == py::types::dict()) {
-        auto *dict = static_cast<py::PyDict *>(b_container);
-        bool found = dict->map().find(r_val.to_value()) != dict->map().end();
-        return found ? py::py_false() : py::py_true();
-    }
+	if (b_container->type() == py::types::dict()) {
+		auto *dict = static_cast<py::PyDict *>(b_container);
+		bool found = dict->map().find(r_val.to_value()) != dict->map().end();
+		return found ? py::py_false() : py::py_true();
+	}
 
-    if (b_container->type() == py::types::list()) {
-        auto *list = static_cast<py::PyList *>(b_container);
-        bool found = false;
-        for (const auto& item : list->elements()) {
-            if (py::RtValue::compare_eq(py::RtValue::from_value(item), r_val).is_truthy()) {
-                found = true; break;
-            }
-        }
-        return found ? py::py_false() : py::py_true();
-    }
+	if (b_container->type() == py::types::list()) {
+		auto *list = static_cast<py::PyList *>(b_container);
+		bool found = false;
+		for (const auto &item : list->elements()) {
+			if (py::RtValue::compare_eq(py::RtValue::from_value(item), r_val).is_truthy()) {
+				found = true;
+				break;
+			}
+		}
+		return found ? py::py_false() : py::py_true();
+	}
 
-    bool result = rt_unwrap(b_container->contains(py::ensure_box(value)));
-    return result ? py::py_false() : py::py_true();
+	bool result = rt_unwrap(b_container->contains(py::ensure_box(value)));
+	return result ? py::py_false() : py::py_true();
 }

@@ -26,4 +26,4 @@ struct TestHeap : ::testing::Test
 	void TearDown() final { m_heap->reset(); }
 };
 
-#endif // PYLANG_USE_ARENA
+#endif// PYLANG_USE_ARENA

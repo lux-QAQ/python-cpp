@@ -22,35 +22,35 @@ std::vector<std::string_view> RuntimeFunction::params() const
 // RuntimeLinker::create
 // =============================================================================
 Result<RuntimeLinker> RuntimeLinker::create(LLVMModuleLoader &loader,
-    const std::filesystem::path &bitcode_path)
+	const std::filesystem::path &bitcode_path)
 {
-    auto mod_res = loader.load_bitcode(bitcode_path);
-    // [FIX] 使用 unexpected 包装错误
-    if (!mod_res) { return std::unexpected(mod_res.error()); }
+	auto mod_res = loader.load_bitcode(bitcode_path);
+	// [FIX] 使用 unexpected 包装错误
+	if (!mod_res) { return std::unexpected(mod_res.error()); }
 
-    auto clone_res = loader.clone_module(*mod_res); 
-    // [FIX] 使用 unexpected 包装错误
-    if (!clone_res) { return std::unexpected(clone_res.error()); }
+	auto clone_res = loader.clone_module(*mod_res);
+	// [FIX] 使用 unexpected 包装错误
+	if (!clone_res) { return std::unexpected(clone_res.error()); }
 
-    // [FIX] 使用移动语义调用私有构造函数
-    return RuntimeLinker(std::move(*clone_res));
+	// [FIX] 使用移动语义调用私有构造函数
+	return RuntimeLinker(std::move(*clone_res));
 }
 
 // =============================================================================
 // RuntimeLinker::create_from_memory
 // =============================================================================
 Result<RuntimeLinker> RuntimeLinker::create_from_memory(LLVMModuleLoader &loader,
-        std::string_view bc_data)
+	std::string_view bc_data)
 {
-    auto mod = loader.load_from_memory(bc_data, "runtime.bc");
-    // [FIX] 使用 pylang::Error 避免歧义
-    if (!mod) { 
-        
-        spdlog::error("Failed to load runtime from memory: {}", "Invalid bitcode data");
-        std::abort();
-    }
-    
-    return RuntimeLinker(std::move(mod));
+	auto mod = loader.load_from_memory(bc_data, "runtime.bc");
+	// [FIX] 使用 pylang::Error 避免歧义
+	if (!mod) {
+
+		spdlog::error("Failed to load runtime from memory: {}", "Invalid bitcode data");
+		std::abort();
+	}
+
+	return RuntimeLinker(std::move(mod));
 }
 
 // =============================================================================
@@ -394,15 +394,14 @@ VoidResult RuntimeLinker::link_into(llvm::Module *user_module)
 }
 
 // [FIX] 实现私有构造函数
-RuntimeLinker::RuntimeLinker(std::unique_ptr<llvm::Module> mod)
-    : m_runtime_module(std::move(mod))
+RuntimeLinker::RuntimeLinker(std::unique_ptr<llvm::Module> mod) : m_runtime_module(std::move(mod))
 {
-    // 在构造时直接扫描，使得构造出的对象即是初始化完毕的
-    if (auto res = scan_annotations(); !res.has_value()) {
-         log::linker()->error("Failed to scan annotations: {}", res.error().message());
-         // 注意：构造函数不能返回值，如果这里扫描失败是一个严重错误。
-         // 更好的设计是将 scan_annotations 放在工厂方法 create 中调用。
-    }
+	// 在构造时直接扫描，使得构造出的对象即是初始化完毕的
+	if (auto res = scan_annotations(); !res.has_value()) {
+		log::linker()->error("Failed to scan annotations: {}", res.error().message());
+		// 注意：构造函数不能返回值，如果这里扫描失败是一个严重错误。
+		// 更好的设计是将 scan_annotations 放在工厂方法 create 中调用。
+	}
 }
 
 }// namespace pylang

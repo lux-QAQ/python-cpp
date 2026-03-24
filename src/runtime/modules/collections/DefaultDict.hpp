@@ -11,7 +11,7 @@ namespace collections {
 #ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
 #endif
-	friend class ::py::Arena;
+		friend class ::py::Arena;
 
 		PyObject *m_default_factory;
 

@@ -285,7 +285,6 @@ bool MLIRGenerator::compile(std::shared_ptr<ast::Module> m,
 }
 
 
-
 std::optional<mlir::Block *> MLIRGenerator::unhappy_path() const
 {
 	if (scope().unhappy_path.empty()) { return std::nullopt; }

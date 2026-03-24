@@ -178,4 +178,4 @@ uint8_t *Heap::allocate_gc(uint8_t *ptr) const
 	return ptr + sizeof(GarbageCollected);
 }
 
-#endif // PYLANG_USE_ARENA
+#endif// PYLANG_USE_ARENA

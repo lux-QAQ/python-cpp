@@ -75,8 +75,7 @@ PyResult<PyBuiltInMethod *> PyBuiltInMethod::create(MethodDefinition &method_def
 PyType *PyBuiltInMethod::static_type() const { return types::builtin_method(); }
 */
 
-	namespace
-{
+namespace {
 
 	std::once_flag builtin_method_flag;
 

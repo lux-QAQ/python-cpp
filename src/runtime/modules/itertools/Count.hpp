@@ -8,7 +8,7 @@ namespace itertools {
 #ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
 #endif
-	friend class ::py::Arena;
+		friend class ::py::Arena;
 
 		Number m_start{ 0 };
 		Number m_step{ 1 };

@@ -920,37 +920,37 @@ TEST_F(PylangCodegenTest, DeleteGlobal)
 // =============================================================================
 TEST_F(PylangCodegenTest, TryExceptBasic)
 {
-    // try:
-    //     pass
-    // except:
-    //     pass
-    ast::Module mod("<test>");
-    auto pass = std::make_shared<ast::Pass>(loc());
+	// try:
+	//     pass
+	// except:
+	//     pass
+	ast::Module mod("<test>");
+	auto pass = std::make_shared<ast::Pass>(loc());
 
-    // except (bare)
-    // 修复: 使用 "" 而非 std::nullopt (AST 定义 name 为 std::string)
-    auto handler = std::make_shared<ast::ExceptHandler>(
-        nullptr, "", std::vector<std::shared_ptr<ast::ASTNode>>{ pass }, loc());
+	// except (bare)
+	// 修复: 使用 "" 而非 std::nullopt (AST 定义 name 为 std::string)
+	auto handler = std::make_shared<ast::ExceptHandler>(
+		nullptr, "", std::vector<std::shared_ptr<ast::ASTNode>>{ pass }, loc());
 
-    auto try_stmt = std::make_shared<ast::Try>(
-        std::vector<std::shared_ptr<ast::ASTNode>>{ pass },          // body
-        std::vector<std::shared_ptr<ast::ExceptHandler>>{ handler }, // handlers
-        std::vector<std::shared_ptr<ast::ASTNode>>{},                // orelse
-        std::vector<std::shared_ptr<ast::ASTNode>>{},                // finally
-        loc());
-    mod.emplace(try_stmt);
+	auto try_stmt =
+		std::make_shared<ast::Try>(std::vector<std::shared_ptr<ast::ASTNode>>{ pass },// body
+			std::vector<std::shared_ptr<ast::ExceptHandler>>{ handler },// handlers
+			std::vector<std::shared_ptr<ast::ASTNode>>{},// orelse
+			std::vector<std::shared_ptr<ast::ASTNode>>{},// finally
+			loc());
+	mod.emplace(try_stmt);
 
-    auto ir = compile_module(mod);
-    if (ir.empty()) { return; }
+	auto ir = compile_module(mod);
+	if (ir.empty()) { return; }
 
-    // 检查 EH 基础设施
-    EXPECT_TRUE(ir_contains(ir, "landingpad"));
-    // EXPECT_TRUE(ir_contains(ir, "personality")); // 有些平台可能隐式处理
-    EXPECT_TRUE(ir_contains(ir, "__gxx_personality_v0"));
+	// 检查 EH 基础设施
+	EXPECT_TRUE(ir_contains(ir, "landingpad"));
+	// EXPECT_TRUE(ir_contains(ir, "personality")); // 有些平台可能隐式处理
+	EXPECT_TRUE(ir_contains(ir, "__gxx_personality_v0"));
 
-    // 检查异常运行时调用
-    EXPECT_TRUE(ir_calls_rt(ir, "rt_catch_begin"));
-    // catch_end 可能因为 pass 被优化或逻辑结构而出现在不同位置，但 catch_begin 必须有
+	// 检查异常运行时调用
+	EXPECT_TRUE(ir_calls_rt(ir, "rt_catch_begin"));
+	// catch_end 可能因为 pass 被优化或逻辑结构而出现在不同位置，但 catch_begin 必须有
 }
 
 TEST_F(PylangCodegenTest, TryFinally)
@@ -990,65 +990,65 @@ TEST_F(PylangCodegenTest, TryFinally)
 // =============================================================================
 TEST_F(PylangCodegenTest, WithStatement)
 {
-    // with x:
-    //     pass
-    ast::Module mod("<test>");
-    auto context_expr = std::make_shared<ast::Name>("x", ast::ContextType::LOAD, loc());
-    auto with_item = std::make_shared<ast::WithItem>(context_expr, nullptr, loc());
+	// with x:
+	//     pass
+	ast::Module mod("<test>");
+	auto context_expr = std::make_shared<ast::Name>("x", ast::ContextType::LOAD, loc());
+	auto with_item = std::make_shared<ast::WithItem>(context_expr, nullptr, loc());
 
-    auto with_stmt =
-        std::make_shared<ast::With>(std::vector<std::shared_ptr<ast::WithItem>>{ with_item },
-            std::vector<std::shared_ptr<ast::ASTNode>>{ std::make_shared<ast::Pass>(loc()) },
-            "",
-            loc());
-    mod.emplace(with_stmt);
+	auto with_stmt =
+		std::make_shared<ast::With>(std::vector<std::shared_ptr<ast::WithItem>>{ with_item },
+			std::vector<std::shared_ptr<ast::ASTNode>>{ std::make_shared<ast::Pass>(loc()) },
+			"",
+			loc());
+	mod.emplace(with_stmt);
 
-    auto ir = compile_module(mod);
-    if (ir.empty()) { return; }
+	auto ir = compile_module(mod);
+	if (ir.empty()) { return; }
 
-    // __enter__ 和 __exit__ 调用
-    EXPECT_TRUE(ir_contains(ir, "__enter__"));
-    EXPECT_TRUE(ir_contains(ir, "__exit__"));
+	// __enter__ 和 __exit__ 调用
+	EXPECT_TRUE(ir_contains(ir, "__enter__"));
+	EXPECT_TRUE(ir_contains(ir, "__exit__"));
 
-    // with 语句应生成 landingpad（用于 body 中异常的 cleanup）
-    EXPECT_TRUE(ir_contains(ir, "landingpad"));
+	// with 语句应生成 landingpad（用于 body 中异常的 cleanup）
+	EXPECT_TRUE(ir_contains(ir, "landingpad"));
 
-    // body 只有 pass，不产生 runtime call，所以不会有 invoke。
-    // 但 __enter__/__exit__ 的 getattr/call 在 try 保护区之外，
-    // 按 Python 语义正确地生成 call 而非 invoke。
-    // 如果 body 中有实际操作（如函数调用），则会生成 invoke。
+	// body 只有 pass，不产生 runtime call，所以不会有 invoke。
+	// 但 __enter__/__exit__ 的 getattr/call 在 try 保护区之外，
+	// 按 Python 语义正确地生成 call 而非 invoke。
+	// 如果 body 中有实际操作（如函数调用），则会生成 invoke。
 }
 
 TEST_F(PylangCodegenTest, WithStatementInvoke)
 {
-    // with x:
-    //     y = 1 + 2   ← 会生成 invoke（在 try 保护区内）
-    ast::Module mod("<test>");
-    auto context_expr = std::make_shared<ast::Name>("x", ast::ContextType::LOAD, loc());
-    auto with_item = std::make_shared<ast::WithItem>(context_expr, nullptr, loc());
+	// with x:
+	//     y = 1 + 2   ← 会生成 invoke（在 try 保护区内）
+	ast::Module mod("<test>");
+	auto context_expr = std::make_shared<ast::Name>("x", ast::ContextType::LOAD, loc());
+	auto with_item = std::make_shared<ast::WithItem>(context_expr, nullptr, loc());
 
-    auto lhs = std::make_shared<ast::Constant>(int64_t(1), loc());
-    auto rhs = std::make_shared<ast::Constant>(int64_t(2), loc());
-    auto binop = std::make_shared<ast::BinaryExpr>(ast::BinaryOpType::PLUS, lhs, rhs, loc());
-    auto target = std::make_shared<ast::Name>("y", ast::ContextType::STORE, loc());
-    auto assign = std::make_shared<ast::Assign>(
-        std::vector<std::shared_ptr<ast::ASTNode>>{ target }, binop, "", loc());
+	auto lhs = std::make_shared<ast::Constant>(int64_t(1), loc());
+	auto rhs = std::make_shared<ast::Constant>(int64_t(2), loc());
+	auto binop = std::make_shared<ast::BinaryExpr>(ast::BinaryOpType::PLUS, lhs, rhs, loc());
+	auto target = std::make_shared<ast::Name>("y", ast::ContextType::STORE, loc());
+	auto assign = std::make_shared<ast::Assign>(
+		std::vector<std::shared_ptr<ast::ASTNode>>{ target }, binop, "", loc());
 
-    auto with_stmt =
-        std::make_shared<ast::With>(std::vector<std::shared_ptr<ast::WithItem>>{ with_item },
-            std::vector<std::shared_ptr<ast::ASTNode>>{ assign },
-            "",
-            loc());
-    mod.emplace(with_stmt);
+	auto with_stmt =
+		std::make_shared<ast::With>(std::vector<std::shared_ptr<ast::WithItem>>{ with_item },
+			std::vector<std::shared_ptr<ast::ASTNode>>{ assign },
+			"",
+			loc());
+	mod.emplace(with_stmt);
 
-    auto ir = compile_module(mod);
-    if (ir.empty()) { return; }
+	auto ir = compile_module(mod);
+	if (ir.empty()) { return; }
 
-    EXPECT_TRUE(ir_contains(ir, "__enter__"));
-    EXPECT_TRUE(ir_contains(ir, "__exit__"));
-    EXPECT_TRUE(ir_contains(ir, "landingpad"));
-    // body 中的 binary_add 在 try 保护区内，应生成 invoke
-    EXPECT_TRUE(ir_contains(ir, "invoke"));
+	EXPECT_TRUE(ir_contains(ir, "__enter__"));
+	EXPECT_TRUE(ir_contains(ir, "__exit__"));
+	EXPECT_TRUE(ir_contains(ir, "landingpad"));
+	// body 中的 binary_add 在 try 保护区内，应生成 invoke
+	EXPECT_TRUE(ir_contains(ir, "invoke"));
 }
 
 // =============================================================================
@@ -1115,4 +1115,3 @@ TEST_F(PylangCodegenTest, TupleUnpack)
 	// 应调用 unpack_sequence
 	EXPECT_TRUE(ir_calls_rt(ir, "rt_unpack_sequence"));
 }
-

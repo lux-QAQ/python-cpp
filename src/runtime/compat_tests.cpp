@@ -1,13 +1,14 @@
 #include "gtest/gtest.h"
 
-#include "runtime/compat.hpp"
 #include "runtime/PyObject.hpp"
+#include "runtime/compat.hpp"
 #include "types/builtin.hpp"
 
 using namespace py;
 
 // Small test-only type used to exercise PYLANG_ALLOC behavior.
-struct TestCompatObject : public PyBaseObject {
+struct TestCompatObject : public PyBaseObject
+{
 	TestCompatObject() : PyBaseObject(types::object()) {}
 	std::string to_string() const override { return "test_compat"; }
 };

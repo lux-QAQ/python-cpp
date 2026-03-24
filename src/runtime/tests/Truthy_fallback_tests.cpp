@@ -102,7 +102,7 @@ TEST_F(TruthyFallbackTest, NonEmptyStringIsTruthy)
 TEST_F(TruthyFallbackTest, NonEmptyListIsTruthy)
 {
 	auto *list = PyList::create().unwrap();
-	list->append(py_none() );
+	list->append(py_none());
 	EXPECT_TRUE(ctx.is_true(list));
 }
 

@@ -7,10 +7,10 @@
 #include "runtime/StopIteration.hpp"
 #include "runtime/TypeError.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/compat.hpp"
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
 #include <variant>
-#include "runtime/compat.hpp"
 
 namespace py {
 namespace {
@@ -27,8 +27,7 @@ namespace itertools {
 	PyResult<PyObject *> Product::create(PyObject *iterable, std::optional<size_t> repeat)
 	{
 		if (repeat.has_value() && repeat == 0) {
-			auto *obj = PYLANG_ALLOC(Product, 
-				PyList::create().unwrap(), size_t{ 0 });
+			auto *obj = PYLANG_ALLOC(Product, PyList::create().unwrap(), size_t{ 0 });
 			if (!obj) { return Err(memory_error(sizeof(Product))); }
 			return Ok(obj);
 		}

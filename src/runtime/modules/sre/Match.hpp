@@ -9,7 +9,7 @@ namespace sre {
 #ifndef PYLANG_USE_ARENA
 		friend class ::Heap;
 #endif
-	friend class ::py::Arena;
+		friend class ::py::Arena;
 
 		Match();
 		Match(PyType *);

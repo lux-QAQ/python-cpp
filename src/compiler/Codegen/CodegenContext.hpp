@@ -294,26 +294,26 @@ class CodegenContext
 	/// 收集当前 scope 中所有 CELL 和 FREE 变量名
 	/// @param[out] cell_vars  当前函数中需要创建 cell 的变量
 	/// @param[out] free_vars  当前函数中需要从闭包提取的变量
-    void collect_cell_and_free_vars(VariablesResolver::Scope *scope,
-        std::vector<std::string> &cell_vars,
-        std::vector<std::string> &free_vars) const
-    {
-        if (!scope) { return; }
+	void collect_cell_and_free_vars(VariablesResolver::Scope *scope,
+		std::vector<std::string> &cell_vars,
+		std::vector<std::string> &free_vars) const
+	{
+		if (!scope) { return; }
 
-        // 修复: SymbolMap 不是 std::map，需要迭代内部的 .symbols vector
-        // Symbol 结构: { std::string name; Visibility visibility; SourceLocation source_location; }
-        for (const auto &sym : scope->symbol_map.symbols) {
-            if (sym.visibility == Visibility::CELL) {
-                cell_vars.push_back(sym.name);
-            } else if (sym.visibility == Visibility::FREE) {
-                free_vars.push_back(sym.name);
-            }
-        }
+		// 修复: SymbolMap 不是 std::map，需要迭代内部的 .symbols vector
+		// Symbol 结构: { std::string name; Visibility visibility; SourceLocation source_location; }
+		for (const auto &sym : scope->symbol_map.symbols) {
+			if (sym.visibility == Visibility::CELL) {
+				cell_vars.push_back(sym.name);
+			} else if (sym.visibility == Visibility::FREE) {
+				free_vars.push_back(sym.name);
+			}
+		}
 
-        // 排序确保闭包 tuple 索引确定性（AOT 模式下替代 CPython 的 co_freevars 数组）
-        std::sort(cell_vars.begin(), cell_vars.end());
-        std::sort(free_vars.begin(), free_vars.end());
-    }
+		// 排序确保闭包 tuple 索引确定性（AOT 模式下替代 CPython 的 co_freevars 数组）
+		std::sort(cell_vars.begin(), cell_vars.end());
+		std::sort(free_vars.begin(), free_vars.end());
+	}
 
   private:
 	llvm::IRBuilder<> &m_builder;

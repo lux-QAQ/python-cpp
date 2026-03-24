@@ -19,29 +19,29 @@ namespace py {
 class KeyVersionTracker
 {
   public:
-    /// 获取 key 的当前版本号（0 = 从未写入）
-    uint64_t get(const std::string &key) const
-    {
-        std::lock_guard lock(m_mutex);
-        auto it = m_versions.find(key);
-        if (it == m_versions.end()) return 0;
-        return it->second.load(std::memory_order_relaxed);
-    }
+	/// 获取 key 的当前版本号（0 = 从未写入）
+	uint64_t get(const std::string &key) const
+	{
+		std::lock_guard lock(m_mutex);
+		auto it = m_versions.find(key);
+		if (it == m_versions.end()) return 0;
+		return it->second.load(std::memory_order_relaxed);
+	}
 
-    /// 递增 key 的版本号
-    void bump(const std::string &key)
-    {
-        std::lock_guard lock(m_mutex);
-        auto [it, inserted] = m_versions.try_emplace(key, 0);
-        it->second.fetch_add(1, std::memory_order_relaxed);
-    }
+	/// 递增 key 的版本号
+	void bump(const std::string &key)
+	{
+		std::lock_guard lock(m_mutex);
+		auto [it, inserted] = m_versions.try_emplace(key, 0);
+		it->second.fetch_add(1, std::memory_order_relaxed);
+	}
 
-    /// 是否包含该 key
-    bool contains(const std::string &key) const { return m_versions.contains(key); }
+	/// 是否包含该 key
+	bool contains(const std::string &key) const { return m_versions.contains(key); }
 
   private:
-     mutable std::mutex m_mutex;
-    std::unordered_map<std::string, std::atomic<uint64_t>> m_versions;
+	mutable std::mutex m_mutex;
+	std::unordered_map<std::string, std::atomic<uint64_t>> m_versions;
 };
 
 }// namespace py

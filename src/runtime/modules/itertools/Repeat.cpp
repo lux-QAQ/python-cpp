@@ -3,8 +3,8 @@
 #include "runtime/PyArgParser.hpp"
 #include "runtime/PyNone.hpp"
 #include "runtime/StopIteration.hpp"
-#include "runtime/types/api.hpp"
 #include "runtime/compat.hpp"
+#include "runtime/types/api.hpp"
 
 namespace py {
 namespace {

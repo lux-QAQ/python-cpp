@@ -75,7 +75,7 @@ class RuntimeLinker
 	VoidResult scan_annotations();
 	Result<RuntimeFunction> parse_annotation(std::string_view annotation_str, llvm::Function *func);
 
-	std::unique_ptr<llvm::Module> m_runtime_module; 
+	std::unique_ptr<llvm::Module> m_runtime_module;
 	std::unordered_map<std::string, RuntimeFunction> m_functions;
 
 	RuntimeLinkerOptions m_options;

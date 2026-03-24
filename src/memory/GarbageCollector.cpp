@@ -331,4 +331,4 @@ void MarkSweepGC::pause()
 
 bool MarkSweepGC::is_active() const { return !m_pause; }
 
-#endif // PYLANG_USE_ARENA
+#endif// PYLANG_USE_ARENA

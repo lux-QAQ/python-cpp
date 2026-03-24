@@ -87,11 +87,11 @@ PyTuple::PyTuple(std::vector<Value> &&elements)
 }
 
 PyTuple::PyTuple(py::GCVector<Value> &&elements)
-    : PyBaseObject(types::tuple()), m_elements(std::move(elements))
+	: PyBaseObject(types::tuple()), m_elements(std::move(elements))
 {}
 
 PyTuple::PyTuple(PyType *type, py::GCVector<Value> &&elements)
-    : PyBaseObject(type), m_elements(std::move(elements))
+	: PyBaseObject(type), m_elements(std::move(elements))
 {}
 
 PyTuple::PyTuple() : PyTuple(std::vector<Value>{}) {}

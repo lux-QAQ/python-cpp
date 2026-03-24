@@ -8,12 +8,12 @@
 #include "runtime/StopIteration.hpp"
 #include "runtime/TypeError.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/compat.hpp"
 #include "runtime/forward.hpp"
 #include "runtime/types/api.hpp"
 #include "runtime/types/builtin.hpp"
 #include "utilities.hpp"
 #include <variant>
-#include "runtime/compat.hpp"
 
 namespace py {
 namespace {

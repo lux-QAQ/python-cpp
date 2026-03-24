@@ -28,7 +28,7 @@ template<typename T> struct klass
 	klass(PyModule *module, std::string_view name, BaseType &&...bases)
 		: type(TypePrototype::create<T>(name)), m_module(module)
 	{
-	
+
 		type->__bases__ = std::vector<PyType *>{ bases... };
 	}
 
@@ -38,7 +38,7 @@ template<typename T> struct klass
 		requires(std::is_same_v<std::remove_reference_t<BaseType>, PyType *> && ...)
 	klass(std::string_view name, BaseType &&...bases) : type(TypePrototype::create<T>(name))
 	{
-		
+
 		type->__bases__ = std::vector<PyType *>{ bases... };
 	}
 

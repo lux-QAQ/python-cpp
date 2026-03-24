@@ -80,37 +80,36 @@ PyResult<PyObject *>
 	if (class_name_.is_err()) { return Err(class_name_.unwrap_err()); }
 	auto *class_name = class_name_.unwrap();
 
-    auto ns_ = [metaclass, class_name, bases, kwargs]() -> PyResult<PyObject *> {
-        if (metaclass == types::type()) {
-            return PyDict::create();
-        } else {
-            auto prepare = PyString::create("__prepare__");
-            if (prepare.is_err()) { return Err(prepare.unwrap_err()); }
+	auto ns_ = [metaclass, class_name, bases, kwargs]() -> PyResult<PyObject *> {
+		if (metaclass == types::type()) {
+			return PyDict::create();
+		} else {
+			auto prepare = PyString::create("__prepare__");
+			if (prepare.is_err()) { return Err(prepare.unwrap_err()); }
 
-            // 过滤掉 metaclass= 关键字
-            PyDict *new_kwargs = nullptr;
-            if (kwargs && !kwargs->map().empty()) {
-                auto prepare_kwargs = kwargs->map();
-                prepare_kwargs.erase(String{ "metaclass" });
-                if (!prepare_kwargs.empty()) {
-                    auto kw = PyDict::create(prepare_kwargs);
-                    if (kw.is_err()) { return Err(kw.unwrap_err()); }
-                    new_kwargs = kw.unwrap();
-                }
-            }
+			// 过滤掉 metaclass= 关键字
+			PyDict *new_kwargs = nullptr;
+			if (kwargs && !kwargs->map().empty()) {
+				auto prepare_kwargs = kwargs->map();
+				prepare_kwargs.erase(String{ "metaclass" });
+				if (!prepare_kwargs.empty()) {
+					auto kw = PyDict::create(prepare_kwargs);
+					if (kw.is_err()) { return Err(kw.unwrap_err()); }
+					new_kwargs = kw.unwrap();
+				}
+			}
 
-            auto result = metaclass->lookup_attribute(prepare.unwrap());
-            if (std::get<0>(result).is_ok()
-                && std::get<1>(result) == LookupAttrResult::FOUND) {
-                auto prepare_fn = std::get<0>(result).unwrap();
-                auto args = PyTuple::create(class_name, bases);
-                if (args.is_err()) { return Err(args.unwrap_err()); }
-                return prepare_fn->call(args.unwrap(), new_kwargs);
-            } else {
-                return PyDict::create();
-            }
-        }
-    }();
+			auto result = metaclass->lookup_attribute(prepare.unwrap());
+			if (std::get<0>(result).is_ok() && std::get<1>(result) == LookupAttrResult::FOUND) {
+				auto prepare_fn = std::get<0>(result).unwrap();
+				auto args = PyTuple::create(class_name, bases);
+				if (args.is_err()) { return Err(args.unwrap_err()); }
+				return prepare_fn->call(args.unwrap(), new_kwargs);
+			} else {
+				return PyDict::create();
+			}
+		}
+	}();
 
 	if (ns_.is_err()) { return ns_; }
 	auto *ns = ns_.unwrap();
