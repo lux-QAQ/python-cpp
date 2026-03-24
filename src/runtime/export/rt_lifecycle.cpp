@@ -204,7 +204,7 @@ void rt_init()
 	GC_set_warn_proc(pylang_gc_warn_proc);
 	GC_set_finalize_on_demand(0);
 
-	// [新增] 预膨胀 Finalizer Table
+	// 预膨胀 Finalizer Table
 	const int K_DUMMY_ENTRIES = 512 * 1024 * 10;
 	void **dummy = (void **)GC_MALLOC(sizeof(void *) * K_DUMMY_ENTRIES);
 	for (int i = 0; i < K_DUMMY_ENTRIES; ++i) {

@@ -1823,7 +1823,7 @@ namespace {
 		return std::move(klass<PyObject>("object")
 				.property_readonly("__class__",
 					[](PyObject *self) -> PyResult<PyObject *> {
-						// [修复]: 显式转为 PyObject* 并包裹
+						// 显式转为 PyObject* 并包裹
 						return Ok(static_cast<PyObject *>(self->type()));
 					})
 				.type);

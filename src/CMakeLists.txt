@@ -318,7 +318,7 @@ if(ENABLE_RUNTIME_ARENA)
     # [全局暴露]: 让 MLIR 等未继承 python-cpp public 依赖的目录也能找到 gc.h
     include_directories(${bdwgc_SOURCE_DIR}/include)
 
-    # [修复]: 增加 GC_THREADS 宏，让 C++ 代码能看到多线程 API
+    # 增加 GC_THREADS 宏，让 C++ 代码能看到多线程 API
     target_compile_definitions(python-cpp PUBLIC PYLANG_USE_Boehm_GC GC_THREADS)
   endif()
 endif()
@@ -575,7 +575,7 @@ if(LLVM_FOUND)
     endif()
   endif()
 
-  # [修正]: 增加对 cpptrace::cpptrace 命名空间 Target 的检查
+  # 增加对 cpptrace::cpptrace 命名空间 Target 的检查
   if(TARGET cpptrace::cpptrace)
     set(LIB_CPTRACE "$<TARGET_FILE:cpptrace::cpptrace>")
   elseif(TARGET cpptrace)
@@ -584,7 +584,7 @@ if(LLVM_FOUND)
     find_library(LIB_CPTRACE NAMES libcpptrace.a cpptrace)
   endif()
 
-  # [修复]: 正确解析 libdwarf 静态库路径
+  # 正确解析 libdwarf 静态库路径
   if(TARGET libdwarf::dwarf)
     set(LIB_DWARF "$<TARGET_FILE:libdwarf::dwarf>")
   elseif(TARGET dwarf)
@@ -599,7 +599,7 @@ if(LLVM_FOUND)
     endif()
   endif()
 
-  # [新增] 获取 Boehm GC 静态库路径
+  # 获取 Boehm GC 静态库路径
   if(TARGET gc)
     set(LIB_GC_STATIC "$<TARGET_FILE:gc>")
     set(GC_EMBED_ARG "LIB_GC=${LIB_GC_STATIC};")
@@ -617,11 +617,11 @@ if(LLVM_FOUND)
       COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/generated"
       COMMAND ${CMAKE_COMMAND}
       -DOUTPUT_HEADER=${EMBEDDED_HEADER}
-      # [修改] 把 GC_EMBED_ARG 塞进传递给脚本的宏里
+      # 把 GC_EMBED_ARG 塞进传递给脚本的宏里
       "-DFILES=RUNTIME_BC=${RUNTIME_BC_FILE};LIB_SPDLOG=${LIB_SPDLOG};LIB_GMP=${LIB_GMP_STATIC};LIB_GMPXX=${LIB_GMPXX_STATIC};LIB_ICUUC=${LIB_ICUUC_STATIC};LIB_ICUDATA=${LIB_ICUDATA_STATIC};LIB_CPPTRACE=${LIB_CPTRACE};LIB_DWARF=${LIB_DWARF};${GC_EMBED_ARG}"
       -P ${EMBED_SCRIPT}
-      # [修改] 把 GC_DEPEND 加入依赖列表
-      DEPENDS runtime_bitcode spdlog ${GC_DEPEND} ${LIB_GMP_STATIC} ${EMBED_SCRIPT}
+      # 改为依赖 runtime.bc 的文件路径（避免被当作源目录下的文件名）
+      DEPENDS ${RUNTIME_BC_FILE} spdlog ${GC_DEPEND} ${LIB_GMP_STATIC} ${EMBED_SCRIPT}
       COMMENT "Embedding runtime libraries and bitcode into pyc header..."
       VERBATIM
     )
@@ -645,6 +645,11 @@ if(LLVM_FOUND)
   if(TARGET gen_pyc_embedded_header)
     add_dependencies(pyc gen_pyc_embedded_header)
     target_link_libraries(pyc PRIVATE pyc_resources)
+  endif()
+
+  # 如果 runtime_bitcode 是一个 target，显式把它设为 gen_pyc_embedded_header 的依赖（确保会被构建）
+  if(TARGET runtime_bitcode)
+    add_dependencies(gen_pyc_embedded_header runtime_bitcode)
   endif()
 
   target_include_directories(pyc PRIVATE ${LLVM_INCLUDE_DIRS})

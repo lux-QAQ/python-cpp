@@ -98,7 +98,7 @@ endif()
 # [新增]: 将 yalantinglibs 的编译期反射库暴露给 wllvm
 if(DEFINED yalantinglibs_SOURCE_DIR)
   list(APPEND BC_INC "-isystem" "${yalantinglibs_SOURCE_DIR}/include")
-  # [修复]: 必须包含 ylt 的第三方库路径，否则找不到 frozen/string.h
+  # 必须包含 ylt 的第三方库路径，否则找不到 frozen/string.h
   list(APPEND BC_INC "-isystem" "${yalantinglibs_SOURCE_DIR}/include/ylt/thirdparty")
 endif()
 

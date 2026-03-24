@@ -84,14 +84,14 @@ inline void _pylang_debug_log_alloc(const char *type_name, std::atomic<size_t> &
 #define PYLANG_ALLOC_IMMORTAL(Type, ...) \
 	(PYLANG_DEBUG_LOG_ALLOC(Type), ::py::ArenaManager::program_arena().allocate<Type>(__VA_ARGS__))
 
-// [新增] 手动分配原子内存（GC 绝对不会扫描这块内存内部的指针）
+// 手动分配原子内存（GC 绝对不会扫描这块内存内部的指针）
 // 用于手动构造对象
 #define PYLANG_ALLOC_ATOMIC(Type, ...)                                                \
 	(PYLANG_DEBUG_LOG_ALLOC(Type),                                                    \
 		new (::py::Arena::current().allocate_raw<false>(sizeof(Type), alignof(Type))) \
 			Type(__VA_ARGS__))
 
-// [新增] 手动分配纯原子裸内存 (类似 malloc，不调构造)
+// 手动分配纯原子裸内存 (类似 malloc，不调构造)
 #define PYLANG_ALLOC_ATOMIC_RAW(Size) ::py::Arena::current().allocate_raw<false>(Size)
 
 #else

@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-// [修复]: 将所有条件包含的标准库提前到 namespace 外部！
+// 将所有条件包含的标准库提前到 namespace 外部！
 #if __has_include(<optional>)
 #include <optional>
 #endif
@@ -67,7 +67,7 @@ namespace gc {
 		{
 		};
 
-		// [修复]: 探测并拦截标准库内部节点
+		// 探测并拦截标准库内部节点
 		template<typename T> struct is_std_internal : std::false_type
 		{
 		};
@@ -85,7 +85,7 @@ namespace gc {
 		template<typename T,
 			bool IsReflectable = (std::is_aggregate_v<T> || ylt::reflection::is_ylt_refl_v<T>)
 								 && !std::is_array_v<T> && !std::is_union_v<T>
-								 && !is_std_internal<T>::value>// [修复]: 拦截标准库内部节点
+								 && !is_std_internal<T>::value>// 拦截标准库内部节点
 		struct safe_members_count : std::integral_constant<std::size_t, 0>
 		{
 		};
