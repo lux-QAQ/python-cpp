@@ -1,4 +1,6 @@
 #include "interpreter/InterpreterCore.hpp"
+#ifdef PYLANG_AOT_MODE
+
 #include "runtime/GeneratorInterface.hpp"// 现在会根据 PYLANG_AOT_MODE 提供正确的 StackFrame
 #include "runtime/PyFrame.hpp"
 #include "runtime/PyObject.hpp"
@@ -37,3 +39,5 @@ py::PyResult<py::PyObject *>
 {
 	aot_unreachable("Interpreter::call");
 }
+
+#endif

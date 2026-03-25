@@ -21,6 +21,12 @@
 #include <expected>
 #endif
 
+#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
+#define PYLANG_HAS_STD_EXPECTED 1
+#else
+#define PYLANG_HAS_STD_EXPECTED 0
+#endif
+
 // 针对 C++23 屏蔽第三方库 yalantinglibs/frozen 的弃用警告
 #ifdef __clang__
 #pragma clang system_header
@@ -157,7 +163,7 @@ namespace gc {
 	{
 	};
 #endif
-#if __has_include(<expected>)
+#if PYLANG_HAS_STD_EXPECTED
 	template<typename T, typename E>
 	struct is_atomic_impl<std::expected<T, E>>
 		: std::bool_constant<is_atomic<T>::value && is_atomic<E>::value>
@@ -221,7 +227,7 @@ namespace gc {
 	{
 	};
 #endif
-#if __has_include(<expected>)
+#if PYLANG_HAS_STD_EXPECTED
 	template<typename T, typename E>
 	struct is_trivial_dtor_impl<std::expected<T, E>>
 		: std::bool_constant<is_trivial_dtor<T>::value && is_trivial_dtor<E>::value>
