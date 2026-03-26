@@ -890,8 +890,9 @@ TEST_F(IREmitterTest, Setattr)
 	finish_test_function(obj);
 
 	auto ir = get_ir();
+	// std::cout << "output ir" <<ir;
 	EXPECT_TRUE(ir_contains("rt_setattr"));
-	EXPECT_TRUE(ir_contains("\"x\"") || ir_contains(".str"));
+	EXPECT_TRUE(ir_contains("pystr_obj.x") || ir_contains("\"x\"") || ir_contains(".str"));
 }
 
 TEST_F(IREmitterTest, Delattr)

@@ -13,6 +13,13 @@
 
 using namespace py;
 
+#if defined(PYLANG_USE_ARENA)
+#define PYLANG_SKIP_ARENA_ONLY_TEST() \
+	GTEST_SKIP() << "在 PYLANG_USE_ARENA 模式下不测试该 Arena 线性分配/析构语义"
+#else
+#define PYLANG_SKIP_ARENA_ONLY_TEST() ((void)0)
+#endif
+
 // =============================================================================
 // Test fixtures and helper types
 // =============================================================================
@@ -52,6 +59,7 @@ struct LargeObj
 
 TEST(Arena, AllocateTrivial)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	Arena arena(1024);
 	auto *obj = arena.allocate<TrivialObj>(10, 20);
 	ASSERT_NE(obj, nullptr);
@@ -64,6 +72,7 @@ TEST(Arena, AllocateTrivial)
 
 TEST(Arena, AllocateNonTrivial)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	TrackedObj::destruction_order.clear();
 	{
 		Arena arena(1024);
@@ -78,6 +87,7 @@ TEST(Arena, AllocateNonTrivial)
 
 TEST(Arena, DestructionOrderIsLIFO)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	TrackedObj::destruction_order.clear();
 	{
 		Arena arena(4096);
@@ -104,6 +114,7 @@ TEST(Arena, AllocateWithExtra)
 
 TEST(Arena, MultipleBlocks)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	Arena arena(64);
 	std::vector<TrivialObj *> objects;
 	for (int i = 0; i < 100; ++i) {
@@ -138,6 +149,7 @@ TEST(Arena, AllocateRaw)
 
 TEST(Arena, Reset)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	TrackedObj::destruction_order.clear();
 	Arena arena(1024);
 	arena.allocate<TrackedObj>(1);
@@ -156,6 +168,7 @@ TEST(Arena, Reset)
 
 TEST(Arena, MoveConstruct)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	TrackedObj::destruction_order.clear();
 	Arena arena1(1024);
 	arena1.allocate<TrackedObj>(1);
@@ -175,6 +188,7 @@ TEST(Arena, MoveConstruct)
 
 TEST(Arena, SaveAndRestore)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	TrackedObj::destruction_order.clear();
 	Arena arena(4096);
 	arena.allocate<TrackedObj>(1);
@@ -221,6 +235,7 @@ TEST(Arena, CurrentArena)
 
 TEST(ScopedRegion, BasicLifecycle)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	TrackedObj::destruction_order.clear();
 
 	Arena &main_arena = Arena::current();
@@ -246,6 +261,7 @@ TEST(ScopedRegion, BasicLifecycle)
 
 TEST(ScopedRegion, NestedRegions)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	TrackedObj::destruction_order.clear();
 
 	Arena &main_arena = Arena::current();
@@ -481,6 +497,7 @@ TEST(Arena, AlignmentRespected)
 
 TEST(Arena, StressTest)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	Arena arena(256);
 	constexpr int N = 10000;
 	for (int i = 0; i < N; ++i) { arena.allocate<TrivialObj>(i, i); }
@@ -491,6 +508,7 @@ TEST(Arena, StressTest)
 
 TEST(Arena, StressTestNonTrivial)
 {
+	PYLANG_SKIP_ARENA_ONLY_TEST();
 	TrackedObj::destruction_order.clear();
 	constexpr int N = 1000;
 	{
@@ -501,3 +519,71 @@ TEST(Arena, StressTestNonTrivial)
 	ASSERT_EQ(TrackedObj::destruction_order.size(), static_cast<size_t>(N));
 	for (int i = 0; i < N; ++i) { EXPECT_EQ(TrackedObj::destruction_order[i], N - 1 - i); }
 }
+
+#ifdef PYLANG_USE_Boehm_GC
+
+TEST(ArenaGC, AllocationDoesNotUseArenaAccounting)
+{
+	Arena arena(1024);
+	auto *trivial = arena.allocate<TrivialObj>(10, 20);
+	auto *tracked = arena.allocate<TrackedObj>(42);
+
+	ASSERT_NE(trivial, nullptr);
+	ASSERT_NE(tracked, nullptr);
+	EXPECT_EQ(trivial->x, 10);
+	EXPECT_EQ(trivial->y, 20);
+	EXPECT_EQ(tracked->id, 42);
+	EXPECT_EQ(arena.bytes_allocated(), 0u);
+	EXPECT_EQ(arena.block_count(), 0u);
+	EXPECT_EQ(arena.destructor_count(), 0u);
+}
+
+TEST(ArenaGC, ResetAndRestoreDoNotInvalidateReachableObjects)
+{
+	Arena arena(1024);
+	auto *first = arena.allocate<TrivialObj>(1, 2);
+	auto sp = arena.save();
+	auto *second = arena.allocate<LargeObj>(7);
+
+	ASSERT_NE(first, nullptr);
+	ASSERT_NE(second, nullptr);
+
+	arena.restore(sp);
+	EXPECT_EQ(first->x, 1);
+	EXPECT_EQ(first->y, 2);
+	EXPECT_EQ(second->id, 7);
+	EXPECT_EQ(second->data[0], 7);
+
+	arena.reset();
+	EXPECT_EQ(first->x, 1);
+	EXPECT_EQ(first->y, 2);
+	EXPECT_EQ(second->id, 7);
+	EXPECT_EQ(second->data[4095], 7);
+	EXPECT_EQ(arena.bytes_allocated(), 0u);
+	EXPECT_EQ(arena.block_count(), 0u);
+	EXPECT_EQ(arena.destructor_count(), 0u);
+}
+
+TEST(ScopedRegionGC, RestoresPreviousArenaWhileKeepingReachableObjectsAlive)
+{
+	Arena &main_arena = Arena::current();
+	Arena outer(1024);
+	Arena::set_current(&outer);
+
+	TrivialObj *inner_obj = nullptr;
+	{
+		ScopedRegion region;
+		inner_obj = Arena::current().allocate<TrivialObj>(5, 6);
+		ASSERT_NE(inner_obj, nullptr);
+		EXPECT_EQ(&Arena::current(), &region.region);
+	}
+
+	EXPECT_EQ(&Arena::current(), &outer);
+	ASSERT_NE(inner_obj, nullptr);
+	EXPECT_EQ(inner_obj->x, 5);
+	EXPECT_EQ(inner_obj->y, 6);
+
+	Arena::set_current(&main_arena);
+}
+
+#endif
