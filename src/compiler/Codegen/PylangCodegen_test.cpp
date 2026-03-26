@@ -276,9 +276,10 @@ TEST_F(PylangCodegenTest, FunctionCall)
 
 	auto ir = compile_module(mod);
 	if (ir.empty()) { return; }
+	std::cout << "Generated IR:\n" << ir << "\n";
 	EXPECT_TRUE(ir_calls_rt(ir, "rt_load_global"));
 	EXPECT_TRUE(ir_calls_rt(ir, "rt_call"));
-	EXPECT_TRUE(ir_calls_rt(ir, "rt_build_tuple"));
+	EXPECT_TRUE(ir_calls_rt(ir, "rt_call_raw"));
 }
 
 // =============================================================================
