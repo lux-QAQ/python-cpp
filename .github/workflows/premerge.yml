@@ -82,17 +82,9 @@ jobs:
       # continue-on-error 确保即使测试挂了，后面的 "Test Report" 步骤也能运行
       continue-on-error: true
       run: |
-        # 运行单元测试：生成单元测试报告，且失败时在终端打印输出
-        ctest --preset ${{env.CMAKE_PRESET}} \
-              -E integration-tests \
-              --output-on-failure \
-              --output-junit unit-tests.xml
+        ./build/${{env.CMAKE_PRESET}}/unittests_ --gtest_output=xml:unit-tests.xml
         
-        # 运行集成测试：生成集成测试报告，-V 会输出详细过程
-        ctest --preset ${{env.CMAKE_PRESET}} \
-              -R integration-tests \
-              -V \
-              --output-junit integration-tests.xml
+        ./build/${{env.CMAKE_PRESET}}/integration-tests --gtest_output=xml:integration-tests.xml
 
     - name: Test Report
       uses: dorny/test-reporter@v1
