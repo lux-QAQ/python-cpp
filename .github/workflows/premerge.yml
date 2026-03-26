@@ -32,22 +32,33 @@ jobs:
         sudo ./llvm.sh 20
         sudo apt install libmlir-20-dev mlir-20-tools
 
-    - name: Fix LLVM tool symlinks
+    - name: Fix llvm-link
       run: |
         set -eux
 
-        LLVM_BIN="/usr/lib/llvm-${LLVM_VERSION}/bin"
+        # llvm-link-20
+        LLVM_LINK=$(command -v llvm-link-20 || true)
 
-        ls $LLVM_BIN
 
-        sudo ln -sf $LLVM_BIN/clang /usr/local/bin/clang
-        sudo ln -sf $LLVM_BIN/clang++ /usr/local/bin/clang++
-        sudo ln -sf $LLVM_BIN/llvm-link /usr/local/bin/llvm-link
-        sudo ln -sf $LLVM_BIN/lld /usr/local/bin/lld
+        if [ -z "$LLVM_LINK" ]; then
+          LLVM_LINK=$(command -v llvm-link || true)
+        fi
 
-        which clang
-        clang --version
-        which llvm-link
+  
+        if [ -z "$LLVM_LINK" ]; then
+          LLVM_LINK=$(find /usr -name llvm-link 2>/dev/null | head -n 1)
+        fi
+
+        echo "Found llvm-link at: $LLVM_LINK"
+
+        if [ -z "$LLVM_LINK" ]; then
+          echo "llvm-link not found!"
+          exit 1
+        fi
+
+        sudo ln -sf "$LLVM_LINK" /usr/local/bin/llvm-link
+
+        llvm-link --version
 
     - name: Install Bitcode Tools
       run: |
