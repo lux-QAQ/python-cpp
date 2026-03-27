@@ -138,11 +138,66 @@ PyResult<PyObject *> PyInteger::__new__(const PyType *type, PyTuple *args, PyDic
 	return Err(nullptr);
 }
 
+
+namespace {
+	constexpr int kPyHashBits = (sizeof(void *) >= 8) ? 61 : 31;
+	constexpr uint64_t kPyHashModulus = (uint64_t{ 1 } << kPyHashBits) - 1;
+	constexpr int64_t kPyHashModulusSigned = static_cast<int64_t>(kPyHashModulus);
+
+	inline int64_t normalize_python_hash(int64_t h) noexcept { return (h == -1) ? -2 : h; }
+}// namespace
+
+int64_t PyInteger::hash_big_int(const BigIntType &val)
+{
+	const int sign = mpz_sgn(val.get_mpz_t());
+	if (sign == 0) { return 0; }
+
+	uint64_t abs_rem = 0;
+
+	if constexpr (std::numeric_limits<unsigned long>::digits >= kPyHashBits) {
+		// 64-bit LP64：P=2^61-1 可直接放进 unsigned long
+		// 32-bit：P=2^31-1 也可直接放进 unsigned long
+		abs_rem = static_cast<uint64_t>(
+			mpz_tdiv_ui(val.get_mpz_t(), static_cast<unsigned long>(kPyHashModulus)));
+	} else {
+		// LLP64（如 Windows x64）：unsigned long 只有 32 位，61-bit 模数放不下
+		// 这里走 mpz_tdiv_r + 读取低 limb 的路径，避免 mpz_export
+		static const mpz_class mpz_p = []() {
+			mpz_class p;
+			mpz_ui_pow_ui(p.get_mpz_t(), 2, kPyHashBits);
+			p -= 1;
+			return p;
+		}();
+
+		static thread_local mpz_class remainder;
+		mpz_tdiv_r(remainder.get_mpz_t(), val.get_mpz_t(), mpz_p.get_mpz_t());
+
+		// 余数绝对值必然小于 P，因此这里取低 limb 就够了
+		abs_rem = static_cast<uint64_t>(mpz_getlimbn(remainder.get_mpz_t(), 0));
+	}
+
+	int64_t h = static_cast<int64_t>(abs_rem);
+	if (sign < 0) { h = -h; }
+
+	return normalize_python_hash(h);
+}
+
+
 PyResult<int64_t> PyInteger::__hash__() const
 {
-	const auto value = as_i64();
-	if (value == -1) return Ok(-2);
-	return Ok(value);
+	const BigIntType &val = as_big_int();
+
+	if (mpz_sgn(val.get_mpz_t()) == 0) [[unlikely]] { return Ok(0); }
+
+	// 小整数快路径：|i| < P 时，hash(i) == i
+	if (val.fits_slong_p()) [[likely]] {
+		const int64_t i = static_cast<int64_t>(val.get_si());
+		if (i > -kPyHashModulusSigned && i < kPyHashModulusSigned) [[likely]] {
+			return Ok(normalize_python_hash(i));
+		}
+	}
+
+	return Ok(hash_big_int(val));
 }
 
 // PyResult<PyObject *> PyInteger::__and__(PyObject *obj)
