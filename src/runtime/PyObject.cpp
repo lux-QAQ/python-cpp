@@ -125,6 +125,11 @@ bool ValueEq::operator()(const Value &lhs, const Value &rhs) const
 }
 
 namespace {
+	inline bool may_break_reflexive_equality(const PyObject *obj) noexcept
+	{
+		PyType *type = obj->type();
+		return type == types::float_() || type == types::complex();
+	}
 
 	template<typename T> auto to_object(T &&value)
 	{
@@ -620,7 +625,7 @@ PyResult<PyObject *> PyObject::richcompare(const PyObject *other, RichCompare op
 
 PyResult<PyObject *> PyObject::eq(const PyObject *other) const
 {
-	if (this == other) { return Ok(py_true()); }
+	if (this == other && !may_break_reflexive_equality(this)) { return Ok(py_true()); }
 	bool checked_reverse_op = false;
 	if (type() != other->type() && other->type()->issubclass(type())
 		&& other->type()->underlying_type().__eq__.has_value()) {
@@ -642,7 +647,8 @@ PyResult<PyObject *> PyObject::eq(const PyObject *other) const
 			return result;
 		}
 	}
-	return Ok(this == other ? py_true() : py_false());
+	if (this == other) { return Ok(py_true()); }
+	return Ok(py_false());
 }
 
 PyResult<PyObject *> PyObject::ge(const PyObject *other) const
@@ -679,7 +685,7 @@ PyResult<PyObject *> PyObject::lt(const PyObject *other) const
 
 PyResult<PyObject *> PyObject::ne(const PyObject *other) const
 {
-	if (this == other) { return Ok(py_false()); }
+	if (this == other && !may_break_reflexive_equality(this)) { return Ok(py_false()); }
 	bool checked_reverse_op = false;
 	if (type() != other->type() && other->type()->issubclass(type())
 		&& other->type()->underlying_type().__ne__.has_value()) {
@@ -701,7 +707,8 @@ PyResult<PyObject *> PyObject::ne(const PyObject *other) const
 			return result;
 		}
 	}
-	return Ok(this != other ? py_true() : py_false());
+	if (this == other) { return Ok(py_false()); }
+	return Ok(py_true());
 }
 
 PyResult<PyObject *> PyObject::getattribute(PyObject *attribute) const

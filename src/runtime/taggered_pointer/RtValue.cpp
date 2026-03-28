@@ -1,10 +1,14 @@
 #include "RtValue.hpp"
 #include "runtime/PyBool.hpp"
+#include "runtime/PyComplex.hpp"
+#include "runtime/PyFloat.hpp"
 #include "runtime/PyInteger.hpp"
 #include "runtime/PyNumber.hpp"
 #include "runtime/PyObject.hpp"
 #include "runtime/PyString.hpp"
 #include "runtime/Value.hpp"
+
+#include "runtime/types/api.hpp"
 
 #include <iostream>
 #include <variant>
@@ -232,16 +236,42 @@ RtValue RtValue::rshift(RtValue lhs, RtValue rhs)
 // 比较运算
 // =============================================================================
 
+namespace {
+
+	inline bool heap_object_may_break_reflexive_equality(PyObject *obj) noexcept
+	{
+		PyType *type = obj->type();
+		// 仅对可能包含 NaN 且因此 a == a 可能为 false 的类型回退慢路径。
+		// 这里用 type 指针比较，成本极低；普通对象仍保留原始 identity fast-path。
+		return type == types::float_() || type == types::complex();
+	}
+
+}// namespace
+
 RtValue RtValue::compare_eq(RtValue lhs, RtValue rhs)
 {
-	if (lhs.m_bits == rhs.m_bits) { return from_ptr(py_true()); }
+	if (lhs.m_bits == rhs.m_bits) {
+		if (lhs.is_tagged_int() || lhs.is_null()) { return from_ptr(py_true()); }
+
+		PyObject *obj = lhs.as_ptr();
+		if (!heap_object_may_break_reflexive_equality(obj)) { return from_ptr(py_true()); }
+
+		return from_ptr(obj->eq(obj).unwrap());
+	}
 	if (RtValue::are_both_tagged_int(lhs, rhs)) { return from_ptr(py_false()); }
 	return from_ptr(lhs.box()->eq(rhs.box()).unwrap());
 }
 
 RtValue RtValue::compare_ne(RtValue lhs, RtValue rhs)
 {
-	if (lhs.m_bits == rhs.m_bits) { return from_ptr(py_false()); }
+	if (lhs.m_bits == rhs.m_bits) {
+		if (lhs.is_tagged_int() || lhs.is_null()) { return from_ptr(py_false()); }
+
+		PyObject *obj = lhs.as_ptr();
+		if (!heap_object_may_break_reflexive_equality(obj)) { return from_ptr(py_false()); }
+
+		return from_ptr(obj->ne(obj).unwrap());
+	}
 	if (RtValue::are_both_tagged_int(lhs, rhs)) { return from_ptr(py_true()); }
 	return from_ptr(lhs.box()->ne(rhs.box()).unwrap());
 }

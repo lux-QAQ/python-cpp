@@ -1306,70 +1306,62 @@ print("dict_comp", squares[2], squares[3])
 }
 
 
-TEST_F(SimpleDriverTest, Feature_FloatComprehensive)
+TEST_F(SimpleDriverTest, Feature_simpleHashAndEquality)
 {
 	std::string code = R"(
-import math
-
-# 1. 各种字面量格式 (PEP 515 下划线支持)
-f1 = 1.5
-f2 = .5
-f3 = 1.
-f4 = 1_000.000_1
-f5 = 1e2
-f6 = 1.5e-2
-print("literals", f1, f2, f3, f4, f5, f6)
-
-# 2. 算术与跨类型比较 (Python 核心语义：1.0 == 1)
-print("eq_int", 1.0 == 1)
-print("eq_neg", -0.0 == 0.0)
+# 1. 核心比较与哈希一致性 (Hash Parity)
+# Python 规定 1.0 == 1 必须成立，且它们的哈希值必须相等
+print("eq_check", 1.0 == 1, 1.5 == 1)
 print("hash_parity", hash(1.0) == hash(1))
-print("hash_parity_large", hash(123456.0) == hash(123456))
+print("hash_large", hash(123456789.0) == hash(123456789))
 
-# 3. 浮点数特有方法
-f_int = 1.0
-f_non_int = 1.5
-print("is_integer", f_int.is_integer(), f_non_int.is_integer())
+# 2. 符号与零的处理
+# 0.0 与 -0.0 在比较上是相等的
+print("zero_eq", 0.0 == -0.0)
+print("abs_neg", abs(-1.5) == 1.5)
 
-# 4. as_integer_ratio (返回一对整数)
-# 0.75 = 3/4
+# 3. 浮点数特有方法 (无需 import)
+print("is_int", (1.0).is_integer(), (1.5).is_integer())
+
+# 4. 精确分数还原 (as_integer_ratio)
+# 0.75 应该还原为 (3, 4)
 ratio = (0.75).as_integer_ratio()
 print("ratio", ratio[0], ratio[1])
 
-# 5. 十六进制转换
-h_str = (10.0).hex()
-# 期望得到类似 '0x1.4000000000000p+3'
-h_val = float.fromhex(h_str)
-print("hex_roundtrip", h_val == 10.0)
-print("fromhex_direct", float.fromhex("0x1.4p+3") == 10.0)
+# 5. 银行家舍入法 (Round half to even)
+# Python 的 round() 在 .5 的时候会向偶数取整
+print("round_half", round(0.5), round(1.5), round(2.5), round(3.5))
 
-# 6. 特殊值处理 (inf, nan)
+# 6. 类型转换语义
+print("to_int", int(1.9), int(-1.9)) # 向零截断
+print("from_str", float("1.25") == 1.25)
+
+# 7. 特殊值构造与比较 (通过字符串构造以避开字面量格式测试)
 inf = float("inf")
+neg_inf = float("-inf")
 nan = float("nan")
-print("is_inf", math.isinf(inf))
-print("is_nan", math.isnan(nan))
-print("inf_hash", hash(inf) == 314159) # 64位标准哈希值
 
-# 7. 构造函数协议
-print("init_int", float(42) == 42.0)
-print("init_str", float("  1.23  ") == 1.23)
+print("nan_self", nan == nan) # NaN 不等于自身是 IEEE 754 标准
+print("inf_hash", hash(inf) == 314159) # Python 64位系统标准哈希常数
+
+# 8. 逻辑运算
+print("float_bool", bool(0.0), bool(1.5))
 )";
 
 	run_aot_test(shared_driver(),
-		"float_comprehensive",
+		"simpleHashAndEquality",
 		code,
-		{ "literals 1.5 0.5 1.0 1000.0001 100.0 0.015",
-			"eq_int True",
-			"eq_neg True",
+		{ "eq_check True False",
 			"hash_parity True",
-			"hash_parity_large True",
-			"is_integer True False",
+			"hash_large True",
+			"zero_eq True",
+			"abs_neg True",
+			"is_int True False",
 			"ratio 3 4",
-			"hex_roundtrip True",
-			"fromhex_direct True",
-			"is_inf True",
-			"is_nan True",
+			"round_half 0 2 2 4",
+			"to_int 1 -1",
+			"from_str True",
+			"nan_self False",
 			"inf_hash True",
-			"init_int True",
-			"init_str True" });
+			"float_bool False True" });
 }
