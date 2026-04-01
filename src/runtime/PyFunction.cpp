@@ -247,16 +247,62 @@ PyResult<PyObject *> PyFunction::call_with_frame(PyObject *ns, PyTuple *args, Py
 //         new (&stack_args[0]) Value(m_self);
 //         std::copy(args.begin(), args.end(), stack_args + 1);
 
-//         // 注意：此处必须使用 std::span 显式调用基类的 call_raw 或直接分发
-//         auto res = PyObject::call_raw(std::span<Value>(stack_args, total_argc), kwargs);
+// ============================================
+// PyNativeFunction 核心实现（AOT C++绑定专用）
+// ============================================
+PyResult<PyObject *> PyNativeFunction::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
+{
+	spdlog::debug("[NativeFunc::call_fast_ptrs] fn='{}', argc={}, has_aot={}, has_self={}",
+		m_name,
+		argc,
+		m_aot_ptr != nullptr,
+		m_self != nullptr);
 
-//         for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&stack_args[i]);
-//         return res;
-//     }
+	if (argc > 1000000) {
+		spdlog::critical("[call_fast_ptrs] Corrupt argc detected: {}", argc);
+		return Err(runtime_error("Corrupt execution stack"));
+	}
 
-//     return PyObject::call_raw(args, kwargs);
-// }
+	// [最强 Fast Path]: 纯 Native 方法/函数完全直通，消除 std::variant (Value) 分配!
+	if (m_self) {
+		size_t total_argc = argc + 1;
+		PyObject *raw_args_array[16];
+		PyObject **final_args = args;
+		if (total_argc <= 16) {
+			final_args = raw_args_array;
+		} else {
+			final_args = static_cast<PyObject **>(alloca(sizeof(PyObject *) * total_argc));
+		}
 
+		final_args[0] = m_self;
+		for (size_t i = 0; i < argc; ++i) final_args[i + 1] = args[i];
+
+		if (m_aot_ptr) {
+			auto *res = reinterpret_cast<py::PyObject
+					*(*)(py::PyObject *, py::PyObject *, py::PyObject **, int32_t, py::PyDict *)>(
+				m_aot_ptr)(
+				m_module_ref, m_closure, final_args, static_cast<int32_t>(total_argc), kwargs);
+			if (res) return Ok(res);
+			return Err(runtime_error("AOT call failed"));
+		}
+
+		// Fallback
+		return PyObject::call_fast_ptrs(final_args, total_argc, kwargs);
+	}
+
+	if (m_aot_ptr) {
+		auto *res = reinterpret_cast<py::PyObject
+				*(*)(py::PyObject *, py::PyObject *, py::PyObject **, int32_t, py::PyDict *)>(
+			m_aot_ptr)(m_module_ref, m_closure, args, static_cast<int32_t>(argc), kwargs);
+		if (res) return Ok(res);
+
+		return Err(runtime_error("AOT call failed: NULL returned from AOT function"));
+	}
+
+	return PyObject::call_fast_ptrs(args, argc, kwargs);
+}
+
+// 旧版 call_raw 兼容回退
 PyResult<PyObject *> PyNativeFunction::call_raw(std::span<const Value> args, PyDict *kwargs)
 {
 

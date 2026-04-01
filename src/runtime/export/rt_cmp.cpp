@@ -3,6 +3,7 @@
 #include "runtime/PyBool.hpp"
 #include "runtime/PyDict.hpp"// <-- 新增
 #include "runtime/PyList.hpp"// <-- 新增
+#include "runtime/PyString.hpp"// <-- 新增
 #include "runtime/taggered_pointer/RtValue.hpp"
 #include "runtime/types/builtin.hpp"// <-- 新增
 
@@ -73,9 +74,13 @@ py::PyObject *rt_compare_in(py::PyObject *value, py::PyObject *container)
 	// [极致优化]：Dict Fast Path (O(1))
 	if (b_container->type() == py::types::dict()) {
 		auto *dict = static_cast<py::PyDict *>(b_container);
-		// Value(r_val) 会正确根据类型放入 variant
-		bool found = dict->map().find(r_val.to_value()) != dict->map().end();
-		return found ? py::py_true() : py::py_false();
+
+		auto *unboxed_val = py::ensure_box(r_val.as_pyobject_raw());
+		if (unboxed_val->type() == py::types::str()) {
+			bool found = dict->map().find(py::Value(static_cast<py::PyString *>(unboxed_val)))
+						 != dict->map().end();
+			return found ? py::py_true() : py::py_false();
+		}
 	}
 
 	// [极致优化]：List Fast Path (安全版)
@@ -105,8 +110,12 @@ py::PyObject *rt_compare_not_in(py::PyObject *value, py::PyObject *container)
 
 	if (b_container->type() == py::types::dict()) {
 		auto *dict = static_cast<py::PyDict *>(b_container);
-		bool found = dict->map().find(r_val.to_value()) != dict->map().end();
-		return found ? py::py_false() : py::py_true();
+		auto *unboxed_val = py::ensure_box(r_val.as_pyobject_raw());
+		if (unboxed_val->type() == py::types::str()) {
+			bool found = dict->map().find(py::Value(static_cast<py::PyString *>(unboxed_val)))
+						 != dict->map().end();
+			return found ? py::py_false() : py::py_true();
+		}
 	}
 
 	if (b_container->type() == py::types::list()) {

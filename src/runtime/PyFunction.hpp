@@ -145,6 +145,8 @@ class PyNativeFunction : public PyBaseObject
 		return Ok(result);
 	}
 	PyResult<PyObject *> call_raw(std::span<const Value> args, PyDict *kwargs) override;
+	[[nodiscard]] PyResult<PyObject *>
+		call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs) override;
 	// AOT 编译器工厂
 	/// 从原生函数指针创建 Python 可调用对象
 	///

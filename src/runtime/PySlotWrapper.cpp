@@ -4,6 +4,7 @@
 #include "PyType.hpp"
 #include "TypeError.hpp"
 #include "interpreter/InterpreterCore.hpp"
+#include "taggered_pointer/RtValue.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -102,6 +103,28 @@ PyResult<PyObject *> PySlotWrapper::call_raw(std::span<const Value> args, PyDict
 	py::GCVector<Value> slice_args;
 	slice_args.reserve(args.size() - 1);
 	for (size_t i = 1; i < args.size(); ++i) { slice_args.push_back(args[i]); }
+
+	return PyTuple::create(std::move(slice_args))
+		.and_then([this, self, kwargs](
+					  PyTuple *t) -> PyResult<PyObject *> { return m_slot(self, t, kwargs); });
+}
+
+PyResult<PyObject *> PySlotWrapper::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
+{
+	if (argc == 0) return Err(type_error("slot wrapper requires self"));
+
+	auto *self = RtValue::from_ptr(args[0]).box();
+
+	// [核心优化]：无参调用快速路径
+	if (argc == 1 && (!kwargs || kwargs->map().empty())) {
+		return m_slot(self, PyTuple::create().unwrap(), kwargs);
+	}
+
+	py::GCVector<Value> slice_args;
+	slice_args.reserve(argc - 1);
+	for (size_t i = 1; i < argc; ++i) {
+		slice_args.push_back(RtValue::from_ptr(args[i]).to_value());
+	}
 
 	return PyTuple::create(std::move(slice_args))
 		.and_then([this, self, kwargs](

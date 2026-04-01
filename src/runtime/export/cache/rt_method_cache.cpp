@@ -148,24 +148,22 @@ py::PyObject *rt_call_method_ic_ptrs(py::cache::MethodCache *cache,
 				}
 
 				size_t total_argc = needs_self ? argc + 1 : argc;
-				auto *value_array =
-					static_cast<py::Value *>(alloca(sizeof(py::Value) * total_argc));
+				py::PyObject *raw_args_array[16];
+				py::PyObject **final_args = args;
 
 				if (needs_self) {
-					new (&value_array[0]) py::Value(b_owner);
-					for (int i = 0; i < argc; ++i) {
-						new (&value_array[i + 1]) py::Value(py::ensure_box(args[i]));
+					if (total_argc <= 16) {
+						final_args = raw_args_array;
+					} else {
+						final_args = static_cast<py::PyObject **>(
+							alloca(sizeof(py::PyObject *) * total_argc));
 					}
-				} else {
-					for (int i = 0; i < argc; ++i) {
-						new (&value_array[i]) py::Value(py::ensure_box(args[i]));
-					}
+					final_args[0] = b_owner;
+					for (int i = 0; i < argc; ++i) { final_args[i + 1] = args[i]; }
 				}
 
-				auto result =
-					resolved_func->call_raw(std::span<py::Value>(value_array, total_argc), kwargs);
+				auto result = resolved_func->call_fast_ptrs(final_args, total_argc, kwargs);
 
-				for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&value_array[i]);
 				return rt_unwrap(result);
 			}
 		}

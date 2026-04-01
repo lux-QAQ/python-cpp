@@ -93,24 +93,17 @@ void rt_cell_set(py::PyObject *cell, py::PyObject *value)
 PYLANG_EXPORT_FUNC("call_fast", "obj", "obj,i32,ptr")
 py::PyObject *rt_call_fast(py::PyObject *callable, int32_t argc, py::PyObject **argv)
 {
-	std::vector<py::Value> elements;
-	elements.reserve(argc);
-	for (int32_t i = 0; i < argc; ++i) { elements.push_back(py::ensure_box(argv[i])); }
-	auto *args = rt_unwrap(py::PyTuple::create(elements));
-	return rt_unwrap(py::ensure_box(callable)->call(args, nullptr));
+	// 抛弃旧版本的 PyTuple 生成与 variant 装箱包装
+	// 全面采用 AOT C ABI 零分配指针穿透协议
+	auto result = py::ensure_box(callable)->call_fast_ptrs(argv, argc, nullptr);
+	return rt_unwrap(result);
 }
 
 // =============================================================================
 // Tier 4: make_function
 // =============================================================================
 PYLANG_EXPORT_FUNC("value_array_get", "obj", "ptr,i32")
-py::PyObject *rt_value_array_get(const py::Value *args, int32_t index)
-{
-	// 使用 PyObject::from 将 variant 包装或提取为 PyObject*
-	auto res = py::PyObject::from(args[index]);
-	if (res.is_err()) return nullptr;
-	return res.unwrap();
-}
+py::PyObject *rt_value_array_get(py::PyObject **args, int32_t index) { return args[index]; }
 
 
 PYLANG_EXPORT_FUNC("make_function", "obj", "str,ptr,obj,obj,obj,obj")
@@ -219,23 +212,11 @@ py::PyObject *rt_call_raw_ptrs(py::PyObject *callable,
 	int32_t argc,
 	py::PyObject *kwargs_dict)
 {
-	py::Value *value_array = nullptr;
-	if (argc > 0) {
-		value_array = static_cast<py::Value *>(alloca(sizeof(py::Value) * argc));
-		for (int i = 0; i < argc; ++i) {
-			// 必须使用 ensure_box 处理 Tagged Pointer，否则 AOT 传来的整数会崩溃
-			new (&value_array[i]) py::Value(py::ensure_box(args[i]));
-		}
-	}
-
 	py::PyDict *kwargs = nullptr;
 	if (kwargs_dict && kwargs_dict != py::py_none()) { kwargs = py::as<py::PyDict>(kwargs_dict); }
 
-	// 统一 boxing callable
-	auto result =
-		py::ensure_box(callable)->call_raw(std::span<py::Value>(value_array, argc), kwargs);
-
-	for (int i = 0; i < argc; ++i) std::destroy_at(&value_array[i]);
+	// 统一 boxing callable，通过极速无variant通道执行
+	auto result = py::ensure_box(callable)->call_fast_ptrs(args, argc, kwargs);
 
 	return rt_unwrap(result);
 }
@@ -288,16 +269,20 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 				}
 			}
 
-			// AOT 零分配极速绑定调用
+			// AOT 极速直通绑定调用 (彻底剔除 variant)
 			size_t total_argc = argc + 1;
-			auto *value_array = static_cast<py::Value *>(alloca(sizeof(py::Value) * total_argc));
-			new (&value_array[0]) py::Value(b_owner);
-			for (int i = 0; i < argc; ++i) {
-				new (&value_array[i + 1]) py::Value(py::ensure_box(args[i]));
+			py::PyObject *raw_args_array[16];
+			py::PyObject **final_args = args;
+			if (total_argc <= 16) {
+				final_args = raw_args_array;
+			} else {
+				final_args =
+					static_cast<py::PyObject **>(alloca(sizeof(py::PyObject *) * total_argc));
 			}
+			final_args[0] = b_owner;
+			for (int i = 0; i < argc; ++i) { final_args[i + 1] = args[i]; }
 
-			auto result = desc->call_raw(std::span<py::Value>(value_array, total_argc), kwargs);
-			for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&value_array[i]);
+			auto result = desc->call_fast_ptrs(final_args, total_argc, kwargs);
 			return rt_unwrap(result);
 		}
 

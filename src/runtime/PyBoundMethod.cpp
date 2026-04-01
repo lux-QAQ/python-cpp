@@ -70,11 +70,25 @@ PyResult<PyObject *> PyBoundMethod::__call__(PyTuple *args, PyDict *kwargs)
 //     // 穿透调用底层函数的 call_raw
 //     auto result = m_method->call_raw(std::span<Value>(stack_args, total_argc), kwargs);
 
-//     // 析构 Value (使用 std::destroy_at 避免 typedef 解析错误)
-//     for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&stack_args[i]);
-//     return result;
-// }
+PyResult<PyObject *> PyBoundMethod::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
+{
+	size_t total_argc = argc + 1;
+	PyObject *raw_args_array[16];
+	PyObject **final_args = args;
+	if (total_argc <= 16) {
+		final_args = raw_args_array;
+	} else {
+		final_args = static_cast<PyObject **>(alloca(sizeof(PyObject *) * total_argc));
+	}
 
+	final_args[0] = m_self;
+	for (size_t i = 0; i < argc; ++i) { final_args[i + 1] = args[i]; }
+
+	// 极速穿透调用底层函数的 call_fast_ptrs，全管线无 variant 开销！
+	return m_method->call_fast_ptrs(final_args, total_argc, kwargs);
+}
+
+// 旧版 call_raw 兼容回退
 PyResult<PyObject *> PyBoundMethod::call_raw(std::span<const Value> args, PyDict *kwargs)
 {
 	// 在栈上准备空间：[self, arg0, arg1, ...]

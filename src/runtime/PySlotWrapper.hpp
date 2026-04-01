@@ -121,6 +121,8 @@ class PySlotWrapper : public PyBaseObject
 
 	PyResult<PyObject *> __repr__() const;
 	PyResult<PyObject *> __call__(PyTuple *args, PyDict *kwargs);
+	[[nodiscard]] PyResult<PyObject *>
+		call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs) override;
 	PyResult<PyObject *> call_raw(std::span<const Value> args, PyDict *kwargs) override;
 	PyResult<PyObject *> __get__(PyObject *, PyObject *) const;
 

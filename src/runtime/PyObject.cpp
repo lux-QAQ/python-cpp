@@ -20,7 +20,8 @@
 #include "PyType.hpp"
 #include "StopIteration.hpp"
 #include "TypeError.hpp"
-#include "runtime/Value.hpp"
+#include "Value.hpp"
+#include "taggered_pointer/RtValue.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -1249,6 +1250,26 @@ PyResult<PyObject *> PyObject::call_raw(std::span<const Value> args, PyDict *kwa
 		return this->call(t, kwargs);
 	});
 }
+
+// 消除 variant，高速直通传参方案的基类默认实现 (旧版回退兼容)
+PyResult<PyObject *> PyObject::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
+{
+	if (argc == 0 && (!kwargs || kwargs->map().empty())) {
+		return call(PyTuple::create().unwrap(), kwargs);
+	}
+
+	// 在没有实现 call_fast_ptrs 的子类上，安全回退到包装 Value 之后调用 call_raw
+	py::Value *value_array =
+		argc > 0 ? static_cast<py::Value *>(alloca(sizeof(py::Value) * argc)) : nullptr;
+	for (size_t i = 0; i < argc; ++i) { new (&value_array[i]) py::Value(py::ensure_box(args[i])); }
+
+	auto result = this->call_raw(std::span<const py::Value>(value_array, argc), kwargs);
+
+	for (size_t i = 0; i < argc; ++i) { std::destroy_at(&value_array[i]); }
+
+	return result;
+}
+
 PyResult<PyObject *> PyObject::new_(PyTuple *args, PyDict *kwargs) const
 {
 	if (!as<PyType>(this)) {
@@ -1320,6 +1341,39 @@ PyResult<PyObject *> PyType::call_raw(std::span<const Value> args, PyDict *kwarg
 	return Ok(obj);
 }
 
+PyResult<PyObject *> PyType::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
+{
+	// 1. 特殊处理 type(x)
+	if (this == py::types::type() && argc == 1 && (!kwargs || kwargs->map().empty())) {
+		return Ok(args[0]->type());
+	}
+
+	// 2. [性能优化]：如果是无参构造且无关键字参数，使用空元组单例避免分配
+	PyTuple *tuple_args = nullptr;
+	if (argc == 0 && (!kwargs || kwargs->map().empty())) {
+		tuple_args = PyTuple::create().unwrap();
+	} else {
+		py::GCVector<Value> elements;
+		elements.reserve(argc);
+		for (size_t i = 0; i < argc; ++i) elements.push_back(py::ensure_box(args[i]));
+		auto tuple_res = PyTuple::create(std::move(elements));
+		if (tuple_res.is_err()) return Err(tuple_res.unwrap_err());
+		tuple_args = tuple_res.unwrap();
+	}
+
+	auto obj_res = new_(tuple_args, kwargs);
+	if (obj_res.is_err()) return obj_res;
+	auto *obj = obj_res.unwrap();
+
+	// 3. 调用 obj.__init__
+	if (obj->type()->issubclass(const_cast<PyType *>(this))) {
+		auto init_res = obj->init_fast_ptrs(args, argc, kwargs);
+		if (init_res.is_err()) return Err(init_res.unwrap_err());
+	}
+
+	return Ok(obj);
+}
+
 // PyResult<int32_t> PyObject::init_raw(std::span<const Value> args, PyDict *kwargs)
 // {
 // 	auto *init_str = PyString::intern("__init__");
@@ -1355,6 +1409,8 @@ PyResult<PyObject *> PyType::call_raw(std::span<const Value> args, PyDict *kwarg
 
 // 	return Ok(0);
 // }
+// ===================================
+// 原版 init_raw 保留兼容
 PyResult<int32_t> PyObject::init_raw(std::span<const Value> args, PyDict *kwargs)
 {
 	auto *init_str = PyString::intern("__init__");
@@ -1380,6 +1436,34 @@ PyResult<int32_t> PyObject::init_raw(std::span<const Value> args, PyDict *kwargs
 	return Ok(static_cast<int32_t>(0));
 }
 
+// 高速 C ABI init
+PyResult<int32_t> PyObject::init_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
+{
+	auto *init_str = PyString::intern("__init__");
+	auto [res, found] = type()->lookup_attribute(init_str);
+
+	if (found == LookupAttrResult::FOUND) {
+		auto *init_method = res.unwrap();
+		size_t total_argc = argc + 1;
+
+		PyObject *raw_args_array[16];
+		PyObject **final_args = args;
+		if (total_argc <= 16) {
+			final_args = raw_args_array;
+		} else {
+			final_args = static_cast<PyObject **>(alloca(sizeof(PyObject *) * total_argc));
+		}
+
+		final_args[0] = this;
+		for (size_t i = 0; i < argc; ++i) final_args[i + 1] = args[i];
+
+		auto call_res = init_method->call_fast_ptrs(final_args, total_argc, kwargs);
+
+		if (call_res.is_err()) return Err(call_res.unwrap_err());
+		return Ok(static_cast<int32_t>(0));
+	}
+	return Ok(static_cast<int32_t>(0));
+}
 
 PyResult<PyObject *> PyObject::getitem(PyObject *key)
 {

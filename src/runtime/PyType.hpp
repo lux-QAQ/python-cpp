@@ -49,6 +49,8 @@ class PyType : public PyBaseObject
 	PyResult<PyObject *> __getattribute__(PyObject *attribute) const;
 
 	PyResult<PyObject *> call_raw(std::span<const Value> args, PyDict *kwargs) override;
+	[[nodiscard]] PyResult<PyObject *>
+		call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs) override;
 
 	PyResult<PyObject *> new_(PyTuple *args, PyDict *kwargs) const override;
 
