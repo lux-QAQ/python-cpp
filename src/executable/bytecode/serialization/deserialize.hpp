@@ -1,7 +1,10 @@
 #pragma once
 
 #include "forward.hpp"
+#include "runtime/PyBool.hpp"
+#include "runtime/PyEllipsis.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/types/api.hpp"
 #include "serialize.hpp"
 #include "utilities.hpp"
 
@@ -101,13 +104,13 @@ inline auto deserialize(std::span<const uint8_t> &buffer)
 			return Bytes{ deserialize<std::vector<std::byte>>(buffer) };
 		} break;
 		case ValueType::ELLIPSIS: {
-			return Ellipsis{};
+			return py_ellipsis();
 		} break;
 		case ValueType::NONE: {
-			return NameConstant{ NoneType{} };
+			return py_none();
 		} break;
 		case ValueType::BOOL: {
-			return NameConstant{ deserialize<bool>(buffer) };
+			return deserialize<bool>(buffer) ? py_true() : py_false();
 		} break;
 		case ValueType::OBJECT: {
 			TODO();

@@ -1,6 +1,7 @@
 #include "PylangCodegen.hpp"
 #include "compiler/Support/gtest_wrapper.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/types/api.hpp"
 
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
@@ -175,7 +176,7 @@ TEST_F(PylangCodegenTest, NoneConstant)
 	ast::Module mod("<test>");
 
 	// None → py::NameConstant{ NoneType{} } → py::Value
-	py::Value none_value = py::NameConstant{ py::NoneType{} };
+	py::Value none_value = py::py_none();
 	auto none_val = std::make_shared<ast::Constant>(none_value, loc());
 
 	auto target = std::make_shared<ast::Name>("x", ast::ContextType::STORE, loc());
@@ -690,7 +691,7 @@ TEST_F(PylangCodegenTest, CompareIs)
 	// x = a is None
 	ast::Module mod("<test>");
 	auto name_a = std::make_shared<ast::Name>("a", ast::ContextType::LOAD, loc());
-	py::Value none_val = py::NameConstant{ py::NoneType{} };
+	py::Value none_val = py::py_none();
 	auto none_c = std::make_shared<ast::Constant>(none_val, loc());
 
 	auto cmp = std::make_shared<ast::Compare>(name_a,

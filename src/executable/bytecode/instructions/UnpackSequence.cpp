@@ -1,4 +1,8 @@
 #include "UnpackSequence.hpp"
+#include "runtime/PyBool.hpp"
+#include "runtime/PyEllipsis.hpp"
+#include "runtime/PyNone.hpp"
+#include "runtime/types/api.hpp"
 
 #include "runtime/PyInteger.hpp"
 #include "runtime/PyList.hpp"
@@ -97,15 +101,19 @@ PyResult<Value> UnpackSequence::execute(VirtualMachine &vm, Interpreter &) const
 				}
 				return Ok(Value{ py_none() });
 			}
-		} else if (std::holds_alternative<Ellipsis>(source)) {
-			return Err(type_error("cannot unpack non-iterable ellipsis object"));
-		} else {
-			const auto val = std::get<NameConstant>(source).value;
-			if (std::holds_alternative<bool>(val)) {
+		} else if (std::holds_alternative<PyObject *>(source)) {
+			auto obj = std::get<PyObject *>(source);
+			if (obj == py_ellipsis()) {
+				return Err(type_error("cannot unpack non-iterable ellipsis object"));
+			} else if (obj == py_true() || obj == py_false()) {
 				return Err(type_error("cannot unpack non-iterable bool object"));
-			} else {
+			} else if (obj == py_none()) {
 				return Err(type_error("cannot unpack non-iterable NoneType object"));
+			} else {
+				return Err(type_error("cannot unpack non-iterable object"));
 			}
+		} else {
+			return Err(type_error("cannot unpack non-iterable object"));
 		}
 	}();
 }

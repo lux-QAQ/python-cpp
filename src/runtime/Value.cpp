@@ -173,13 +173,6 @@ bool Number::operator==(const PyObject *other) const
 	}
 }
 
-bool Number::operator==(const NameConstant &other) const
-{
-	if (std::holds_alternative<NoneType>(other.value)) { return false; }
-	if (*this == Number{ int64_t{ 0 } }) { return std::get<bool>(other.value) == false; }
-	if (*this == Number{ int64_t{ 1 } }) { return std::get<bool>(other.value) == true; }
-	return false;
-}
 
 bool Number::operator==(const Number &rhs) const
 {
@@ -577,38 +570,26 @@ std::string Bytes::to_string() const
 
 bool Ellipsis::operator==(const PyObject *other) const { return other == py_ellipsis(); }
 
-
 bool NoneType::operator==(const PyObject *other) const { return other == py_none(); }
 
+bool NameConstant::operator==(const NameConstant &other) const { return value == other.value; }
 
 bool NameConstant::operator==(const PyObject *other) const
 {
-	if (std::holds_alternative<NoneType>(value)) { return other == py_none(); }
-	const auto bool_value = std::get<bool>(value);
-	if (bool_value) {
-		return other == py_true();
-	} else {
-		return other == py_false();
-	}
+	if (std::holds_alternative<NoneType>(value)) return other == py_none();
+	if (std::get<bool>(value)) return other == py_true();
+	return other == py_false();
 }
-
 
 bool NameConstant::operator==(const Number &other) const
 {
-	if (std::holds_alternative<NoneType>(value)) { return false; }
-	const short bool_value = std::get<bool>(value);
-	if (bool_value) {
-		return other == Number{ int64_t{ 1 } };
-	} else {
-		return other == Number{ int64_t{ 0 } };
-	}
+	if (std::holds_alternative<NoneType>(value)) return false;
+	const bool b = std::get<bool>(value);
+	if (b) return other == Number{ 1 };
+	return other == Number{ 0 };
 }
 
-bool NameConstant::operator==(const NameConstant &other) const
-{
-	return std::visit(
-		[](const auto &rhs, const auto &lhs) { return rhs == lhs; }, value, other.value);
-}
+bool Number::operator==(const NameConstant &other) const { return other == *this; }
 
 std::string Tuple::to_string() const
 {
@@ -803,7 +784,7 @@ PyResult<Value> equals(const Value &lhs, const Value &rhs)
 {
 	return std::visit(
 		overloaded{ [](const auto &lhs_value, const auto &rhs_value) -> PyResult<Value> {
-					   return Ok(NameConstant{ lhs_value == rhs_value });
+					   return Ok((lhs_value == rhs_value) ? py::py_true() : py::py_false());
 				   },
 			[](PyObject *lhs_value, PyObject *rhs_value) -> PyResult<Value> {
 				return lhs_value->richcompare(rhs_value, RichCompare::Py_EQ);
@@ -816,13 +797,13 @@ PyResult<Value> not_equals(const Value &lhs, const Value &rhs, Interpreter &)
 {
 	return std::visit(
 		overloaded{ [](const NoneType &lhs_value, const auto &rhs_value) -> PyResult<Value> {
-					   return Ok(NameConstant{ lhs_value != rhs_value });
+					   return Ok((lhs_value != rhs_value) ? py::py_true() : py::py_false());
 				   },
 			[](const auto &lhs_value, const NoneType &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value != rhs_value });
+				return Ok((lhs_value != rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const Number &lhs_value, const Number &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value != rhs_value });
+				return Ok((lhs_value != rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const auto &lhs_value, const auto &rhs_value) -> PyResult<Value> {
 				const auto py_lhs = PyObject::from(lhs_value);
@@ -839,13 +820,13 @@ PyResult<Value> less_than_equals(const Value &lhs, const Value &rhs, Interpreter
 {
 	return std::visit(
 		overloaded{ [](const NoneType &lhs_value, const auto &rhs_value) -> PyResult<Value> {
-					   return Ok(NameConstant{ lhs_value <= rhs_value });
+					   return Ok((lhs_value <= rhs_value) ? py::py_true() : py::py_false());
 				   },
 			[](const auto &lhs_value, const NoneType &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value <= rhs_value });
+				return Ok((lhs_value <= rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const Number &lhs_value, const Number &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value <= rhs_value });
+				return Ok((lhs_value <= rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const auto &lhs_value, const auto &rhs_value) -> PyResult<Value> {
 				const auto py_lhs = PyObject::from(lhs_value);
@@ -863,13 +844,13 @@ PyResult<Value> less_than(const Value &lhs, const Value &rhs, Interpreter &)
 {
 	return std::visit(
 		overloaded{ [](const NoneType &lhs_value, const auto &rhs_value) -> PyResult<Value> {
-					   return Ok(NameConstant{ lhs_value < rhs_value });
+					   return Ok((lhs_value < rhs_value) ? py::py_true() : py::py_false());
 				   },
 			[](const auto &lhs_value, const NoneType &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value < rhs_value });
+				return Ok((lhs_value < rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const Number &lhs_value, const Number &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value < rhs_value });
+				return Ok((lhs_value < rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const auto &lhs_value, const auto &rhs_value) -> PyResult<Value> {
 				const auto py_lhs = PyObject::from(lhs_value);
@@ -886,13 +867,13 @@ PyResult<Value> greater_than(const Value &lhs, const Value &rhs, Interpreter &)
 {
 	return std::visit(
 		overloaded{ [](const NoneType &lhs_value, const auto &rhs_value) -> PyResult<Value> {
-					   return Ok(NameConstant{ lhs_value > rhs_value });
+					   return Ok((lhs_value > rhs_value) ? py::py_true() : py::py_false());
 				   },
 			[](const auto &lhs_value, const NoneType &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value > rhs_value });
+				return Ok((lhs_value > rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const Number &lhs_value, const Number &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value > rhs_value });
+				return Ok((lhs_value > rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const auto &lhs_value, const auto &rhs_value) -> PyResult<Value> {
 				const auto py_lhs = PyObject::from(lhs_value);
@@ -909,13 +890,13 @@ PyResult<Value> greater_than_equals(const Value &lhs, const Value &rhs, Interpre
 {
 	return std::visit(
 		overloaded{ [](const NoneType &lhs_value, const auto &rhs_value) -> PyResult<Value> {
-					   return Ok(NameConstant{ lhs_value >= rhs_value });
+					   return Ok((lhs_value >= rhs_value) ? py::py_true() : py::py_false());
 				   },
 			[](const auto &lhs_value, const NoneType &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value >= rhs_value });
+				return Ok((lhs_value >= rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const Number &lhs_value, const Number &rhs_value) -> PyResult<Value> {
-				return Ok(NameConstant{ lhs_value >= rhs_value });
+				return Ok((lhs_value >= rhs_value) ? py::py_true() : py::py_false());
 			},
 			[](const auto &lhs_value, const auto &rhs_value) -> PyResult<Value> {
 				const auto py_lhs = PyObject::from(lhs_value);
@@ -1042,20 +1023,18 @@ PyResult<bool> truthy(const Value &value, Interpreter &) { return truthy(value);
 PyResult<bool> truthy(const Value &value)
 {
 	// Number, String, Bytes, Ellipsis, NameConstant, PyObject *
-	return std::visit(overloaded{ [](const NameConstant &c) -> PyResult<bool> {
-									 if (std::holds_alternative<NoneType>(c.value)) {
-										 return Ok(false);
-									 } else {
-										 return Ok(std::get<bool>(c.value));
-									 }
+	return std::visit(overloaded{ [](const Number &number) -> PyResult<bool> {
+									 return Ok(number != Number{ int64_t{ 0 } });
 								 },
-						  [](const Number &number) -> PyResult<bool> {
-							  return Ok(number != Number{ int64_t{ 0 } });
-						  },
 						  [](const String &str) -> PyResult<bool> { return Ok(!str.s.empty()); },
 						  [](const Bytes &bytes) -> PyResult<bool> { return Ok(!bytes.b.empty()); },
 						  [](const Ellipsis &) -> PyResult<bool> { return Ok(true); },
 						  [](const Tuple &t) -> PyResult<bool> { return Ok(!t.elements.empty()); },
+						  [](const NameConstant &c) -> PyResult<bool> {
+							  if (std::holds_alternative<bool>(c.value))
+								  return Ok(std::get<bool>(c.value));
+							  return Ok(false);
+						  },
 						  [](PyObject *obj) -> PyResult<bool> { return obj->true_(); } },
 		value);
 }

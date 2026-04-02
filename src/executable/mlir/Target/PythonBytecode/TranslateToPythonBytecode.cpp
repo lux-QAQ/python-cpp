@@ -78,6 +78,11 @@
 #include "executable/bytecode/instructions/YieldFrom.hpp"
 #include "executable/bytecode/instructions/YieldLoad.hpp"
 #include "executable/bytecode/instructions/YieldValue.hpp"
+#include "runtime/PyBool.hpp"
+#include "runtime/PyEllipsis.hpp"
+#include "runtime/PyNone.hpp"
+#include "runtime/taggered_pointer/RtValue.hpp"
+#include "runtime/types/api.hpp"
 
 #include "memory/GCVectorUtils.hpp"
 #include "mlir/Analysis/TopologicalSortUtils.h"
@@ -908,10 +913,16 @@ struct PythonBytecodeEmitter
 		ASSERT(attr);
 		::py::Value value =
 			llvm::TypeSwitch<mlir::Attribute, ::py::Value>(attr)
-				.Case<FloatAttr>([](FloatAttr f) { return ::py::Number{ f.getValueAsDouble() }; })
-				.Case<BoolAttr>([](BoolAttr b) { return ::py::NameConstant{ b.getValue() }; })
-				.Case<UnitAttr>([](UnitAttr) { return ::py::NameConstant{ ::py::NoneType{} }; })
-				.Case<StringAttr>([](StringAttr str) { return ::py::String{ str.str() }; })
+				.Case<FloatAttr>(
+					[](FloatAttr f) { return ::py::Value{ ::py::Number{ f.getValueAsDouble() } }; })
+				.Case<BoolAttr>([](BoolAttr b) {
+					return ::py::Value{ ::py::RtValue::from_ptr(
+						b.getValue() ? ::py::py_true() : ::py::py_false())
+							.box() };
+				})
+				.Case<UnitAttr>([](UnitAttr) { return ::py::Value{ ::py::py_none() }; })
+				.Case<StringAttr>(
+					[](StringAttr str) { return ::py::Value{ ::py::String{ str.str() } }; })
 				.Case<IntegerAttr>([](IntegerAttr int_attr) {
 					const auto &int_value = int_attr.getAPSInt();
 					::py::BigIntType big_int_value{};
@@ -925,7 +936,7 @@ struct PythonBytecodeEmitter
 							int_value.getNumWords(),
 							big_int_value.get_mpz_t()->_mp_d);
 					}
-					return ::py::Number{ std::move(big_int_value) };
+					return ::py::Value{ ::py::Number{ std::move(big_int_value) } };
 				})
 				.Case<DenseIntElementsAttr>([](DenseIntElementsAttr bytes_attr) {
 					std::vector<std::byte> bytes;
@@ -933,7 +944,7 @@ struct PythonBytecodeEmitter
 						ASSERT(el.isIntN(8));
 						bytes.push_back(std::byte{ *bit_cast<const uint8_t *>(el.getRawData()) });
 					}
-					return ::py::Bytes{ std::move(bytes) };
+					return ::py::Value{ ::py::Bytes{ std::move(bytes) } };
 				})
 				.Case<ArrayAttr>([this](ArrayAttr arr) {
 					std::vector<::py::Value> elements;
@@ -944,7 +955,7 @@ struct PythonBytecodeEmitter
 				})
 				.Default([](auto) {
 					TODO();
-					return ::py::NameConstant{ ::py::NoneType{} };
+					return ::py::Value{ ::py::py_none() };
 				});
 		return value;
 	};
@@ -1730,7 +1741,7 @@ template<> LogicalResult PythonBytecodeEmitter::emitOperation(mlir::emitpybyteco
 template<>
 LogicalResult PythonBytecodeEmitter::emitOperation(mlir::emitpybytecode::LoadEllipsisOp &op)
 {
-	const auto idx = add_const(::py::Ellipsis{});
+	const auto idx = add_const(::py::py_ellipsis());
 	emit<LoadConst>(get_register(op.getResult()), idx);
 	return success();
 }
@@ -1993,9 +2004,11 @@ template<> LogicalResult PythonBytecodeEmitter::emitOperation(mlir::ModuleOp &mo
 	m_filename = mlir::cast<mlir::FileLineColLoc>(module_.getLoc()).getFilename().str();
 	auto argv = module_->getAttr("llvm.argv");
 	ASSERT(argv);
-	auto argv_array = argv.cast<mlir::ArrayAttr>();
+	auto argv_array = mlir::cast<mlir::ArrayAttr>(argv);
 	m_argv.reserve(argv_array.size());
-	for (const auto &argv_ : argv_array) { m_argv.push_back(argv_.cast<mlir::StringAttr>().str()); }
+	for (const auto &argv_ : argv_array) {
+		m_argv.push_back(mlir::cast<mlir::StringAttr>(argv_).str());
+	}
 	auto &module_region = module_.getBodyRegion();
 	ASSERT(module_region.getBlocks().size() == 1);
 	auto fn = std::find_if(module_region.getBlocks().back().getOperations().begin(),

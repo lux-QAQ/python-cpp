@@ -77,6 +77,9 @@
 #include "executable/bytecode/instructions/YieldFrom.hpp"
 #include "executable/bytecode/instructions/YieldLoad.hpp"
 #include "executable/bytecode/instructions/YieldValue.hpp"
+#include "runtime/PyBool.hpp"
+#include "runtime/PyEllipsis.hpp"
+#include "runtime/types/api.hpp"
 
 #include "ast/optimizers/ConstantFolding.hpp"
 #include "executable/FunctionBlock.hpp"
@@ -682,7 +685,7 @@ Value *BytecodeGenerator::generate_function(const FunctionType *node)
 	// always return None
 	// this can be optimised away later on
 	auto none_value_register = allocate_register();
-	auto *value = load_const(py::NameConstant{ py::NoneType{} }, f->function_info().function_id);
+	auto *value = load_const(py::py_none(), f->function_info().function_id);
 	emit<LoadConst>(none_value_register, value->get_index());
 	emit<ReturnValue>(none_value_register);
 
@@ -933,7 +936,7 @@ Value *BytecodeGenerator::visit(const Lambda *node)
 	// always return None
 	// this can be optimised away later on
 	auto none_value_register = allocate_register();
-	auto *value = load_const(py::NameConstant{ py::NoneType{} }, f->function_info().function_id);
+	auto *value = load_const(py::py_none(), f->function_info().function_id);
 	emit<LoadConst>(none_value_register, value->get_index());
 	emit<ReturnValue>(none_value_register);
 
@@ -1112,7 +1115,7 @@ Value *BytecodeGenerator::visit(const Return *node)
 			return generate(node->value().get(), m_function_id);
 		} else {
 			auto *none_value = create_value();
-			auto *value = load_const(py::NameConstant{ py::NoneType{} }, m_function_id);
+			auto *value = load_const(py::py_none(), m_function_id);
 			emit<LoadConst>(none_value->get_register(), value->get_index());
 			return none_value;
 		}
@@ -1157,7 +1160,7 @@ Value *BytecodeGenerator::visit(const ast::YieldFrom *node)
 	ASSERT(src);
 	auto *iterator = create_value();
 	emit<GetYieldFromIter>(iterator->get_register(), src->get_register());
-	auto *none_static = load_const(py::NameConstant{ py::NoneType{} }, m_function_id);
+	auto *none_static = load_const(py::py_none(), m_function_id);
 	auto *none = create_value();
 	emit<LoadConst>(none->get_register(), none_static->get_index());
 	auto *result = create_value();
@@ -1733,8 +1736,7 @@ Value *BytecodeGenerator::visit(const ClassDefinition *node)
 		emit<StoreName>("__classcell__", class_value->get_register());
 		emit<ReturnValue>(class_value->get_register());
 	} else {
-		emit<LoadConst>(return_none_register,
-			load_const(py::NameConstant{ py::NoneType{} }, class_id)->get_index());
+		emit<LoadConst>(return_none_register, load_const(py::py_none(), class_id)->get_index());
 		emit<ReturnValue>(return_none_register);
 	}
 
@@ -1965,7 +1967,7 @@ Value *BytecodeGenerator::visit(const Import *node)
 {
 	for (const auto &n : node->names()) {
 		auto *name = load_name(n.name, m_function_id);
-		auto *from_list = load_const(py::NameConstant{ py::NoneType{} }, m_function_id);
+		auto *from_list = load_const(py::py_none(), m_function_id);
 		auto *level = load_const(py::Number{ int64_t{ 0 } }, m_function_id);
 
 		auto *from_list_value = create_value();
@@ -2046,8 +2048,7 @@ Value *BytecodeGenerator::visit(const Module *node)
 
 	// TODO: should the module return the last value if there is one?
 	last = create_value();
-	emit<LoadConst>(last->get_register(),
-		load_const(py::NameConstant{ py::NoneType{} }, m_function_id)->get_index());
+	emit<LoadConst>(last->get_register(), load_const(py::py_none(), m_function_id)->get_index());
 	emit<ReturnValue>(last->get_register());
 	m_stack.pop();
 	return last;
@@ -2064,32 +2065,32 @@ BytecodeValue *BytecodeGenerator::build_slice(const ast::Subscript::SliceType &s
 		auto *upper = slice.upper ? generate(slice.upper.get(), m_function_id) : nullptr;
 		auto *step = slice.step ? generate(slice.step.get(), m_function_id) : nullptr;
 		if (!lower && !upper && !step) {
-			auto *none = load_const(py::NameConstant{ py::NoneType{} }, m_function_id);
+			auto *none = load_const(py::py_none(), m_function_id);
 			auto *none_value = create_value();
 			emit<LoadConst>(none_value->get_register(), none->get_index());
 			emit<BuildSlice>(
 				index->get_register(), none_value->get_register(), none_value->get_register());
 		} else if (!upper && !step) {
-			auto *none = load_const(py::NameConstant{ py::NoneType{} }, m_function_id);
+			auto *none = load_const(py::py_none(), m_function_id);
 			auto *none_value = create_value();
 			emit<LoadConst>(none_value->get_register(), none->get_index());
 			emit<BuildSlice>(
 				index->get_register(), lower->get_register(), none_value->get_register());
 		} else if (!step) {
 			if (!lower) {
-				auto *none = load_const(py::NameConstant{ py::NoneType{} }, m_function_id);
+				auto *none = load_const(py::py_none(), m_function_id);
 				lower = create_value();
 				emit<LoadConst>(lower->get_register(), none->get_index());
 			}
 			emit<BuildSlice>(index->get_register(), lower->get_register(), upper->get_register());
 		} else {
 			if (!lower) {
-				auto *none = load_const(py::NameConstant{ py::NoneType{} }, m_function_id);
+				auto *none = load_const(py::py_none(), m_function_id);
 				lower = create_value();
 				emit<LoadConst>(lower->get_register(), none->get_index());
 			}
 			if (!upper) {
-				auto *none = load_const(py::NameConstant{ py::NoneType{} }, m_function_id);
+				auto *none = load_const(py::py_none(), m_function_id);
 				upper = create_value();
 				emit<LoadConst>(upper->get_register(), none->get_index());
 			}
@@ -2877,7 +2878,7 @@ Value *BytecodeGenerator::visit(const GeneratorExp *node)
 	}
 
 	auto none_value_register = allocate_register();
-	auto *value = load_const(py::NameConstant{ py::NoneType{} }, f->function_info().function_id);
+	auto *value = load_const(py::py_none(), f->function_info().function_id);
 	emit<LoadConst>(none_value_register, value->get_index());
 	emit<ReturnValue>(none_value_register);
 
@@ -3053,7 +3054,7 @@ Value *BytecodeGenerator::visit(const Await *node)
 	ASSERT(iterable);
 	auto iterator = create_value();
 	emit<GetAwaitable>(iterator->get_register(), iterable->get_register());
-	auto *none_static = load_const(py::NameConstant{ py::NoneType{} }, m_function_id);
+	auto *none_static = load_const(py::py_none(), m_function_id);
 	auto *none = create_value();
 	emit<LoadConst>(none->get_register(), none_static->get_index());
 	auto *result = create_value();

@@ -1,6 +1,9 @@
 #include "Parser.hpp"
+#include "runtime/PyBool.hpp"
+#include "runtime/PyEllipsis.hpp"
 #include "runtime/SyntaxError.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/types/api.hpp"
 
 #include <gmpxx.h>
 
@@ -2536,8 +2539,8 @@ struct AtomPattern : PatternV2<AtomPattern>
 				return std::make_shared<Constant>(
 					false, SourceLocation{ token.token.start(), token.token.end() });
 			} else if (name == "None") {
-				return std::make_shared<Constant>(py::NameConstant{ py::NoneType{} },
-					SourceLocation{ token.token.start(), token.token.end() });
+				return std::make_shared<Constant>(
+					py::py_none(), SourceLocation{ token.token.start(), token.token.end() });
 			} else {
 				return std::make_shared<Name>(name,
 					ContextType::LOAD,
@@ -2590,8 +2593,8 @@ struct AtomPattern : PatternV2<AtomPattern>
 		using pattern11 = PatternMatchV2<SingleTokenPatternV2<Token::TokenType::ELLIPSIS>>;
 		if (auto result = pattern11::match(p)) {
 			auto [token] = *result;
-			return std::make_shared<Constant>(
-				Ellipsis{}, SourceLocation{ token.token.start(), token.token.end() });
+			return std::make_shared<Constant>(py::Value{ py::py_ellipsis() },
+				SourceLocation{ token.token.start(), token.token.end() });
 		}
 
 		return {};
@@ -4723,7 +4726,7 @@ struct YieldExpressionPattern : PatternV2<YieldExpressionPattern>
 			}
 			const auto end = p.lexer().peek_token(p.token_position() - 1);
 			auto value = std::make_shared<Constant>(
-				NameConstant{ NoneType{} }, SourceLocation{ end->start(), end->end() });
+				py::Value{ py::py_none() }, SourceLocation{ end->start(), end->end() });
 			return std::make_shared<Yield>(
 				value, SourceLocation{ yield_token.start(), value->source_location().end });
 		}

@@ -328,7 +328,7 @@ endif()
 add_executable(unittests_ ${UNITTEST_SOURCES})
 
 target_link_libraries(python-cpp
-  PUBLIC spdlog m
+  PUBLIC spdlog m tsl::ordered_map
   PRIVATE
   project_options
   project_warnings
@@ -336,7 +336,6 @@ target_link_libraries(python-cpp
   ICU::data
   ${GMPXX_LIBRARIES}
   ${GMP_LIBRARIES}
-  tsl::ordered_map
   spdlog::spdlog
   cpptrace::cpptrace
 )

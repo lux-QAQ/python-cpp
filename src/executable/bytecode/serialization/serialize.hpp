@@ -1,6 +1,10 @@
 #pragma once
 
+#include "runtime/PyBool.hpp"
+#include "runtime/PyEllipsis.hpp"
 #include "runtime/PyTuple.hpp"
+#include "runtime/Value.hpp"
+#include "runtime/types/api.hpp"
 #include "utilities.hpp"
 
 #include <cstdint>

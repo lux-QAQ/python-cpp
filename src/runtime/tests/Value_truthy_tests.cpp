@@ -122,7 +122,7 @@ TEST(ValueTruthy, NonEmptyListIsTruthy)
 
 TEST(ValueTruthy, NameConstantTrue)
 {
-	Value v{ NameConstant{ true } };
+	Value v{ py_true() };
 	auto r = truthy(v);
 	ASSERT_TRUE(r.is_ok());
 	EXPECT_TRUE(r.unwrap());
@@ -130,7 +130,7 @@ TEST(ValueTruthy, NameConstantTrue)
 
 TEST(ValueTruthy, NameConstantFalse)
 {
-	Value v{ NameConstant{ false } };
+	Value v{ py_false() };
 	auto r = truthy(v);
 	ASSERT_TRUE(r.is_ok());
 	EXPECT_FALSE(r.unwrap());
@@ -138,7 +138,7 @@ TEST(ValueTruthy, NameConstantFalse)
 
 TEST(ValueTruthy, NameConstantNone)
 {
-	Value v{ NameConstant{ NoneType{} } };
+	Value v{ py_none() };
 	auto r = truthy(v);
 	ASSERT_TRUE(r.is_ok());
 	EXPECT_FALSE(r.unwrap());

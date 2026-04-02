@@ -37,13 +37,8 @@ void compare_constant(const std::shared_ptr<ASTNode> &result,
 			[&](const String &string_value) {
 				ASSERT_EQ(string_value.s, std::get<String>(*expected_value).s);
 			},
-			[&](const NameConstant &name_constant_value) {
-				if (auto *bool_result = std::get_if<bool>(&name_constant_value.value)) {
-					ASSERT_EQ(*bool_result,
-						std::get<bool>(std::get<NameConstant>(*expected_value).value));
-				} else {
-					TODO();
-				}
+			[&](PyObject *obj_value) {
+				ASSERT_EQ(obj_value, std::get<PyObject *>(*expected_value));
 			},
 			[&](const auto &val) {
 				(void)val;

@@ -22,7 +22,7 @@ PyResult<Value> JumpIfTrue::execute(VirtualMachine &vm, Interpreter &interpreter
 			const auto ip = vm.instruction_pointer() + *m_offset;
 			vm.set_instruction_pointer(ip);
 		}
-		return Ok(Value{ NameConstant{ test_result.unwrap() } });
+		return Ok(Value{ test_result.unwrap() ? py_true() : py_false() });
 	}
 	return Err(test_result.unwrap_err());
 }

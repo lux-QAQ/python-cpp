@@ -39,7 +39,7 @@ PyResult<Value> CompareOperation::execute(VirtualMachine &vm, Interpreter &inter
 		case Comparisson::Is: {
 			[[maybe_unused]] RAIIStoreNonCallInstructionData non_call_instruction_data;
 			if (auto result = is(lhs, rhs, interpreter); result.is_ok()) {
-				return Ok(Value{ NameConstant{ result.unwrap() } });
+				return Ok(Value{ result.unwrap() ? py_true() : py_false() });
 			} else {
 				return Err(result.unwrap_err());
 			}
@@ -47,7 +47,7 @@ PyResult<Value> CompareOperation::execute(VirtualMachine &vm, Interpreter &inter
 		case Comparisson::IsNot: {
 			[[maybe_unused]] RAIIStoreNonCallInstructionData non_call_instruction_data;
 			if (auto result = is(lhs, rhs, interpreter); result.is_ok()) {
-				return Ok(Value{ NameConstant{ !result.unwrap() } });
+				return Ok(Value{ result.unwrap() ? py_false() : py_true() });
 			} else {
 				return Err(result.unwrap_err());
 			}
@@ -55,7 +55,7 @@ PyResult<Value> CompareOperation::execute(VirtualMachine &vm, Interpreter &inter
 		case Comparisson::In: {
 			[[maybe_unused]] RAIIStoreNonCallInstructionData non_call_instruction_data;
 			if (auto result = in(lhs, rhs, interpreter); result.is_ok()) {
-				return Ok(Value{ NameConstant{ result.unwrap() } });
+				return Ok(Value{ result.unwrap() ? py_true() : py_false() });
 			} else {
 				return Err(result.unwrap_err());
 			}
@@ -63,7 +63,7 @@ PyResult<Value> CompareOperation::execute(VirtualMachine &vm, Interpreter &inter
 		case Comparisson::NotIn: {
 			[[maybe_unused]] RAIIStoreNonCallInstructionData non_call_instruction_data;
 			if (auto result = in(lhs, rhs, interpreter); result.is_ok()) {
-				return Ok(Value{ NameConstant{ !result.unwrap() } });
+				return Ok(Value{ result.unwrap() ? py_false() : py_true() });
 			} else {
 				return Err(result.unwrap_err());
 			}

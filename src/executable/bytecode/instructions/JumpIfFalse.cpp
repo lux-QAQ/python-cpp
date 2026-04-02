@@ -22,7 +22,7 @@ PyResult<Value> JumpIfFalse::execute(VirtualMachine &vm, Interpreter &interprete
 	} else if (test_result.is_err()) {
 		return Err(test_result.unwrap_err());
 	}
-	return Ok(Value{ NameConstant{ test_result.unwrap() } });
+	return Ok(Value{ test_result.unwrap() ? py_true() : py_false() });
 }
 
 

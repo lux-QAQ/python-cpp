@@ -1,6 +1,7 @@
 #include "ast/AST.hpp"
 #include "parser/Parser.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/types/api.hpp"
 #include "utilities.hpp"
 
 #include "gtest/gtest.h"
@@ -35,16 +36,8 @@ void compare_constant(const std::shared_ptr<ASTNode> &result,
 			[&](const String &string_value) {
 				ASSERT_EQ(string_value.s, std::get<String>(*expected_value).s);
 			},
-			[&](const NameConstant &name_constant_value) {
-				if (auto *bool_result = std::get_if<bool>(&name_constant_value.value)) {
-					ASSERT_EQ(*bool_result,
-						std::get<bool>(std::get<NameConstant>(*expected_value).value));
-				} else if (std::holds_alternative<NoneType>(
-							   std::get<NameConstant>(*expected_value).value)) {
-					ASSERT_TRUE(std::holds_alternative<NoneType>(name_constant_value.value));
-				} else {
-					TODO();
-				}
+			[&](PyObject *obj_value) {
+				ASSERT_EQ(obj_value, std::get<PyObject *>(*expected_value));
 			},
 			[&](const Bytes &bytes) { ASSERT_EQ(bytes.b, std::get<Bytes>(*expected_value).b); },
 			[&](const auto &val) {
@@ -2964,8 +2957,7 @@ TEST(Parser, FunctionDefinitionWithDecoratorList)
 			SourceLocation{}),// args
 		std::vector<std::shared_ptr<ASTNode>>{
 			std::make_shared<Return>(
-				std::make_shared<Constant>(py::NameConstant{ py::NoneType{} }, SourceLocation{}),
-				SourceLocation{}),
+				std::make_shared<Constant>(py::py_none(), SourceLocation{}), SourceLocation{}),
 		},// body
 		std::vector<std::shared_ptr<ASTNode>>{
 			std::make_shared<Name>("classmethod", ContextType::LOAD, SourceLocation{}),
@@ -3221,7 +3213,7 @@ TEST(Parser, FunctionDefinitionWithOnlyDefaultArguments)
 			std::vector<std::shared_ptr<ASTNode>>{},
 			nullptr,
 			std::vector<std::shared_ptr<ASTNode>>{
-				std::make_shared<Constant>(NameConstant{ NoneType{} }, SourceLocation{}),
+				std::make_shared<Constant>(py_none(), SourceLocation{}),
 			},
 			SourceLocation{}),// args
 		std::vector<std::shared_ptr<ASTNode>>{
@@ -3554,8 +3546,7 @@ TEST(Parser, YieldEmpty)
 			std::vector<std::shared_ptr<Argument>>{}, SourceLocation{}),// args
 		std::vector<std::shared_ptr<ASTNode>>{
 			std::make_shared<Yield>(
-				std::make_shared<Constant>(NameConstant{ NoneType{} }, SourceLocation{}),
-				SourceLocation{}),
+				std::make_shared<Constant>(py_none(), SourceLocation{}), SourceLocation{}),
 		},// body
 		std::vector<std::shared_ptr<ASTNode>>{},// decorator_list
 		nullptr,// returns

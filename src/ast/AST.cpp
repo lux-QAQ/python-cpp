@@ -1,7 +1,9 @@
 #include "AST.hpp"
 
+#include "runtime/PyBool.hpp"
 #include "runtime/PyObject.hpp"
 #include "runtime/Value.hpp"
+#include "runtime/types/api.hpp"
 
 namespace ast {
 
@@ -797,7 +799,7 @@ Constant::Constant(mpz_class value, SourceLocation source_location)
 
 Constant::Constant(bool value, SourceLocation source_location)
 	: ASTNode(ASTNodeType::Constant, source_location),
-	  m_value(std::make_unique<py::Value>(py::NameConstant{ value }))
+	  m_value(std::make_unique<py::Value>(value ? py::py_true() : py::py_false()))
 {}
 
 Constant::Constant(std::string value, SourceLocation source_location)

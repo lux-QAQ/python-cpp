@@ -272,8 +272,8 @@ PyResult<PyObject *> PyFloat::__trunc__() const
 PyResult<PyObject *> PyFloat::is_integer() const
 {
 	const double value = as_f64();
-	if (!is_finite(value)) { return PyObject::from(NameConstant{ false }); }
-	return PyObject::from(NameConstant{ std::floor(value) == value });
+	if (!is_finite(value)) { return Ok(py::py_false()); }
+	return Ok((std::floor(value) == value) ? py::py_true() : py::py_false());
 }
 
 PyResult<PyObject *> PyFloat::hex() const { return PyString::create(float_to_hex(as_f64())); }

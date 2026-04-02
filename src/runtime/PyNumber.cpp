@@ -1,5 +1,6 @@
 #include "PyNumber.hpp"
 #include "NotImplemented.hpp"
+#include "PyBool.hpp"
 #include "PyFloat.hpp"
 #include "PyInteger.hpp"
 #include "PyNone.hpp"
@@ -204,7 +205,9 @@ PyResult<PyObject *> PyNumber::__eq__(const PyObject *obj) const
 {
 	if (auto *pynum = as_number(obj)) {
 		const bool comparisson = m_value == pynum->value();
-		return PyObject::from(NameConstant{ comparisson });
+		return Ok(comparisson
+					  ? py::PyObject::from(py::PyObject::from(py::py_true()).unwrap()).unwrap()
+					  : py::PyObject::from(py::PyObject::from(py::py_false()).unwrap()).unwrap());
 	}
 	return Err(type_error("'==' not supported between instances of '{}' and '{}'",
 		type()->name(),
@@ -216,7 +219,9 @@ PyResult<PyObject *> PyNumber::__ne__(const PyObject *obj) const
 {
 	if (auto *pynum = as_number(obj)) {
 		const bool comparisson = m_value != pynum->value();
-		return PyObject::from(NameConstant{ comparisson });
+		return Ok(comparisson
+					  ? py::PyObject::from(py::PyObject::from(py::py_true()).unwrap()).unwrap()
+					  : py::PyObject::from(py::PyObject::from(py::py_false()).unwrap()).unwrap());
 	}
 	return Err(type_error("'!=' not supported between instances of '{}' and '{}'",
 		type()->name(),
@@ -228,7 +233,9 @@ PyResult<PyObject *> PyNumber::__lt__(const PyObject *other) const
 {
 	if (auto *pynum = as_number(other)) {
 		const bool comparisson = m_value < pynum->value();
-		return PyObject::from(NameConstant{ comparisson });
+		return Ok(comparisson
+					  ? py::PyObject::from(py::PyObject::from(py::py_true()).unwrap()).unwrap()
+					  : py::PyObject::from(py::PyObject::from(py::py_false()).unwrap()).unwrap());
 	}
 	return Err(type_error("'<' not supported between instances of '{}' and '{}'",
 		type()->name(),
@@ -239,7 +246,9 @@ PyResult<PyObject *> PyNumber::__le__(const PyObject *other) const
 {
 	if (auto *pynum = as_number(other)) {
 		const bool comparisson = m_value <= pynum->value();
-		return PyObject::from(NameConstant{ comparisson });
+		return Ok(comparisson
+					  ? py::PyObject::from(py::PyObject::from(py::py_true()).unwrap()).unwrap()
+					  : py::PyObject::from(py::PyObject::from(py::py_false()).unwrap()).unwrap());
 	}
 	return Err(type_error("'<=' not supported between instances of '{}' and '{}'",
 		type()->name(),
@@ -250,7 +259,9 @@ PyResult<PyObject *> PyNumber::__gt__(const PyObject *other) const
 {
 	if (auto *pynum = as_number(other)) {
 		const bool comparisson = m_value > pynum->value();
-		return PyObject::from(NameConstant{ comparisson });
+		return Ok(comparisson
+					  ? py::PyObject::from(py::PyObject::from(py::py_true()).unwrap()).unwrap()
+					  : py::PyObject::from(py::PyObject::from(py::py_false()).unwrap()).unwrap());
 	}
 	return Err(type_error("'>' not supported between instances of '{}' and '{}'",
 		type()->name(),
@@ -261,7 +272,9 @@ PyResult<PyObject *> PyNumber::__ge__(const PyObject *other) const
 {
 	if (auto *pynum = as_number(other)) {
 		const bool comparisson = m_value >= pynum->value();
-		return PyObject::from(NameConstant{ comparisson });
+		return Ok(comparisson
+					  ? py::PyObject::from(py::PyObject::from(py::py_true()).unwrap()).unwrap()
+					  : py::PyObject::from(py::PyObject::from(py::py_false()).unwrap()).unwrap());
 	}
 	return Err(type_error("'>=' not supported between instances of '{}' and '{}'",
 		type()->name(),

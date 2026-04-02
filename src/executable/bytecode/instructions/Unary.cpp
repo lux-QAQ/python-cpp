@@ -22,10 +22,7 @@ PyResult<Value> unary_positive(const Value &val)
 				return Err(type_error("bad operand type for unary +: 'ellipsis'"));
 			},
 			[](const NameConstant &c) -> PyResult<Value> {
-				if (std::holds_alternative<NoneType>(c.value)) {
-					return Err(type_error("bad operand type for unary +: 'NoneType'"));
-				}
-				return Ok(Value{ c });
+				return PyObject::from(c).unwrap()->pos();
 			},
 			[](const Tuple &) -> PyResult<Value> {
 				return Err(type_error("bad operand type for unary +: 'tuple'"));
@@ -57,11 +54,7 @@ PyResult<Value> unary_negative(const Value &val)
 				return Err(type_error("bad operand type for unary -: 'ellipsis'"));
 			},
 			[](const NameConstant &c) -> PyResult<Value> {
-				if (std::holds_alternative<NoneType>(c.value)) {
-					return Err(type_error("bad operand type for unary -: 'NoneType'"));
-				}
-				if (std::get<bool>(c.value)) { return Ok(Value{ Number{ int64_t{ -1 } } }); }
-				return Ok(Value{ Number{ int64_t{ 0 } } });
+				return PyObject::from(c).unwrap()->neg();
 			},
 			[](const Tuple &) -> PyResult<Value> {
 				return Err(type_error("bad operand type for unary -: 'tuple'"));
@@ -98,11 +91,7 @@ PyResult<Value> unary_invert(const Value &val)
 				return Err(type_error("bad operand type for unary ~: 'ellipsis'"));
 			},
 			[](const NameConstant &c) -> PyResult<Value> {
-				if (std::holds_alternative<NoneType>(c.value)) {
-					return Err(type_error("bad operand type for unary ~: 'NoneType'"));
-				}
-				if (std::get<bool>(c.value)) { return Ok(Value{ Number{ int64_t{ -2 } } }); }
-				return Ok(Value{ Number{ int64_t{ -1 } } });
+				return PyObject::from(c).unwrap()->invert();
 			},
 			[](const Tuple &) -> PyResult<Value> {
 				return Err(type_error("bad operand type for unary ~: 'tuple'"));
