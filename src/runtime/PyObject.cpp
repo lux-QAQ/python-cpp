@@ -8,6 +8,7 @@
 #include "PyDict.hpp"
 #include "PyEllipsis.hpp"
 #include "PyFloat.hpp"
+#include "PyFunction.hpp"
 #include "PyGenericAlias.hpp"
 #include "PyInteger.hpp"
 #include "PyIterator.hpp"
@@ -783,8 +784,32 @@ PyResult<int64_t> PyObject::hash() const
 	}
 }
 
+// PyResult<PyObject *> PyObject::call(PyTuple *args, PyDict *kwargs)
+// {
+//     // 临时加入这一行防御与追踪：
+//     spdlog::error("DEBUG: calling object type: {}", type()->name());
+
+//     if (type_prototype().__call__.has_value()) {
+//         return call_slot(*type_prototype().__call__, this, args, kwargs);
+//     }
+//     return Err(type_error("'{}' object is not callable", type_prototype().__name__));
+// }
+
 PyResult<PyObject *> PyObject::call(PyTuple *args, PyDict *kwargs)
 {
+	// [核心修复]：直接放行底层核心 Callable，绝对不允许它们绕回槽查表！
+	// 否则 slot_wrapper 查 slot_wrapper 的 __call__ 会形成黑洞死循环
+	if (auto *slot_wrapper = py::as<PySlotWrapper>(this)) {
+		return slot_wrapper->__call__(args, kwargs);
+	}
+	if (auto *function = py::as<PyFunction>(this)) { return function->__call__(args, kwargs); }
+	if (auto *native = py::as<PyNativeFunction>(this)) { return native->__call__(args, kwargs); }
+	// [修复]：增加 PyType 的旁路放行。动态创建类型（或者类实例化）时，
+	// PyType 没有走 Python 侧插槽，而是由 C++ 底层 call_raw 承接！
+	if (auto *type_obj = py::as<PyType>(this)) {
+		return type_obj->call_raw(args->elements(), kwargs);
+	}
+
 	if (type_prototype().__call__.has_value()) {
 		return call_slot(*type_prototype().__call__, this, args, kwargs);
 	}

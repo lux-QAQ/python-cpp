@@ -38,13 +38,40 @@ PyObject *RtValue::box() const
 	__builtin_unreachable();
 }
 
+// RtValue RtValue::flatten(PyObject *ptr)
+// {
+// 	RtValue rt = from_ptr(ptr);
+// 	if (rt.is_tagged_int() || rt.is_null()) { return rt; }
+
+// 	// [修复] 恢复使用 Pylang 原本正确的内建自研 RTTI 进行判定！动态层绝不失效
+// 	if (auto *pyint = py::as<PyInteger>(ptr)) {
+// 		const auto &num = pyint->value();
+// 		if (std::holds_alternative<mpz_class>(num.value)) {
+// 			const auto &gmp_val = std::get<mpz_class>(num.value);
+// 			if (gmp_val.fits_slong_p()) {
+// 				long raw_val = gmp_val.get_si();
+// 				if (fits_tagged_int(raw_val)) { return from_int(raw_val); }
+// 			}
+// 		}
+// 	}
+
+// 	// [补充] Python 3.9 语义：bool 无缝参与算术等效于 0 或 1。
+// 	// 如果由于某种原因被强行送进运算的 ptr 实质是个真/假的 bool Heap对象。我们也直接短路。
+// 	if (auto *pybool = py::as<PyBool>(ptr)) { return from_int(pybool->value() ? 1 : 0); }
+
+// 	return rt;
+// }
+
 RtValue RtValue::flatten(PyObject *ptr)
 {
 	RtValue rt = from_ptr(ptr);
 	if (rt.is_tagged_int() || rt.is_null()) { return rt; }
 
-	// [修复] 恢复使用 Pylang 原本正确的内建自研 RTTI 进行判定！动态层绝不失效
-	if (auto *pyint = py::as<PyInteger>(ptr)) {
+	auto *type = ptr->type();
+
+	// [优化] 使用明确的纯指针比对替换巨慢的 py::as<T> RTTI 检查
+	if (type == types::integer()) {
+		auto *pyint = static_cast<PyInteger *>(ptr);
 		const auto &num = pyint->value();
 		if (std::holds_alternative<mpz_class>(num.value)) {
 			const auto &gmp_val = std::get<mpz_class>(num.value);
@@ -55,12 +82,16 @@ RtValue RtValue::flatten(PyObject *ptr)
 		}
 	}
 
-	// [补充] Python 3.9 语义：bool 无缝参与算术等效于 0 或 1。
+	// [优化] Python 3.9 语义：bool 无缝参与算术等效于 0 或 1。
 	// 如果由于某种原因被强行送进运算的 ptr 实质是个真/假的 bool Heap对象。我们也直接短路。
-	if (auto *pybool = py::as<PyBool>(ptr)) { return from_int(pybool->value() ? 1 : 0); }
+	if (type == types::bool_()) {
+		auto *pybool = static_cast<PyBool *>(ptr);
+		return from_int(pybool->value() ? 1 : 0);
+	}
 
 	return rt;
 }
+
 
 RtValue RtValue::from_int_or_box(int64_t value)
 {

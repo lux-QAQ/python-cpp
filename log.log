@@ -32,63 +32,63 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 32338
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-02 00:03:32.132] [error] [DEBUG_ALLOC] Type: PyDict               | Total:       5000
-[2026-04-02 00:03:32.133] [error] [DEBUG_ALLOC] Type: PyString             | Total:       5000
-[2026-04-02 00:03:32.141] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:       5000
-[2026-04-02 00:03:32.143] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:       5000
-[2026-04-02 00:03:32.145] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      10000
-[2026-04-02 00:03:32.146] [error] [DEBUG_ALLOC] Type: Type                 | Total:       5000
-[2026-04-02 00:03:32.157] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      15000
-[2026-04-02 00:03:32.159] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      10000
-[2026-04-02 00:03:32.159] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:       5000
-[2026-04-02 00:03:32.167] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      20000
-[2026-04-02 00:03:32.167] [error] [DEBUG_ALLOC] Type: Type                 | Total:      10000
-[2026-04-02 00:03:32.172] [error] [DEBUG_ALLOC] Type: PyString             | Total:      10000
-[2026-04-02 00:03:32.178] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      15000
-[2026-04-02 00:03:32.179] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      25000
-[2026-04-02 00:03:32.180] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      10000
-[2026-04-02 00:03:32.190] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      30000
-[2026-04-02 00:03:32.190] [error] [DEBUG_ALLOC] Type: Type                 | Total:      15000
-[2026-04-02 00:03:32.196] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      20000
-[2026-04-02 00:03:32.197] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      10000
-[2026-04-02 00:03:32.201] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      35000
-[2026-04-02 00:03:32.209] [error] [DEBUG_ALLOC] Type: PyString             | Total:      15000
-[2026-04-02 00:03:32.213] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      40000
-[2026-04-02 00:03:32.213] [error] [DEBUG_ALLOC] Type: Type                 | Total:      20000
-[2026-04-02 00:03:32.215] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      25000
-[2026-04-02 00:03:32.218] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      15000
-[2026-04-02 00:03:32.226] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      45000
-[2026-04-02 00:03:32.240] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      30000
-[2026-04-02 00:03:32.240] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      15000
-[2026-04-02 00:03:32.241] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      50000
-[2026-04-02 00:03:32.242] [error] [DEBUG_ALLOC] Type: Type                 | Total:      25000
-[2026-04-02 00:03:32.253] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      55000
-[2026-04-02 00:03:32.254] [error] [DEBUG_ALLOC] Type: PyString             | Total:      20000
-[2026-04-02 00:03:32.260] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      35000
-[2026-04-02 00:03:32.263] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      20000
-[2026-04-02 00:03:32.265] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      60000
-[2026-04-02 00:03:32.265] [error] [DEBUG_ALLOC] Type: Type                 | Total:      30000
-[2026-04-02 00:03:32.278] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      65000
-[2026-04-02 00:03:32.282] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      40000
-[2026-04-02 00:03:32.282] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      20000
-[2026-04-02 00:03:32.292] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      70000
-[2026-04-02 00:03:32.292] [error] [DEBUG_ALLOC] Type: Type                 | Total:      35000
-[2026-04-02 00:03:32.297] [error] [DEBUG_ALLOC] Type: PyString             | Total:      25000
-[2026-04-02 00:03:32.305] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      75000
-[2026-04-02 00:03:32.305] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      45000
-[2026-04-02 00:03:32.308] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      25000
-[2026-04-02 00:03:32.317] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      80000
-[2026-04-02 00:03:32.318] [error] [DEBUG_ALLOC] Type: Type                 | Total:      40000
-[2026-04-02 00:03:32.326] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      50000
-[2026-04-02 00:03:32.327] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      25000
-[2026-04-02 00:03:32.329] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      85000
-[2026-04-02 00:03:32.340] [error] [DEBUG_ALLOC] Type: PyString             | Total:      30000
-[2026-04-02 00:03:32.341] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      90000
-[2026-04-02 00:03:32.342] [error] [DEBUG_ALLOC] Type: Type                 | Total:      45000
-[2026-04-02 00:03:32.347] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      55000
-[2026-04-02 00:03:32.349] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      30000
-[2026-04-02 00:03:32.354] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      95000
-[2026-04-02 00:03:32.674] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     100000
+[:32.132] Type: PyDict               | Total:       5000
+[:32.133] Type: PyString             | Total:       5000
+[:32.141] Type: PyTuple              | Total:       5000
+[:32.143] Type: PyInteger            | Total:       5000
+[:32.145] Type: PyDict               | Total:      10000
+[:32.146] Type: Type                 | Total:       5000
+[:32.157] Type: PyDict               | Total:      15000
+[:32.159] Type: PyTuple              | Total:      10000
+[:32.159] Type: PyStringIterator     | Total:       5000
+[:32.167] Type: PyDict               | Total:      20000
+[:32.167] Type: Type                 | Total:      10000
+[:32.172] Type: PyString             | Total:      10000
+[:32.178] Type: PyTuple              | Total:      15000
+[:32.179] Type: PyDict               | Total:      25000
+[:32.180] Type: PyInteger            | Total:      10000
+[:32.190] Type: PyDict               | Total:      30000
+[:32.190] Type: Type                 | Total:      15000
+[:32.196] Type: PyTuple              | Total:      20000
+[:32.197] Type: PyStringIterator     | Total:      10000
+[:32.201] Type: PyDict               | Total:      35000
+[:32.209] Type: PyString             | Total:      15000
+[:32.213] Type: PyDict               | Total:      40000
+[:32.213] Type: Type                 | Total:      20000
+[:32.215] Type: PyTuple              | Total:      25000
+[:32.218] Type: PyInteger            | Total:      15000
+[:32.226] Type: PyDict               | Total:      45000
+[:32.240] Type: PyTuple              | Total:      30000
+[:32.240] Type: PyStringIterator     | Total:      15000
+[:32.241] Type: PyDict               | Total:      50000
+[:32.242] Type: Type                 | Total:      25000
+[:32.253] Type: PyDict               | Total:      55000
+[:32.254] Type: PyString             | Total:      20000
+[:32.260] Type: PyTuple              | Total:      35000
+[:32.263] Type: PyInteger            | Total:      20000
+[:32.265] Type: PyDict               | Total:      60000
+[:32.265] Type: Type                 | Total:      30000
+[:32.278] Type: PyDict               | Total:      65000
+[:32.282] Type: PyTuple              | Total:      40000
+[:32.282] Type: PyStringIterator     | Total:      20000
+[:32.292] Type: PyDict               | Total:      70000
+[:32.292] Type: Type                 | Total:      35000
+[:32.297] Type: PyString             | Total:      25000
+[:32.305] Type: PyDict               | Total:      75000
+[:32.305] Type: PyTuple              | Total:      45000
+[:32.308] Type: PyInteger            | Total:      25000
+[:32.317] Type: PyDict               | Total:      80000
+[:32.318] Type: Type                 | Total:      40000
+[:32.326] Type: PyTuple              | Total:      50000
+[:32.327] Type: PyStringIterator     | Total:      25000
+[:32.329] Type: PyDict               | Total:      85000
+[:32.340] Type: PyString             | Total:      30000
+[:32.341] Type: PyDict               | Total:      90000
+[:32.342] Type: Type                 | Total:      45000
+[:32.347] Type: PyTuple              | Total:      55000
+[:32.349] Type: PyInteger            | Total:      30000
+[:32.354] Type: PyDict               | Total:      95000
+[:32.674] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     100000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -114,47 +114,47 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:32.674] [error] [DEBUG_ALLOC] Type: Type                 | Total:      50000
-[2026-04-02 00:03:32.676] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      60000
-[2026-04-02 00:03:32.676] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      30000
-[2026-04-02 00:03:32.685] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     105000
-[2026-04-02 00:03:32.690] [error] [DEBUG_ALLOC] Type: PyString             | Total:      35000
-[2026-04-02 00:03:32.697] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      65000
-[2026-04-02 00:03:32.699] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     110000
-[2026-04-02 00:03:32.699] [error] [DEBUG_ALLOC] Type: Type                 | Total:      55000
-[2026-04-02 00:03:32.700] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      35000
-[2026-04-02 00:03:32.712] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     115000
-[2026-04-02 00:03:32.719] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      70000
-[2026-04-02 00:03:32.720] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      35000
-[2026-04-02 00:03:32.726] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     120000
-[2026-04-02 00:03:32.726] [error] [DEBUG_ALLOC] Type: Type                 | Total:      60000
-[2026-04-02 00:03:32.735] [error] [DEBUG_ALLOC] Type: PyString             | Total:      40000
-[2026-04-02 00:03:32.738] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     125000
-[2026-04-02 00:03:32.742] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      75000
-[2026-04-02 00:03:32.745] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      40000
-[2026-04-02 00:03:32.750] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     130000
-[2026-04-02 00:03:32.751] [error] [DEBUG_ALLOC] Type: Type                 | Total:      65000
-[2026-04-02 00:03:32.762] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     135000
-[2026-04-02 00:03:32.763] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      80000
-[2026-04-02 00:03:32.763] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      40000
-[2026-04-02 00:03:32.773] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     140000
-[2026-04-02 00:03:32.774] [error] [DEBUG_ALLOC] Type: Type                 | Total:      70000
-[2026-04-02 00:03:32.776] [error] [DEBUG_ALLOC] Type: PyString             | Total:      45000
-[2026-04-02 00:03:32.783] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      85000
-[2026-04-02 00:03:32.785] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     145000
-[2026-04-02 00:03:32.786] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      45000
-[2026-04-02 00:03:32.797] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     150000
-[2026-04-02 00:03:32.798] [error] [DEBUG_ALLOC] Type: Type                 | Total:      75000
-[2026-04-02 00:03:32.804] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      90000
-[2026-04-02 00:03:32.804] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      45000
-[2026-04-02 00:03:32.809] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     155000
-[2026-04-02 00:03:32.819] [error] [DEBUG_ALLOC] Type: PyString             | Total:      50000
-[2026-04-02 00:03:32.823] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     160000
-[2026-04-02 00:03:32.823] [error] [DEBUG_ALLOC] Type: Type                 | Total:      80000
-[2026-04-02 00:03:32.826] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      95000
-[2026-04-02 00:03:32.828] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      50000
-[2026-04-02 00:03:32.835] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     165000
-[2026-04-02 00:03:32.859] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     100000
+[:32.674] Type: Type                 | Total:      50000
+[:32.676] Type: PyTuple              | Total:      60000
+[:32.676] Type: PyStringIterator     | Total:      30000
+[:32.685] Type: PyDict               | Total:     105000
+[:32.690] Type: PyString             | Total:      35000
+[:32.697] Type: PyTuple              | Total:      65000
+[:32.699] Type: PyDict               | Total:     110000
+[:32.699] Type: Type                 | Total:      55000
+[:32.700] Type: PyInteger            | Total:      35000
+[:32.712] Type: PyDict               | Total:     115000
+[:32.719] Type: PyTuple              | Total:      70000
+[:32.720] Type: PyStringIterator     | Total:      35000
+[:32.726] Type: PyDict               | Total:     120000
+[:32.726] Type: Type                 | Total:      60000
+[:32.735] Type: PyString             | Total:      40000
+[:32.738] Type: PyDict               | Total:     125000
+[:32.742] Type: PyTuple              | Total:      75000
+[:32.745] Type: PyInteger            | Total:      40000
+[:32.750] Type: PyDict               | Total:     130000
+[:32.751] Type: Type                 | Total:      65000
+[:32.762] Type: PyDict               | Total:     135000
+[:32.763] Type: PyTuple              | Total:      80000
+[:32.763] Type: PyStringIterator     | Total:      40000
+[:32.773] Type: PyDict               | Total:     140000
+[:32.774] Type: Type                 | Total:      70000
+[:32.776] Type: PyString             | Total:      45000
+[:32.783] Type: PyTuple              | Total:      85000
+[:32.785] Type: PyDict               | Total:     145000
+[:32.786] Type: PyInteger            | Total:      45000
+[:32.797] Type: PyDict               | Total:     150000
+[:32.798] Type: Type                 | Total:      75000
+[:32.804] Type: PyTuple              | Total:      90000
+[:32.804] Type: PyStringIterator     | Total:      45000
+[:32.809] Type: PyDict               | Total:     155000
+[:32.819] Type: PyString             | Total:      50000
+[:32.823] Type: PyDict               | Total:     160000
+[:32.823] Type: Type                 | Total:      80000
+[:32.826] Type: PyTuple              | Total:      95000
+[:32.828] Type: PyInteger            | Total:      50000
+[:32.835] Type: PyDict               | Total:     165000
+[:32.859] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     100000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:119:14
@@ -174,25 +174,25 @@ Stack trace (most recent call first):
 #15 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #16 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #17 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:32.860] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     170000
-[2026-04-02 00:03:32.860] [error] [DEBUG_ALLOC] Type: Type                 | Total:      85000
-[2026-04-02 00:03:32.860] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      50000
-[2026-04-02 00:03:32.875] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     175000
-[2026-04-02 00:03:32.876] [error] [DEBUG_ALLOC] Type: PyString             | Total:      55000
-[2026-04-02 00:03:32.886] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     105000
-[2026-04-02 00:03:32.889] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      55000
-[2026-04-02 00:03:32.890] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     180000
-[2026-04-02 00:03:32.890] [error] [DEBUG_ALLOC] Type: Type                 | Total:      90000
-[2026-04-02 00:03:32.904] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     185000
-[2026-04-02 00:03:32.910] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     110000
-[2026-04-02 00:03:32.910] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      55000
-[2026-04-02 00:03:32.917] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     190000
-[2026-04-02 00:03:32.918] [error] [DEBUG_ALLOC] Type: Type                 | Total:      95000
-[2026-04-02 00:03:32.925] [error] [DEBUG_ALLOC] Type: PyString             | Total:      60000
-[2026-04-02 00:03:32.930] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     195000
-[2026-04-02 00:03:32.933] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     115000
-[2026-04-02 00:03:32.935] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      60000
-[2026-04-02 00:03:32.943] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     200000
+[:32.860] Type: PyDict               | Total:     170000
+[:32.860] Type: Type                 | Total:      85000
+[:32.860] Type: PyStringIterator     | Total:      50000
+[:32.875] Type: PyDict               | Total:     175000
+[:32.876] Type: PyString             | Total:      55000
+[:32.886] Type: PyTuple              | Total:     105000
+[:32.889] Type: PyInteger            | Total:      55000
+[:32.890] Type: PyDict               | Total:     180000
+[:32.890] Type: Type                 | Total:      90000
+[:32.904] Type: PyDict               | Total:     185000
+[:32.910] Type: PyTuple              | Total:     110000
+[:32.910] Type: PyStringIterator     | Total:      55000
+[:32.917] Type: PyDict               | Total:     190000
+[:32.918] Type: Type                 | Total:      95000
+[:32.925] Type: PyString             | Total:      60000
+[:32.930] Type: PyDict               | Total:     195000
+[:32.933] Type: PyTuple              | Total:     115000
+[:32.935] Type: PyInteger            | Total:      60000
+[:32.943] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     200000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -218,7 +218,7 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.007] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     100000
+[:33.007] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     100000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:579:12
@@ -248,63 +248,63 @@ Stack trace (most recent call first):
 #25 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #26 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #27 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.019] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     120000
-[2026-04-02 00:03:33.020] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      60000
-[2026-04-02 00:03:33.020] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     205000
-[2026-04-02 00:03:33.031] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     210000
-[2026-04-02 00:03:33.032] [error] [DEBUG_ALLOC] Type: Type                 | Total:     105000
-[2026-04-02 00:03:33.033] [error] [DEBUG_ALLOC] Type: PyString             | Total:      65000
-[2026-04-02 00:03:33.041] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     125000
-[2026-04-02 00:03:33.043] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      65000
-[2026-04-02 00:03:33.044] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     215000
-[2026-04-02 00:03:33.055] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     220000
-[2026-04-02 00:03:33.056] [error] [DEBUG_ALLOC] Type: Type                 | Total:     110000
-[2026-04-02 00:03:33.061] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     130000
-[2026-04-02 00:03:33.061] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      65000
-[2026-04-02 00:03:33.067] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     225000
-[2026-04-02 00:03:33.074] [error] [DEBUG_ALLOC] Type: PyString             | Total:      70000
-[2026-04-02 00:03:33.079] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     230000
-[2026-04-02 00:03:33.079] [error] [DEBUG_ALLOC] Type: Type                 | Total:     115000
-[2026-04-02 00:03:33.081] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     135000
-[2026-04-02 00:03:33.084] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      70000
-[2026-04-02 00:03:33.092] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     235000
-[2026-04-02 00:03:33.103] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     140000
-[2026-04-02 00:03:33.103] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      70000
-[2026-04-02 00:03:33.104] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     240000
-[2026-04-02 00:03:33.104] [error] [DEBUG_ALLOC] Type: Type                 | Total:     120000
-[2026-04-02 00:03:33.115] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     245000
-[2026-04-02 00:03:33.117] [error] [DEBUG_ALLOC] Type: PyString             | Total:      75000
-[2026-04-02 00:03:33.124] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     145000
-[2026-04-02 00:03:33.126] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      75000
-[2026-04-02 00:03:33.127] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     250000
-[2026-04-02 00:03:33.128] [error] [DEBUG_ALLOC] Type: Type                 | Total:     125000
-[2026-04-02 00:03:33.139] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     255000
-[2026-04-02 00:03:33.144] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     150000
-[2026-04-02 00:03:33.144] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      75000
-[2026-04-02 00:03:33.150] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     260000
-[2026-04-02 00:03:33.151] [error] [DEBUG_ALLOC] Type: Type                 | Total:     130000
-[2026-04-02 00:03:33.157] [error] [DEBUG_ALLOC] Type: PyString             | Total:      80000
-[2026-04-02 00:03:33.162] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     265000
-[2026-04-02 00:03:33.164] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     155000
-[2026-04-02 00:03:33.167] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      80000
-[2026-04-02 00:03:33.174] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     270000
-[2026-04-02 00:03:33.174] [error] [DEBUG_ALLOC] Type: Type                 | Total:     135000
-[2026-04-02 00:03:33.185] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     160000
-[2026-04-02 00:03:33.186] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      80000
-[2026-04-02 00:03:33.186] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     275000
-[2026-04-02 00:03:33.198] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     280000
-[2026-04-02 00:03:33.198] [error] [DEBUG_ALLOC] Type: Type                 | Total:     140000
-[2026-04-02 00:03:33.199] [error] [DEBUG_ALLOC] Type: PyString             | Total:      85000
-[2026-04-02 00:03:33.206] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     165000
-[2026-04-02 00:03:33.209] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      85000
-[2026-04-02 00:03:33.210] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     285000
-[2026-04-02 00:03:33.223] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     290000
-[2026-04-02 00:03:33.223] [error] [DEBUG_ALLOC] Type: Type                 | Total:     145000
-[2026-04-02 00:03:33.228] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     170000
-[2026-04-02 00:03:33.228] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      85000
-[2026-04-02 00:03:33.235] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     295000
-[2026-04-02 00:03:33.242] [error] [DEBUG_ALLOC] Type: PyString             | Total:      90000
-[2026-04-02 00:03:33.249] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     300000
+[:33.019] Type: PyTuple              | Total:     120000
+[:33.020] Type: PyStringIterator     | Total:      60000
+[:33.020] Type: PyDict               | Total:     205000
+[:33.031] Type: PyDict               | Total:     210000
+[:33.032] Type: Type                 | Total:     105000
+[:33.033] Type: PyString             | Total:      65000
+[:33.041] Type: PyTuple              | Total:     125000
+[:33.043] Type: PyInteger            | Total:      65000
+[:33.044] Type: PyDict               | Total:     215000
+[:33.055] Type: PyDict               | Total:     220000
+[:33.056] Type: Type                 | Total:     110000
+[:33.061] Type: PyTuple              | Total:     130000
+[:33.061] Type: PyStringIterator     | Total:      65000
+[:33.067] Type: PyDict               | Total:     225000
+[:33.074] Type: PyString             | Total:      70000
+[:33.079] Type: PyDict               | Total:     230000
+[:33.079] Type: Type                 | Total:     115000
+[:33.081] Type: PyTuple              | Total:     135000
+[:33.084] Type: PyInteger            | Total:      70000
+[:33.092] Type: PyDict               | Total:     235000
+[:33.103] Type: PyTuple              | Total:     140000
+[:33.103] Type: PyStringIterator     | Total:      70000
+[:33.104] Type: PyDict               | Total:     240000
+[:33.104] Type: Type                 | Total:     120000
+[:33.115] Type: PyDict               | Total:     245000
+[:33.117] Type: PyString             | Total:      75000
+[:33.124] Type: PyTuple              | Total:     145000
+[:33.126] Type: PyInteger            | Total:      75000
+[:33.127] Type: PyDict               | Total:     250000
+[:33.128] Type: Type                 | Total:     125000
+[:33.139] Type: PyDict               | Total:     255000
+[:33.144] Type: PyTuple              | Total:     150000
+[:33.144] Type: PyStringIterator     | Total:      75000
+[:33.150] Type: PyDict               | Total:     260000
+[:33.151] Type: Type                 | Total:     130000
+[:33.157] Type: PyString             | Total:      80000
+[:33.162] Type: PyDict               | Total:     265000
+[:33.164] Type: PyTuple              | Total:     155000
+[:33.167] Type: PyInteger            | Total:      80000
+[:33.174] Type: PyDict               | Total:     270000
+[:33.174] Type: Type                 | Total:     135000
+[:33.185] Type: PyTuple              | Total:     160000
+[:33.186] Type: PyStringIterator     | Total:      80000
+[:33.186] Type: PyDict               | Total:     275000
+[:33.198] Type: PyDict               | Total:     280000
+[:33.198] Type: Type                 | Total:     140000
+[:33.199] Type: PyString             | Total:      85000
+[:33.206] Type: PyTuple              | Total:     165000
+[:33.209] Type: PyInteger            | Total:      85000
+[:33.210] Type: PyDict               | Total:     285000
+[:33.223] Type: PyDict               | Total:     290000
+[:33.223] Type: Type                 | Total:     145000
+[:33.228] Type: PyTuple              | Total:     170000
+[:33.228] Type: PyStringIterator     | Total:      85000
+[:33.235] Type: PyDict               | Total:     295000
+[:33.242] Type: PyString             | Total:      90000
+[:33.249] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     300000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -330,26 +330,26 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.249] [error] [DEBUG_ALLOC] Type: Type                 | Total:     150000
-[2026-04-02 00:03:33.251] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     175000
-[2026-04-02 00:03:33.253] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      90000
-[2026-04-02 00:03:33.261] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     305000
-[2026-04-02 00:03:33.272] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     180000
-[2026-04-02 00:03:33.272] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      90000
-[2026-04-02 00:03:33.273] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     310000
-[2026-04-02 00:03:33.273] [error] [DEBUG_ALLOC] Type: Type                 | Total:     155000
-[2026-04-02 00:03:33.285] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     315000
-[2026-04-02 00:03:33.286] [error] [DEBUG_ALLOC] Type: PyString             | Total:      95000
-[2026-04-02 00:03:33.293] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     185000
-[2026-04-02 00:03:33.296] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      95000
-[2026-04-02 00:03:33.298] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     320000
-[2026-04-02 00:03:33.298] [error] [DEBUG_ALLOC] Type: Type                 | Total:     160000
-[2026-04-02 00:03:33.310] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     325000
-[2026-04-02 00:03:33.315] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     190000
-[2026-04-02 00:03:33.315] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      95000
-[2026-04-02 00:03:33.322] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     330000
-[2026-04-02 00:03:33.323] [error] [DEBUG_ALLOC] Type: Type                 | Total:     165000
-[2026-04-02 00:03:33.366] [error] [DEBUG_ALLOC_TRACE] Type: PyString             | Total:     100000
+[:33.249] Type: Type                 | Total:     150000
+[:33.251] Type: PyTuple              | Total:     175000
+[:33.253] Type: PyInteger            | Total:      90000
+[:33.261] Type: PyDict               | Total:     305000
+[:33.272] Type: PyTuple              | Total:     180000
+[:33.272] Type: PyStringIterator     | Total:      90000
+[:33.273] Type: PyDict               | Total:     310000
+[:33.273] Type: Type                 | Total:     155000
+[:33.285] Type: PyDict               | Total:     315000
+[:33.286] Type: PyString             | Total:      95000
+[:33.293] Type: PyTuple              | Total:     185000
+[:33.296] Type: PyInteger            | Total:      95000
+[:33.298] Type: PyDict               | Total:     320000
+[:33.298] Type: Type                 | Total:     160000
+[:33.310] Type: PyDict               | Total:     325000
+[:33.315] Type: PyTuple              | Total:     190000
+[:33.315] Type: PyStringIterator     | Total:      95000
+[:33.322] Type: PyDict               | Total:     330000
+[:33.323] Type: Type                 | Total:     165000
+[:33.366] [error] [DEBUG_ALLOC_TRACE] Type: PyString             | Total:     100000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:229:17
@@ -379,9 +379,9 @@ Stack trace (most recent call first):
 #25 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #26 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #27 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.372] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     335000
-[2026-04-02 00:03:33.374] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     195000
-[2026-04-02 00:03:33.400] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     100000
+[:33.372] Type: PyDict               | Total:     335000
+[:33.374] Type: PyTuple              | Total:     195000
+[:33.400] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     100000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
@@ -410,9 +410,9 @@ Stack trace (most recent call first):
 #24 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #25 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #26 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.410] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     340000
-[2026-04-02 00:03:33.410] [error] [DEBUG_ALLOC] Type: Type                 | Total:     170000
-[2026-04-02 00:03:33.422] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     200000
+[:33.410] Type: PyDict               | Total:     340000
+[:33.410] Type: Type                 | Total:     170000
+[:33.422] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     200000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:119:14
@@ -432,7 +432,7 @@ Stack trace (most recent call first):
 #15 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #16 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #17 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.424] [error] [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:     100000
+[:33.424] [error] [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:     100000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyString::__iter__() const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1319:13
@@ -452,38 +452,38 @@ Stack trace (most recent call first):
 #15 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #16 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #17 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.424] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     345000
-[2026-04-02 00:03:33.436] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     350000
-[2026-04-02 00:03:33.437] [error] [DEBUG_ALLOC] Type: Type                 | Total:     175000
-[2026-04-02 00:03:33.437] [error] [DEBUG_ALLOC] Type: PyString             | Total:     105000
-[2026-04-02 00:03:33.445] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     205000
-[2026-04-02 00:03:33.447] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     105000
-[2026-04-02 00:03:33.449] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     355000
-[2026-04-02 00:03:33.462] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     360000
-[2026-04-02 00:03:33.462] [error] [DEBUG_ALLOC] Type: Type                 | Total:     180000
-[2026-04-02 00:03:33.467] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     210000
-[2026-04-02 00:03:33.467] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     105000
-[2026-04-02 00:03:33.474] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     365000
-[2026-04-02 00:03:33.481] [error] [DEBUG_ALLOC] Type: PyString             | Total:     110000
-[2026-04-02 00:03:33.486] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     370000
-[2026-04-02 00:03:33.487] [error] [DEBUG_ALLOC] Type: Type                 | Total:     185000
-[2026-04-02 00:03:33.489] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     215000
-[2026-04-02 00:03:33.491] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     110000
-[2026-04-02 00:03:33.498] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     375000
-[2026-04-02 00:03:33.510] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     220000
-[2026-04-02 00:03:33.510] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     110000
-[2026-04-02 00:03:33.511] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     380000
-[2026-04-02 00:03:33.511] [error] [DEBUG_ALLOC] Type: Type                 | Total:     190000
-[2026-04-02 00:03:33.523] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     385000
-[2026-04-02 00:03:33.524] [error] [DEBUG_ALLOC] Type: PyString             | Total:     115000
-[2026-04-02 00:03:33.531] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     225000
-[2026-04-02 00:03:33.534] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     115000
-[2026-04-02 00:03:33.536] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     390000
-[2026-04-02 00:03:33.536] [error] [DEBUG_ALLOC] Type: Type                 | Total:     195000
-[2026-04-02 00:03:33.547] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     395000
-[2026-04-02 00:03:33.552] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     230000
-[2026-04-02 00:03:33.553] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     115000
-[2026-04-02 00:03:33.561] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     400000
+[:33.424] Type: PyDict               | Total:     345000
+[:33.436] Type: PyDict               | Total:     350000
+[:33.437] Type: Type                 | Total:     175000
+[:33.437] Type: PyString             | Total:     105000
+[:33.445] Type: PyTuple              | Total:     205000
+[:33.447] Type: PyInteger            | Total:     105000
+[:33.449] Type: PyDict               | Total:     355000
+[:33.462] Type: PyDict               | Total:     360000
+[:33.462] Type: Type                 | Total:     180000
+[:33.467] Type: PyTuple              | Total:     210000
+[:33.467] Type: PyStringIterator     | Total:     105000
+[:33.474] Type: PyDict               | Total:     365000
+[:33.481] Type: PyString             | Total:     110000
+[:33.486] Type: PyDict               | Total:     370000
+[:33.487] Type: Type                 | Total:     185000
+[:33.489] Type: PyTuple              | Total:     215000
+[:33.491] Type: PyInteger            | Total:     110000
+[:33.498] Type: PyDict               | Total:     375000
+[:33.510] Type: PyTuple              | Total:     220000
+[:33.510] Type: PyStringIterator     | Total:     110000
+[:33.511] Type: PyDict               | Total:     380000
+[:33.511] Type: Type                 | Total:     190000
+[:33.523] Type: PyDict               | Total:     385000
+[:33.524] Type: PyString             | Total:     115000
+[:33.531] Type: PyTuple              | Total:     225000
+[:33.534] Type: PyInteger            | Total:     115000
+[:33.536] Type: PyDict               | Total:     390000
+[:33.536] Type: Type                 | Total:     195000
+[:33.547] Type: PyDict               | Total:     395000
+[:33.552] Type: PyTuple              | Total:     230000
+[:33.553] Type: PyStringIterator     | Total:     115000
+[:33.561] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     400000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -509,7 +509,7 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.563] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     200000
+[:33.563] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     200000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:579:12
@@ -539,63 +539,63 @@ Stack trace (most recent call first):
 #25 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #26 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #27 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.571] [error] [DEBUG_ALLOC] Type: PyString             | Total:     120000
-[2026-04-02 00:03:33.576] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     405000
-[2026-04-02 00:03:33.578] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     235000
-[2026-04-02 00:03:33.581] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     120000
-[2026-04-02 00:03:33.588] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     410000
-[2026-04-02 00:03:33.590] [error] [DEBUG_ALLOC] Type: Type                 | Total:     205000
-[2026-04-02 00:03:33.601] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     240000
-[2026-04-02 00:03:33.601] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     120000
-[2026-04-02 00:03:33.602] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     415000
-[2026-04-02 00:03:33.614] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     420000
-[2026-04-02 00:03:33.614] [error] [DEBUG_ALLOC] Type: Type                 | Total:     210000
-[2026-04-02 00:03:33.615] [error] [DEBUG_ALLOC] Type: PyString             | Total:     125000
-[2026-04-02 00:03:33.623] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     245000
-[2026-04-02 00:03:33.625] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     125000
-[2026-04-02 00:03:33.626] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     425000
-[2026-04-02 00:03:33.638] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     430000
-[2026-04-02 00:03:33.638] [error] [DEBUG_ALLOC] Type: Type                 | Total:     215000
-[2026-04-02 00:03:33.643] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     250000
-[2026-04-02 00:03:33.644] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     125000
-[2026-04-02 00:03:33.650] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     435000
-[2026-04-02 00:03:33.658] [error] [DEBUG_ALLOC] Type: PyString             | Total:     130000
-[2026-04-02 00:03:33.663] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     440000
-[2026-04-02 00:03:33.663] [error] [DEBUG_ALLOC] Type: Type                 | Total:     220000
-[2026-04-02 00:03:33.665] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     255000
-[2026-04-02 00:03:33.668] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     130000
-[2026-04-02 00:03:33.675] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     445000
-[2026-04-02 00:03:33.687] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     260000
-[2026-04-02 00:03:33.687] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     450000
-[2026-04-02 00:03:33.688] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     130000
-[2026-04-02 00:03:33.688] [error] [DEBUG_ALLOC] Type: Type                 | Total:     225000
-[2026-04-02 00:03:33.699] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     455000
-[2026-04-02 00:03:33.701] [error] [DEBUG_ALLOC] Type: PyString             | Total:     135000
-[2026-04-02 00:03:33.709] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     265000
-[2026-04-02 00:03:33.711] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     135000
-[2026-04-02 00:03:33.712] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     460000
-[2026-04-02 00:03:33.712] [error] [DEBUG_ALLOC] Type: Type                 | Total:     230000
-[2026-04-02 00:03:33.724] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     465000
-[2026-04-02 00:03:33.731] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     270000
-[2026-04-02 00:03:33.732] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     135000
-[2026-04-02 00:03:33.737] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     470000
-[2026-04-02 00:03:33.738] [error] [DEBUG_ALLOC] Type: Type                 | Total:     235000
-[2026-04-02 00:03:33.748] [error] [DEBUG_ALLOC] Type: PyString             | Total:     140000
-[2026-04-02 00:03:33.751] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     475000
-[2026-04-02 00:03:33.755] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     275000
-[2026-04-02 00:03:33.758] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     140000
-[2026-04-02 00:03:33.764] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     480000
-[2026-04-02 00:03:33.766] [error] [DEBUG_ALLOC] Type: Type                 | Total:     240000
-[2026-04-02 00:03:33.780] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     485000
-[2026-04-02 00:03:33.780] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     280000
-[2026-04-02 00:03:33.781] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     140000
-[2026-04-02 00:03:33.792] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     490000
-[2026-04-02 00:03:33.792] [error] [DEBUG_ALLOC] Type: Type                 | Total:     245000
-[2026-04-02 00:03:33.795] [error] [DEBUG_ALLOC] Type: PyString             | Total:     145000
-[2026-04-02 00:03:33.802] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     285000
-[2026-04-02 00:03:33.804] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     495000
-[2026-04-02 00:03:33.804] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     145000
-[2026-04-02 00:03:33.818] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     500000
+[:33.571] Type: PyString             | Total:     120000
+[:33.576] Type: PyDict               | Total:     405000
+[:33.578] Type: PyTuple              | Total:     235000
+[:33.581] Type: PyInteger            | Total:     120000
+[:33.588] Type: PyDict               | Total:     410000
+[:33.590] Type: Type                 | Total:     205000
+[:33.601] Type: PyTuple              | Total:     240000
+[:33.601] Type: PyStringIterator     | Total:     120000
+[:33.602] Type: PyDict               | Total:     415000
+[:33.614] Type: PyDict               | Total:     420000
+[:33.614] Type: Type                 | Total:     210000
+[:33.615] Type: PyString             | Total:     125000
+[:33.623] Type: PyTuple              | Total:     245000
+[:33.625] Type: PyInteger            | Total:     125000
+[:33.626] Type: PyDict               | Total:     425000
+[:33.638] Type: PyDict               | Total:     430000
+[:33.638] Type: Type                 | Total:     215000
+[:33.643] Type: PyTuple              | Total:     250000
+[:33.644] Type: PyStringIterator     | Total:     125000
+[:33.650] Type: PyDict               | Total:     435000
+[:33.658] Type: PyString             | Total:     130000
+[:33.663] Type: PyDict               | Total:     440000
+[:33.663] Type: Type                 | Total:     220000
+[:33.665] Type: PyTuple              | Total:     255000
+[:33.668] Type: PyInteger            | Total:     130000
+[:33.675] Type: PyDict               | Total:     445000
+[:33.687] Type: PyTuple              | Total:     260000
+[:33.687] Type: PyDict               | Total:     450000
+[:33.688] Type: PyStringIterator     | Total:     130000
+[:33.688] Type: Type                 | Total:     225000
+[:33.699] Type: PyDict               | Total:     455000
+[:33.701] Type: PyString             | Total:     135000
+[:33.709] Type: PyTuple              | Total:     265000
+[:33.711] Type: PyInteger            | Total:     135000
+[:33.712] Type: PyDict               | Total:     460000
+[:33.712] Type: Type                 | Total:     230000
+[:33.724] Type: PyDict               | Total:     465000
+[:33.731] Type: PyTuple              | Total:     270000
+[:33.732] Type: PyStringIterator     | Total:     135000
+[:33.737] Type: PyDict               | Total:     470000
+[:33.738] Type: Type                 | Total:     235000
+[:33.748] Type: PyString             | Total:     140000
+[:33.751] Type: PyDict               | Total:     475000
+[:33.755] Type: PyTuple              | Total:     275000
+[:33.758] Type: PyInteger            | Total:     140000
+[:33.764] Type: PyDict               | Total:     480000
+[:33.766] Type: Type                 | Total:     240000
+[:33.780] Type: PyDict               | Total:     485000
+[:33.780] Type: PyTuple              | Total:     280000
+[:33.781] Type: PyStringIterator     | Total:     140000
+[:33.792] Type: PyDict               | Total:     490000
+[:33.792] Type: Type                 | Total:     245000
+[:33.795] Type: PyString             | Total:     145000
+[:33.802] Type: PyTuple              | Total:     285000
+[:33.804] Type: PyDict               | Total:     495000
+[:33.804] Type: PyInteger            | Total:     145000
+[:33.818] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     500000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -621,19 +621,19 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.818] [error] [DEBUG_ALLOC] Type: Type                 | Total:     250000
-[2026-04-02 00:03:33.825] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     290000
-[2026-04-02 00:03:33.826] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     145000
-[2026-04-02 00:03:33.830] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     505000
-[2026-04-02 00:03:33.839] [error] [DEBUG_ALLOC] Type: PyString             | Total:     150000
-[2026-04-02 00:03:33.843] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     510000
-[2026-04-02 00:03:33.843] [error] [DEBUG_ALLOC] Type: Type                 | Total:     255000
-[2026-04-02 00:03:33.848] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     295000
-[2026-04-02 00:03:33.850] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     150000
-[2026-04-02 00:03:33.856] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     515000
-[2026-04-02 00:03:33.869] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     520000
-[2026-04-02 00:03:33.870] [error] [DEBUG_ALLOC] Type: Type                 | Total:     260000
-[2026-04-02 00:03:33.873] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     300000
+[:33.818] Type: Type                 | Total:     250000
+[:33.825] Type: PyTuple              | Total:     290000
+[:33.826] Type: PyStringIterator     | Total:     145000
+[:33.830] Type: PyDict               | Total:     505000
+[:33.839] Type: PyString             | Total:     150000
+[:33.843] Type: PyDict               | Total:     510000
+[:33.843] Type: Type                 | Total:     255000
+[:33.848] Type: PyTuple              | Total:     295000
+[:33.850] Type: PyInteger            | Total:     150000
+[:33.856] Type: PyDict               | Total:     515000
+[:33.869] Type: PyDict               | Total:     520000
+[:33.870] Type: Type                 | Total:     260000
+[:33.873] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     300000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:119:14
@@ -653,51 +653,51 @@ Stack trace (most recent call first):
 #15 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #16 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #17 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:33.874] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     150000
-[2026-04-02 00:03:33.884] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     525000
-[2026-04-02 00:03:33.888] [error] [DEBUG_ALLOC] Type: PyString             | Total:     155000
-[2026-04-02 00:03:33.898] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     305000
-[2026-04-02 00:03:33.899] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     530000
-[2026-04-02 00:03:33.900] [error] [DEBUG_ALLOC] Type: Type                 | Total:     265000
-[2026-04-02 00:03:33.901] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     155000
-[2026-04-02 00:03:33.912] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     535000
-[2026-04-02 00:03:33.921] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     310000
-[2026-04-02 00:03:33.921] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     155000
-[2026-04-02 00:03:33.925] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     540000
-[2026-04-02 00:03:33.925] [error] [DEBUG_ALLOC] Type: Type                 | Total:     270000
-[2026-04-02 00:03:33.936] [error] [DEBUG_ALLOC] Type: PyString             | Total:     160000
-[2026-04-02 00:03:33.939] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     545000
-[2026-04-02 00:03:33.945] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     315000
-[2026-04-02 00:03:33.948] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     160000
-[2026-04-02 00:03:33.952] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     550000
-[2026-04-02 00:03:33.953] [error] [DEBUG_ALLOC] Type: Type                 | Total:     275000
-[2026-04-02 00:03:33.965] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     555000
-[2026-04-02 00:03:33.968] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     320000
-[2026-04-02 00:03:33.968] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     160000
-[2026-04-02 00:03:33.977] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     560000
-[2026-04-02 00:03:33.977] [error] [DEBUG_ALLOC] Type: Type                 | Total:     280000
-[2026-04-02 00:03:33.982] [error] [DEBUG_ALLOC] Type: PyString             | Total:     165000
-[2026-04-02 00:03:33.989] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     325000
-[2026-04-02 00:03:33.989] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     565000
-[2026-04-02 00:03:33.992] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     165000
-[2026-04-02 00:03:34.002] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     570000
-[2026-04-02 00:03:34.002] [error] [DEBUG_ALLOC] Type: Type                 | Total:     285000
-[2026-04-02 00:03:34.010] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     330000
-[2026-04-02 00:03:34.011] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     165000
-[2026-04-02 00:03:34.014] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     575000
-[2026-04-02 00:03:34.025] [error] [DEBUG_ALLOC] Type: PyString             | Total:     170000
-[2026-04-02 00:03:34.026] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     580000
-[2026-04-02 00:03:34.027] [error] [DEBUG_ALLOC] Type: Type                 | Total:     290000
-[2026-04-02 00:03:34.033] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     335000
-[2026-04-02 00:03:34.036] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     170000
-[2026-04-02 00:03:34.039] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     585000
-[2026-04-02 00:03:34.052] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     590000
-[2026-04-02 00:03:34.052] [error] [DEBUG_ALLOC] Type: Type                 | Total:     295000
-[2026-04-02 00:03:34.055] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     340000
-[2026-04-02 00:03:34.056] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     170000
-[2026-04-02 00:03:34.064] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     595000
-[2026-04-02 00:03:34.070] [error] [DEBUG_ALLOC] Type: PyString             | Total:     175000
-[2026-04-02 00:03:34.078] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     600000
+[:33.874] Type: PyStringIterator     | Total:     150000
+[:33.884] Type: PyDict               | Total:     525000
+[:33.888] Type: PyString             | Total:     155000
+[:33.898] Type: PyTuple              | Total:     305000
+[:33.899] Type: PyDict               | Total:     530000
+[:33.900] Type: Type                 | Total:     265000
+[:33.901] Type: PyInteger            | Total:     155000
+[:33.912] Type: PyDict               | Total:     535000
+[:33.921] Type: PyTuple              | Total:     310000
+[:33.921] Type: PyStringIterator     | Total:     155000
+[:33.925] Type: PyDict               | Total:     540000
+[:33.925] Type: Type                 | Total:     270000
+[:33.936] Type: PyString             | Total:     160000
+[:33.939] Type: PyDict               | Total:     545000
+[:33.945] Type: PyTuple              | Total:     315000
+[:33.948] Type: PyInteger            | Total:     160000
+[:33.952] Type: PyDict               | Total:     550000
+[:33.953] Type: Type                 | Total:     275000
+[:33.965] Type: PyDict               | Total:     555000
+[:33.968] Type: PyTuple              | Total:     320000
+[:33.968] Type: PyStringIterator     | Total:     160000
+[:33.977] Type: PyDict               | Total:     560000
+[:33.977] Type: Type                 | Total:     280000
+[:33.982] Type: PyString             | Total:     165000
+[:33.989] Type: PyTuple              | Total:     325000
+[:33.989] Type: PyDict               | Total:     565000
+[:33.992] Type: PyInteger            | Total:     165000
+[:34.002] Type: PyDict               | Total:     570000
+[:34.002] Type: Type                 | Total:     285000
+[:34.010] Type: PyTuple              | Total:     330000
+[:34.011] Type: PyStringIterator     | Total:     165000
+[:34.014] Type: PyDict               | Total:     575000
+[:34.025] Type: PyString             | Total:     170000
+[:34.026] Type: PyDict               | Total:     580000
+[:34.027] Type: Type                 | Total:     290000
+[:34.033] Type: PyTuple              | Total:     335000
+[:34.036] Type: PyInteger            | Total:     170000
+[:34.039] Type: PyDict               | Total:     585000
+[:34.052] Type: PyDict               | Total:     590000
+[:34.052] Type: Type                 | Total:     295000
+[:34.055] Type: PyTuple              | Total:     340000
+[:34.056] Type: PyStringIterator     | Total:     170000
+[:34.064] Type: PyDict               | Total:     595000
+[:34.070] Type: PyString             | Total:     175000
+[:34.078] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     600000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -723,7 +723,7 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.081] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     300000
+[:34.081] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     300000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:579:12
@@ -753,56 +753,56 @@ Stack trace (most recent call first):
 #25 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #26 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #27 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.082] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     345000
-[2026-04-02 00:03:34.084] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     175000
-[2026-04-02 00:03:34.093] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     605000
-[2026-04-02 00:03:34.105] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     350000
-[2026-04-02 00:03:34.105] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     175000
-[2026-04-02 00:03:34.107] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     610000
-[2026-04-02 00:03:34.107] [error] [DEBUG_ALLOC] Type: Type                 | Total:     305000
-[2026-04-02 00:03:34.120] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     615000
-[2026-04-02 00:03:34.120] [error] [DEBUG_ALLOC] Type: PyString             | Total:     180000
-[2026-04-02 00:03:34.128] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     355000
-[2026-04-02 00:03:34.134] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     180000
-[2026-04-02 00:03:34.138] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     620000
-[2026-04-02 00:03:34.139] [error] [DEBUG_ALLOC] Type: Type                 | Total:     310000
-[2026-04-02 00:03:34.151] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     625000
-[2026-04-02 00:03:34.156] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     360000
-[2026-04-02 00:03:34.157] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     180000
-[2026-04-02 00:03:34.164] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     630000
-[2026-04-02 00:03:34.165] [error] [DEBUG_ALLOC] Type: Type                 | Total:     315000
-[2026-04-02 00:03:34.172] [error] [DEBUG_ALLOC] Type: PyString             | Total:     185000
-[2026-04-02 00:03:34.177] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     635000
-[2026-04-02 00:03:34.180] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     365000
-[2026-04-02 00:03:34.182] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     185000
-[2026-04-02 00:03:34.190] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     640000
-[2026-04-02 00:03:34.191] [error] [DEBUG_ALLOC] Type: Type                 | Total:     320000
-[2026-04-02 00:03:34.202] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     370000
-[2026-04-02 00:03:34.202] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     645000
-[2026-04-02 00:03:34.203] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     185000
-[2026-04-02 00:03:34.215] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     650000
-[2026-04-02 00:03:34.215] [error] [DEBUG_ALLOC] Type: Type                 | Total:     325000
-[2026-04-02 00:03:34.217] [error] [DEBUG_ALLOC] Type: PyString             | Total:     190000
-[2026-04-02 00:03:34.224] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     375000
-[2026-04-02 00:03:34.227] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     190000
-[2026-04-02 00:03:34.227] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     655000
-[2026-04-02 00:03:34.240] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     660000
-[2026-04-02 00:03:34.240] [error] [DEBUG_ALLOC] Type: Type                 | Total:     330000
-[2026-04-02 00:03:34.246] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     380000
-[2026-04-02 00:03:34.246] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     190000
-[2026-04-02 00:03:34.252] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     665000
-[2026-04-02 00:03:34.261] [error] [DEBUG_ALLOC] Type: PyString             | Total:     195000
-[2026-04-02 00:03:34.265] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     670000
-[2026-04-02 00:03:34.266] [error] [DEBUG_ALLOC] Type: Type                 | Total:     335000
-[2026-04-02 00:03:34.269] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     385000
-[2026-04-02 00:03:34.271] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     195000
-[2026-04-02 00:03:34.278] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     675000
-[2026-04-02 00:03:34.289] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     680000
-[2026-04-02 00:03:34.290] [error] [DEBUG_ALLOC] Type: Type                 | Total:     340000
-[2026-04-02 00:03:34.290] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     390000
-[2026-04-02 00:03:34.291] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     195000
-[2026-04-02 00:03:34.302] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     685000
-[2026-04-02 00:03:34.306] [error] [DEBUG_ALLOC_TRACE] Type: PyString             | Total:     200000
+[:34.082] Type: PyTuple              | Total:     345000
+[:34.084] Type: PyInteger            | Total:     175000
+[:34.093] Type: PyDict               | Total:     605000
+[:34.105] Type: PyTuple              | Total:     350000
+[:34.105] Type: PyStringIterator     | Total:     175000
+[:34.107] Type: PyDict               | Total:     610000
+[:34.107] Type: Type                 | Total:     305000
+[:34.120] Type: PyDict               | Total:     615000
+[:34.120] Type: PyString             | Total:     180000
+[:34.128] Type: PyTuple              | Total:     355000
+[:34.134] Type: PyInteger            | Total:     180000
+[:34.138] Type: PyDict               | Total:     620000
+[:34.139] Type: Type                 | Total:     310000
+[:34.151] Type: PyDict               | Total:     625000
+[:34.156] Type: PyTuple              | Total:     360000
+[:34.157] Type: PyStringIterator     | Total:     180000
+[:34.164] Type: PyDict               | Total:     630000
+[:34.165] Type: Type                 | Total:     315000
+[:34.172] Type: PyString             | Total:     185000
+[:34.177] Type: PyDict               | Total:     635000
+[:34.180] Type: PyTuple              | Total:     365000
+[:34.182] Type: PyInteger            | Total:     185000
+[:34.190] Type: PyDict               | Total:     640000
+[:34.191] Type: Type                 | Total:     320000
+[:34.202] Type: PyTuple              | Total:     370000
+[:34.202] Type: PyDict               | Total:     645000
+[:34.203] Type: PyStringIterator     | Total:     185000
+[:34.215] Type: PyDict               | Total:     650000
+[:34.215] Type: Type                 | Total:     325000
+[:34.217] Type: PyString             | Total:     190000
+[:34.224] Type: PyTuple              | Total:     375000
+[:34.227] Type: PyInteger            | Total:     190000
+[:34.227] Type: PyDict               | Total:     655000
+[:34.240] Type: PyDict               | Total:     660000
+[:34.240] Type: Type                 | Total:     330000
+[:34.246] Type: PyTuple              | Total:     380000
+[:34.246] Type: PyStringIterator     | Total:     190000
+[:34.252] Type: PyDict               | Total:     665000
+[:34.261] Type: PyString             | Total:     195000
+[:34.265] Type: PyDict               | Total:     670000
+[:34.266] Type: Type                 | Total:     335000
+[:34.269] Type: PyTuple              | Total:     385000
+[:34.271] Type: PyInteger            | Total:     195000
+[:34.278] Type: PyDict               | Total:     675000
+[:34.289] Type: PyDict               | Total:     680000
+[:34.290] Type: Type                 | Total:     340000
+[:34.290] Type: PyTuple              | Total:     390000
+[:34.291] Type: PyStringIterator     | Total:     195000
+[:34.302] Type: PyDict               | Total:     685000
+[:34.306] [error] [DEBUG_ALLOC_TRACE] Type: PyString             | Total:     200000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:229:17
@@ -832,9 +832,9 @@ Stack trace (most recent call first):
 #25 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #26 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #27 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.314] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     395000
-[2026-04-02 00:03:34.317] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     690000
-[2026-04-02 00:03:34.319] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     200000
+[:34.314] Type: PyTuple              | Total:     395000
+[:34.317] Type: PyDict               | Total:     690000
+[:34.319] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     200000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
@@ -863,9 +863,9 @@ Stack trace (most recent call first):
 #24 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #25 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #26 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.319] [error] [DEBUG_ALLOC] Type: Type                 | Total:     345000
-[2026-04-02 00:03:34.331] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     695000
-[2026-04-02 00:03:34.339] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     400000
+[:34.319] Type: Type                 | Total:     345000
+[:34.331] Type: PyDict               | Total:     695000
+[:34.339] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     400000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:119:14
@@ -885,7 +885,7 @@ Stack trace (most recent call first):
 #15 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #16 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #17 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.342] [error] [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:     200000
+[:34.342] [error] [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:     200000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyString::__iter__() const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1319:13
@@ -905,7 +905,7 @@ Stack trace (most recent call first):
 #15 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #16 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #17 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.349] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     700000
+[:34.349] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     700000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -931,64 +931,64 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.350] [error] [DEBUG_ALLOC] Type: Type                 | Total:     350000
-[2026-04-02 00:03:34.359] [error] [DEBUG_ALLOC] Type: PyString             | Total:     205000
-[2026-04-02 00:03:34.362] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     705000
-[2026-04-02 00:03:34.367] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     405000
-[2026-04-02 00:03:34.370] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     205000
-[2026-04-02 00:03:34.375] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     710000
-[2026-04-02 00:03:34.376] [error] [DEBUG_ALLOC] Type: Type                 | Total:     355000
-[2026-04-02 00:03:34.388] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     715000
-[2026-04-02 00:03:34.390] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     410000
-[2026-04-02 00:03:34.390] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     205000
-[2026-04-02 00:03:34.401] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     720000
-[2026-04-02 00:03:34.402] [error] [DEBUG_ALLOC] Type: Type                 | Total:     360000
-[2026-04-02 00:03:34.406] [error] [DEBUG_ALLOC] Type: PyString             | Total:     210000
-[2026-04-02 00:03:34.413] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     415000
-[2026-04-02 00:03:34.415] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     725000
-[2026-04-02 00:03:34.417] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     210000
-[2026-04-02 00:03:34.427] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     730000
-[2026-04-02 00:03:34.428] [error] [DEBUG_ALLOC] Type: Type                 | Total:     365000
-[2026-04-02 00:03:34.436] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     420000
-[2026-04-02 00:03:34.437] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     210000
-[2026-04-02 00:03:34.440] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     735000
-[2026-04-02 00:03:34.451] [error] [DEBUG_ALLOC] Type: PyString             | Total:     215000
-[2026-04-02 00:03:34.453] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     740000
-[2026-04-02 00:03:34.453] [error] [DEBUG_ALLOC] Type: Type                 | Total:     370000
-[2026-04-02 00:03:34.459] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     425000
-[2026-04-02 00:03:34.462] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     215000
-[2026-04-02 00:03:34.466] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     745000
-[2026-04-02 00:03:34.479] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     750000
-[2026-04-02 00:03:34.479] [error] [DEBUG_ALLOC] Type: Type                 | Total:     375000
-[2026-04-02 00:03:34.482] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     430000
-[2026-04-02 00:03:34.483] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     215000
-[2026-04-02 00:03:34.491] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     755000
-[2026-04-02 00:03:34.497] [error] [DEBUG_ALLOC] Type: PyString             | Total:     220000
-[2026-04-02 00:03:34.503] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     760000
-[2026-04-02 00:03:34.504] [error] [DEBUG_ALLOC] Type: Type                 | Total:     380000
-[2026-04-02 00:03:34.504] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     435000
-[2026-04-02 00:03:34.507] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     220000
-[2026-04-02 00:03:34.516] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     765000
-[2026-04-02 00:03:34.527] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     440000
-[2026-04-02 00:03:34.527] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     220000
-[2026-04-02 00:03:34.529] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     770000
-[2026-04-02 00:03:34.529] [error] [DEBUG_ALLOC] Type: Type                 | Total:     385000
-[2026-04-02 00:03:34.541] [error] [DEBUG_ALLOC] Type: PyString             | Total:     225000
-[2026-04-02 00:03:34.541] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     775000
-[2026-04-02 00:03:34.549] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     445000
-[2026-04-02 00:03:34.552] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     225000
-[2026-04-02 00:03:34.554] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     780000
-[2026-04-02 00:03:34.555] [error] [DEBUG_ALLOC] Type: Type                 | Total:     390000
-[2026-04-02 00:03:34.566] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     785000
-[2026-04-02 00:03:34.571] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     450000
-[2026-04-02 00:03:34.572] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     225000
-[2026-04-02 00:03:34.580] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     790000
-[2026-04-02 00:03:34.580] [error] [DEBUG_ALLOC] Type: Type                 | Total:     395000
-[2026-04-02 00:03:34.587] [error] [DEBUG_ALLOC] Type: PyString             | Total:     230000
-[2026-04-02 00:03:34.593] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     795000
-[2026-04-02 00:03:34.595] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     455000
-[2026-04-02 00:03:34.597] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     230000
-[2026-04-02 00:03:34.607] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     800000
+[:34.350] Type: Type                 | Total:     350000
+[:34.359] Type: PyString             | Total:     205000
+[:34.362] Type: PyDict               | Total:     705000
+[:34.367] Type: PyTuple              | Total:     405000
+[:34.370] Type: PyInteger            | Total:     205000
+[:34.375] Type: PyDict               | Total:     710000
+[:34.376] Type: Type                 | Total:     355000
+[:34.388] Type: PyDict               | Total:     715000
+[:34.390] Type: PyTuple              | Total:     410000
+[:34.390] Type: PyStringIterator     | Total:     205000
+[:34.401] Type: PyDict               | Total:     720000
+[:34.402] Type: Type                 | Total:     360000
+[:34.406] Type: PyString             | Total:     210000
+[:34.413] Type: PyTuple              | Total:     415000
+[:34.415] Type: PyDict               | Total:     725000
+[:34.417] Type: PyInteger            | Total:     210000
+[:34.427] Type: PyDict               | Total:     730000
+[:34.428] Type: Type                 | Total:     365000
+[:34.436] Type: PyTuple              | Total:     420000
+[:34.437] Type: PyStringIterator     | Total:     210000
+[:34.440] Type: PyDict               | Total:     735000
+[:34.451] Type: PyString             | Total:     215000
+[:34.453] Type: PyDict               | Total:     740000
+[:34.453] Type: Type                 | Total:     370000
+[:34.459] Type: PyTuple              | Total:     425000
+[:34.462] Type: PyInteger            | Total:     215000
+[:34.466] Type: PyDict               | Total:     745000
+[:34.479] Type: PyDict               | Total:     750000
+[:34.479] Type: Type                 | Total:     375000
+[:34.482] Type: PyTuple              | Total:     430000
+[:34.483] Type: PyStringIterator     | Total:     215000
+[:34.491] Type: PyDict               | Total:     755000
+[:34.497] Type: PyString             | Total:     220000
+[:34.503] Type: PyDict               | Total:     760000
+[:34.504] Type: Type                 | Total:     380000
+[:34.504] Type: PyTuple              | Total:     435000
+[:34.507] Type: PyInteger            | Total:     220000
+[:34.516] Type: PyDict               | Total:     765000
+[:34.527] Type: PyTuple              | Total:     440000
+[:34.527] Type: PyStringIterator     | Total:     220000
+[:34.529] Type: PyDict               | Total:     770000
+[:34.529] Type: Type                 | Total:     385000
+[:34.541] Type: PyString             | Total:     225000
+[:34.541] Type: PyDict               | Total:     775000
+[:34.549] Type: PyTuple              | Total:     445000
+[:34.552] Type: PyInteger            | Total:     225000
+[:34.554] Type: PyDict               | Total:     780000
+[:34.555] Type: Type                 | Total:     390000
+[:34.566] Type: PyDict               | Total:     785000
+[:34.571] Type: PyTuple              | Total:     450000
+[:34.572] Type: PyStringIterator     | Total:     225000
+[:34.580] Type: PyDict               | Total:     790000
+[:34.580] Type: Type                 | Total:     395000
+[:34.587] Type: PyString             | Total:     230000
+[:34.593] Type: PyDict               | Total:     795000
+[:34.595] Type: PyTuple              | Total:     455000
+[:34.597] Type: PyInteger            | Total:     230000
+[:34.607] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     800000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -1014,7 +1014,7 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.609] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     400000
+[:34.609] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     400000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:579:12
@@ -1044,49 +1044,49 @@ Stack trace (most recent call first):
 #25 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #26 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #27 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.620] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     460000
-[2026-04-02 00:03:34.621] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     230000
-[2026-04-02 00:03:34.622] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     805000
-[2026-04-02 00:03:34.634] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     810000
-[2026-04-02 00:03:34.635] [error] [DEBUG_ALLOC] Type: Type                 | Total:     405000
-[2026-04-02 00:03:34.636] [error] [DEBUG_ALLOC] Type: PyString             | Total:     235000
-[2026-04-02 00:03:34.643] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     465000
-[2026-04-02 00:03:34.646] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     235000
-[2026-04-02 00:03:34.647] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     815000
-[2026-04-02 00:03:34.660] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     820000
-[2026-04-02 00:03:34.660] [error] [DEBUG_ALLOC] Type: Type                 | Total:     410000
-[2026-04-02 00:03:34.665] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     470000
-[2026-04-02 00:03:34.666] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     235000
-[2026-04-02 00:03:34.672] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     825000
-[2026-04-02 00:03:34.680] [error] [DEBUG_ALLOC] Type: PyString             | Total:     240000
-[2026-04-02 00:03:34.685] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     830000
-[2026-04-02 00:03:34.685] [error] [DEBUG_ALLOC] Type: Type                 | Total:     415000
-[2026-04-02 00:03:34.688] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     475000
-[2026-04-02 00:03:34.690] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     240000
-[2026-04-02 00:03:34.697] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     835000
-[2026-04-02 00:03:34.710] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     840000
-[2026-04-02 00:03:34.710] [error] [DEBUG_ALLOC] Type: Type                 | Total:     420000
-[2026-04-02 00:03:34.710] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     480000
-[2026-04-02 00:03:34.711] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     240000
-[2026-04-02 00:03:34.722] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     845000
-[2026-04-02 00:03:34.725] [error] [DEBUG_ALLOC] Type: PyString             | Total:     245000
-[2026-04-02 00:03:34.732] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     485000
-[2026-04-02 00:03:34.735] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     850000
-[2026-04-02 00:03:34.735] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     245000
-[2026-04-02 00:03:34.735] [error] [DEBUG_ALLOC] Type: Type                 | Total:     425000
-[2026-04-02 00:03:34.746] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     855000
-[2026-04-02 00:03:34.754] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     490000
-[2026-04-02 00:03:34.754] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     245000
-[2026-04-02 00:03:34.759] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     860000
-[2026-04-02 00:03:34.760] [error] [DEBUG_ALLOC] Type: Type                 | Total:     430000
-[2026-04-02 00:03:34.768] [error] [DEBUG_ALLOC] Type: PyString             | Total:     250000
-[2026-04-02 00:03:34.771] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     865000
-[2026-04-02 00:03:34.776] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     495000
-[2026-04-02 00:03:34.778] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     250000
-[2026-04-02 00:03:34.784] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     870000
-[2026-04-02 00:03:34.784] [error] [DEBUG_ALLOC] Type: Type                 | Total:     435000
-[2026-04-02 00:03:34.796] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     875000
-[2026-04-02 00:03:34.799] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     500000
+[:34.620] Type: PyTuple              | Total:     460000
+[:34.621] Type: PyStringIterator     | Total:     230000
+[:34.622] Type: PyDict               | Total:     805000
+[:34.634] Type: PyDict               | Total:     810000
+[:34.635] Type: Type                 | Total:     405000
+[:34.636] Type: PyString             | Total:     235000
+[:34.643] Type: PyTuple              | Total:     465000
+[:34.646] Type: PyInteger            | Total:     235000
+[:34.647] Type: PyDict               | Total:     815000
+[:34.660] Type: PyDict               | Total:     820000
+[:34.660] Type: Type                 | Total:     410000
+[:34.665] Type: PyTuple              | Total:     470000
+[:34.666] Type: PyStringIterator     | Total:     235000
+[:34.672] Type: PyDict               | Total:     825000
+[:34.680] Type: PyString             | Total:     240000
+[:34.685] Type: PyDict               | Total:     830000
+[:34.685] Type: Type                 | Total:     415000
+[:34.688] Type: PyTuple              | Total:     475000
+[:34.690] Type: PyInteger            | Total:     240000
+[:34.697] Type: PyDict               | Total:     835000
+[:34.710] Type: PyDict               | Total:     840000
+[:34.710] Type: Type                 | Total:     420000
+[:34.710] Type: PyTuple              | Total:     480000
+[:34.711] Type: PyStringIterator     | Total:     240000
+[:34.722] Type: PyDict               | Total:     845000
+[:34.725] Type: PyString             | Total:     245000
+[:34.732] Type: PyTuple              | Total:     485000
+[:34.735] Type: PyDict               | Total:     850000
+[:34.735] Type: PyInteger            | Total:     245000
+[:34.735] Type: Type                 | Total:     425000
+[:34.746] Type: PyDict               | Total:     855000
+[:34.754] Type: PyTuple              | Total:     490000
+[:34.754] Type: PyStringIterator     | Total:     245000
+[:34.759] Type: PyDict               | Total:     860000
+[:34.760] Type: Type                 | Total:     430000
+[:34.768] Type: PyString             | Total:     250000
+[:34.771] Type: PyDict               | Total:     865000
+[:34.776] Type: PyTuple              | Total:     495000
+[:34.778] Type: PyInteger            | Total:     250000
+[:34.784] Type: PyDict               | Total:     870000
+[:34.784] Type: Type                 | Total:     435000
+[:34.796] Type: PyDict               | Total:     875000
+[:34.799] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     500000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:119:14
@@ -1106,20 +1106,20 @@ Stack trace (most recent call first):
 #15 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #16 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #17 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.799] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     250000
-[2026-04-02 00:03:34.810] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     880000
-[2026-04-02 00:03:34.810] [error] [DEBUG_ALLOC] Type: Type                 | Total:     440000
-[2026-04-02 00:03:34.813] [error] [DEBUG_ALLOC] Type: PyString             | Total:     255000
-[2026-04-02 00:03:34.820] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     505000
-[2026-04-02 00:03:34.821] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     885000
-[2026-04-02 00:03:34.823] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     255000
-[2026-04-02 00:03:34.833] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     890000
-[2026-04-02 00:03:34.833] [error] [DEBUG_ALLOC] Type: Type                 | Total:     445000
-[2026-04-02 00:03:34.841] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     510000
-[2026-04-02 00:03:34.842] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     255000
-[2026-04-02 00:03:34.845] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     895000
-[2026-04-02 00:03:34.855] [error] [DEBUG_ALLOC] Type: PyString             | Total:     260000
-[2026-04-02 00:03:34.858] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     900000
+[:34.799] Type: PyStringIterator     | Total:     250000
+[:34.810] Type: PyDict               | Total:     880000
+[:34.810] Type: Type                 | Total:     440000
+[:34.813] Type: PyString             | Total:     255000
+[:34.820] Type: PyTuple              | Total:     505000
+[:34.821] Type: PyDict               | Total:     885000
+[:34.823] Type: PyInteger            | Total:     255000
+[:34.833] Type: PyDict               | Total:     890000
+[:34.833] Type: Type                 | Total:     445000
+[:34.841] Type: PyTuple              | Total:     510000
+[:34.842] Type: PyStringIterator     | Total:     255000
+[:34.845] Type: PyDict               | Total:     895000
+[:34.855] Type: PyString             | Total:     260000
+[:34.858] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:     900000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -1145,63 +1145,63 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:34.859] [error] [DEBUG_ALLOC] Type: Type                 | Total:     450000
-[2026-04-02 00:03:34.864] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     515000
-[2026-04-02 00:03:34.867] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     260000
-[2026-04-02 00:03:34.870] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     905000
-[2026-04-02 00:03:34.882] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     910000
-[2026-04-02 00:03:34.883] [error] [DEBUG_ALLOC] Type: Type                 | Total:     455000
-[2026-04-02 00:03:34.886] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     520000
-[2026-04-02 00:03:34.886] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     260000
-[2026-04-02 00:03:34.895] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     915000
-[2026-04-02 00:03:34.901] [error] [DEBUG_ALLOC] Type: PyString             | Total:     265000
-[2026-04-02 00:03:34.908] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     920000
-[2026-04-02 00:03:34.908] [error] [DEBUG_ALLOC] Type: Type                 | Total:     460000
-[2026-04-02 00:03:34.909] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     525000
-[2026-04-02 00:03:34.912] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     265000
-[2026-04-02 00:03:34.920] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     925000
-[2026-04-02 00:03:34.930] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     530000
-[2026-04-02 00:03:34.933] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     265000
-[2026-04-02 00:03:34.934] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     930000
-[2026-04-02 00:03:34.935] [error] [DEBUG_ALLOC] Type: Type                 | Total:     465000
-[2026-04-02 00:03:34.946] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     935000
-[2026-04-02 00:03:34.947] [error] [DEBUG_ALLOC] Type: PyString             | Total:     270000
-[2026-04-02 00:03:34.955] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     535000
-[2026-04-02 00:03:34.957] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     270000
-[2026-04-02 00:03:34.960] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     940000
-[2026-04-02 00:03:34.960] [error] [DEBUG_ALLOC] Type: Type                 | Total:     470000
-[2026-04-02 00:03:34.971] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     945000
-[2026-04-02 00:03:34.976] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     540000
-[2026-04-02 00:03:34.977] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     270000
-[2026-04-02 00:03:34.984] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     950000
-[2026-04-02 00:03:34.984] [error] [DEBUG_ALLOC] Type: Type                 | Total:     475000
-[2026-04-02 00:03:34.991] [error] [DEBUG_ALLOC] Type: PyString             | Total:     275000
-[2026-04-02 00:03:34.996] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     955000
-[2026-04-02 00:03:34.998] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     545000
-[2026-04-02 00:03:35.002] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     275000
-[2026-04-02 00:03:35.010] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     960000
-[2026-04-02 00:03:35.010] [error] [DEBUG_ALLOC] Type: Type                 | Total:     480000
-[2026-04-02 00:03:35.022] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     550000
-[2026-04-02 00:03:35.022] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     965000
-[2026-04-02 00:03:35.022] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     275000
-[2026-04-02 00:03:35.034] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     970000
-[2026-04-02 00:03:35.034] [error] [DEBUG_ALLOC] Type: Type                 | Total:     485000
-[2026-04-02 00:03:35.036] [error] [DEBUG_ALLOC] Type: PyString             | Total:     280000
-[2026-04-02 00:03:35.043] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     555000
-[2026-04-02 00:03:35.046] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     280000
-[2026-04-02 00:03:35.046] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     975000
-[2026-04-02 00:03:35.059] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     980000
-[2026-04-02 00:03:35.059] [error] [DEBUG_ALLOC] Type: Type                 | Total:     490000
-[2026-04-02 00:03:35.065] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     560000
-[2026-04-02 00:03:35.066] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     280000
-[2026-04-02 00:03:35.071] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     985000
-[2026-04-02 00:03:35.079] [error] [DEBUG_ALLOC] Type: PyString             | Total:     285000
-[2026-04-02 00:03:35.083] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     990000
-[2026-04-02 00:03:35.083] [error] [DEBUG_ALLOC] Type: Type                 | Total:     495000
-[2026-04-02 00:03:35.087] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     565000
-[2026-04-02 00:03:35.089] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     285000
-[2026-04-02 00:03:35.095] [error] [DEBUG_ALLOC] Type: PyDict               | Total:     995000
-[2026-04-02 00:03:35.109] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    1000000
+[:34.859] Type: Type                 | Total:     450000
+[:34.864] Type: PyTuple              | Total:     515000
+[:34.867] Type: PyInteger            | Total:     260000
+[:34.870] Type: PyDict               | Total:     905000
+[:34.882] Type: PyDict               | Total:     910000
+[:34.883] Type: Type                 | Total:     455000
+[:34.886] Type: PyTuple              | Total:     520000
+[:34.886] Type: PyStringIterator     | Total:     260000
+[:34.895] Type: PyDict               | Total:     915000
+[:34.901] Type: PyString             | Total:     265000
+[:34.908] Type: PyDict               | Total:     920000
+[:34.908] Type: Type                 | Total:     460000
+[:34.909] Type: PyTuple              | Total:     525000
+[:34.912] Type: PyInteger            | Total:     265000
+[:34.920] Type: PyDict               | Total:     925000
+[:34.930] Type: PyTuple              | Total:     530000
+[:34.933] Type: PyStringIterator     | Total:     265000
+[:34.934] Type: PyDict               | Total:     930000
+[:34.935] Type: Type                 | Total:     465000
+[:34.946] Type: PyDict               | Total:     935000
+[:34.947] Type: PyString             | Total:     270000
+[:34.955] Type: PyTuple              | Total:     535000
+[:34.957] Type: PyInteger            | Total:     270000
+[:34.960] Type: PyDict               | Total:     940000
+[:34.960] Type: Type                 | Total:     470000
+[:34.971] Type: PyDict               | Total:     945000
+[:34.976] Type: PyTuple              | Total:     540000
+[:34.977] Type: PyStringIterator     | Total:     270000
+[:34.984] Type: PyDict               | Total:     950000
+[:34.984] Type: Type                 | Total:     475000
+[:34.991] Type: PyString             | Total:     275000
+[:34.996] Type: PyDict               | Total:     955000
+[:34.998] Type: PyTuple              | Total:     545000
+[:35.002] Type: PyInteger            | Total:     275000
+[:35.010] Type: PyDict               | Total:     960000
+[:35.010] Type: Type                 | Total:     480000
+[:35.022] Type: PyTuple              | Total:     550000
+[:35.022] Type: PyDict               | Total:     965000
+[:35.022] Type: PyStringIterator     | Total:     275000
+[:35.034] Type: PyDict               | Total:     970000
+[:35.034] Type: Type                 | Total:     485000
+[:35.036] Type: PyString             | Total:     280000
+[:35.043] Type: PyTuple              | Total:     555000
+[:35.046] Type: PyInteger            | Total:     280000
+[:35.046] Type: PyDict               | Total:     975000
+[:35.059] Type: PyDict               | Total:     980000
+[:35.059] Type: Type                 | Total:     490000
+[:35.065] Type: PyTuple              | Total:     560000
+[:35.066] Type: PyStringIterator     | Total:     280000
+[:35.071] Type: PyDict               | Total:     985000
+[:35.079] Type: PyString             | Total:     285000
+[:35.083] Type: PyDict               | Total:     990000
+[:35.083] Type: Type                 | Total:     495000
+[:35.087] Type: PyTuple              | Total:     565000
+[:35.089] Type: PyInteger            | Total:     285000
+[:35.095] Type: PyDict               | Total:     995000
+[:35.109] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    1000000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -1227,7 +1227,7 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:35.111] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     500000
+[:35.111] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     500000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:579:12
@@ -1257,31 +1257,31 @@ Stack trace (most recent call first):
 #25 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #26 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #27 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:35.112] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     570000
-[2026-04-02 00:03:35.112] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     285000
-[2026-04-02 00:03:35.123] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1005000
-[2026-04-02 00:03:35.126] [error] [DEBUG_ALLOC] Type: PyString             | Total:     290000
-[2026-04-02 00:03:35.134] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     575000
-[2026-04-02 00:03:35.135] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1010000
-[2026-04-02 00:03:35.135] [error] [DEBUG_ALLOC] Type: Type                 | Total:     505000
-[2026-04-02 00:03:35.136] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     290000
-[2026-04-02 00:03:35.147] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1015000
-[2026-04-02 00:03:35.156] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     580000
-[2026-04-02 00:03:35.156] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     290000
-[2026-04-02 00:03:35.160] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1020000
-[2026-04-02 00:03:35.160] [error] [DEBUG_ALLOC] Type: Type                 | Total:     510000
-[2026-04-02 00:03:35.170] [error] [DEBUG_ALLOC] Type: PyString             | Total:     295000
-[2026-04-02 00:03:35.172] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1025000
-[2026-04-02 00:03:35.177] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     585000
-[2026-04-02 00:03:35.180] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     295000
-[2026-04-02 00:03:35.184] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1030000
-[2026-04-02 00:03:35.184] [error] [DEBUG_ALLOC] Type: Type                 | Total:     515000
-[2026-04-02 00:03:35.195] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1035000
-[2026-04-02 00:03:35.198] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     590000
-[2026-04-02 00:03:35.199] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     295000
-[2026-04-02 00:03:35.207] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1040000
-[2026-04-02 00:03:35.208] [error] [DEBUG_ALLOC] Type: Type                 | Total:     520000
-[2026-04-02 00:03:35.214] [error] [DEBUG_ALLOC_TRACE] Type: PyString             | Total:     300000
+[:35.112] Type: PyTuple              | Total:     570000
+[:35.112] Type: PyStringIterator     | Total:     285000
+[:35.123] Type: PyDict               | Total:    1005000
+[:35.126] Type: PyString             | Total:     290000
+[:35.134] Type: PyTuple              | Total:     575000
+[:35.135] Type: PyDict               | Total:    1010000
+[:35.135] Type: Type                 | Total:     505000
+[:35.136] Type: PyInteger            | Total:     290000
+[:35.147] Type: PyDict               | Total:    1015000
+[:35.156] Type: PyTuple              | Total:     580000
+[:35.156] Type: PyStringIterator     | Total:     290000
+[:35.160] Type: PyDict               | Total:    1020000
+[:35.160] Type: Type                 | Total:     510000
+[:35.170] Type: PyString             | Total:     295000
+[:35.172] Type: PyDict               | Total:    1025000
+[:35.177] Type: PyTuple              | Total:     585000
+[:35.180] Type: PyInteger            | Total:     295000
+[:35.184] Type: PyDict               | Total:    1030000
+[:35.184] Type: Type                 | Total:     515000
+[:35.195] Type: PyDict               | Total:    1035000
+[:35.198] Type: PyTuple              | Total:     590000
+[:35.199] Type: PyStringIterator     | Total:     295000
+[:35.207] Type: PyDict               | Total:    1040000
+[:35.208] Type: Type                 | Total:     520000
+[:35.214] [error] [DEBUG_ALLOC_TRACE] Type: PyString             | Total:     300000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyString::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)::$_1::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:229:17
@@ -1311,9 +1311,9 @@ Stack trace (most recent call first):
 #25 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #26 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #27 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:35.221] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1045000
-[2026-04-02 00:03:35.221] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     595000
-[2026-04-02 00:03:35.225] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     300000
+[:35.221] Type: PyDict               | Total:    1045000
+[:35.221] Type: PyTuple              | Total:     595000
+[:35.225] [error] [DEBUG_ALLOC_TRACE] Type: PyInteger            | Total:     300000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyInteger::create(__gmp_expr<__mpz_struct [1], __mpz_struct [1]>)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyInteger.cpp:55:17
@@ -1342,9 +1342,9 @@ Stack trace (most recent call first):
 #24 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #25 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #26 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:35.234] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1050000
-[2026-04-02 00:03:35.235] [error] [DEBUG_ALLOC] Type: Type                 | Total:     525000
-[2026-04-02 00:03:35.245] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     600000
+[:35.234] Type: PyDict               | Total:    1050000
+[:35.235] Type: Type                 | Total:     525000
+[:35.245] [error] [DEBUG_ALLOC_TRACE] Type: PyTuple              | Total:     600000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyTuple::create(std::vector<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*>, py::GCTracingAllocator<std::variant<py::Number, py::String, py::Bytes, py::Ellipsis, py::NameConstant, py::Tuple, py::PyObject*> > >&&)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyTuple.cpp:119:14
@@ -1364,7 +1364,7 @@ Stack trace (most recent call first):
 #15 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #16 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #17 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:35.247] [error] [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:     300000
+[:35.247] [error] [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:     300000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyString::__iter__() const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1319:13
@@ -1384,33 +1384,33 @@ Stack trace (most recent call first):
 #15 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #16 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #17 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:35.249] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1055000
-[2026-04-02 00:03:35.261] [error] [DEBUG_ALLOC] Type: PyString             | Total:     305000
-[2026-04-02 00:03:35.261] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1060000
-[2026-04-02 00:03:35.261] [error] [DEBUG_ALLOC] Type: Type                 | Total:     530000
-[2026-04-02 00:03:35.268] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     605000
-[2026-04-02 00:03:35.271] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     305000
-[2026-04-02 00:03:35.273] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1065000
-[2026-04-02 00:03:35.285] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1070000
-[2026-04-02 00:03:35.286] [error] [DEBUG_ALLOC] Type: Type                 | Total:     535000
-[2026-04-02 00:03:35.291] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     610000
-[2026-04-02 00:03:35.292] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     305000
-[2026-04-02 00:03:35.298] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1075000
-[2026-04-02 00:03:35.306] [error] [DEBUG_ALLOC] Type: PyString             | Total:     310000
-[2026-04-02 00:03:35.311] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1080000
-[2026-04-02 00:03:35.312] [error] [DEBUG_ALLOC] Type: Type                 | Total:     540000
-[2026-04-02 00:03:35.313] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     615000
-[2026-04-02 00:03:35.316] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     310000
-[2026-04-02 00:03:35.324] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1085000
-[2026-04-02 00:03:35.336] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     620000
-[2026-04-02 00:03:35.336] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     310000
-[2026-04-02 00:03:35.336] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1090000
-[2026-04-02 00:03:35.337] [error] [DEBUG_ALLOC] Type: Type                 | Total:     545000
-[2026-04-02 00:03:35.349] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1095000
-[2026-04-02 00:03:35.351] [error] [DEBUG_ALLOC] Type: PyString             | Total:     315000
-[2026-04-02 00:03:35.358] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     625000
-[2026-04-02 00:03:35.361] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     315000
-[2026-04-02 00:03:35.363] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    1100000
+[:35.249] Type: PyDict               | Total:    1055000
+[:35.261] Type: PyString             | Total:     305000
+[:35.261] Type: PyDict               | Total:    1060000
+[:35.261] Type: Type                 | Total:     530000
+[:35.268] Type: PyTuple              | Total:     605000
+[:35.271] Type: PyInteger            | Total:     305000
+[:35.273] Type: PyDict               | Total:    1065000
+[:35.285] Type: PyDict               | Total:    1070000
+[:35.286] Type: Type                 | Total:     535000
+[:35.291] Type: PyTuple              | Total:     610000
+[:35.292] Type: PyStringIterator     | Total:     305000
+[:35.298] Type: PyDict               | Total:    1075000
+[:35.306] Type: PyString             | Total:     310000
+[:35.311] Type: PyDict               | Total:    1080000
+[:35.312] Type: Type                 | Total:     540000
+[:35.313] Type: PyTuple              | Total:     615000
+[:35.316] Type: PyInteger            | Total:     310000
+[:35.324] Type: PyDict               | Total:    1085000
+[:35.336] Type: PyTuple              | Total:     620000
+[:35.336] Type: PyStringIterator     | Total:     310000
+[:35.336] Type: PyDict               | Total:    1090000
+[:35.337] Type: Type                 | Total:     545000
+[:35.349] Type: PyDict               | Total:    1095000
+[:35.351] Type: PyString             | Total:     315000
+[:35.358] Type: PyTuple              | Total:     625000
+[:35.361] Type: PyInteger            | Total:     315000
+[:35.363] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    1100000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -1436,63 +1436,63 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:35.364] [error] [DEBUG_ALLOC] Type: Type                 | Total:     550000
-[2026-04-02 00:03:35.375] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1105000
-[2026-04-02 00:03:35.382] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     630000
-[2026-04-02 00:03:35.383] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     315000
-[2026-04-02 00:03:35.389] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1110000
-[2026-04-02 00:03:35.389] [error] [DEBUG_ALLOC] Type: Type                 | Total:     555000
-[2026-04-02 00:03:35.398] [error] [DEBUG_ALLOC] Type: PyString             | Total:     320000
-[2026-04-02 00:03:35.401] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1115000
-[2026-04-02 00:03:35.405] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     635000
-[2026-04-02 00:03:35.408] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     320000
-[2026-04-02 00:03:35.413] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1120000
-[2026-04-02 00:03:35.413] [error] [DEBUG_ALLOC] Type: Type                 | Total:     560000
-[2026-04-02 00:03:35.425] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1125000
-[2026-04-02 00:03:35.427] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     640000
-[2026-04-02 00:03:35.427] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     320000
-[2026-04-02 00:03:35.437] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1130000
-[2026-04-02 00:03:35.438] [error] [DEBUG_ALLOC] Type: Type                 | Total:     565000
-[2026-04-02 00:03:35.441] [error] [DEBUG_ALLOC] Type: PyString             | Total:     325000
-[2026-04-02 00:03:35.449] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     645000
-[2026-04-02 00:03:35.450] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1135000
-[2026-04-02 00:03:35.451] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     325000
-[2026-04-02 00:03:35.462] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1140000
-[2026-04-02 00:03:35.462] [error] [DEBUG_ALLOC] Type: Type                 | Total:     570000
-[2026-04-02 00:03:35.471] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     650000
-[2026-04-02 00:03:35.471] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     325000
-[2026-04-02 00:03:35.475] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1145000
-[2026-04-02 00:03:35.485] [error] [DEBUG_ALLOC] Type: PyString             | Total:     330000
-[2026-04-02 00:03:35.487] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1150000
-[2026-04-02 00:03:35.487] [error] [DEBUG_ALLOC] Type: Type                 | Total:     575000
-[2026-04-02 00:03:35.493] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     655000
-[2026-04-02 00:03:35.495] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     330000
-[2026-04-02 00:03:35.499] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1155000
-[2026-04-02 00:03:35.511] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1160000
-[2026-04-02 00:03:35.512] [error] [DEBUG_ALLOC] Type: Type                 | Total:     580000
-[2026-04-02 00:03:35.514] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     660000
-[2026-04-02 00:03:35.515] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     330000
-[2026-04-02 00:03:35.523] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1165000
-[2026-04-02 00:03:35.529] [error] [DEBUG_ALLOC] Type: PyString             | Total:     335000
-[2026-04-02 00:03:35.536] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1170000
-[2026-04-02 00:03:35.536] [error] [DEBUG_ALLOC] Type: Type                 | Total:     585000
-[2026-04-02 00:03:35.537] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     665000
-[2026-04-02 00:03:35.539] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     335000
-[2026-04-02 00:03:35.548] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1175000
-[2026-04-02 00:03:35.559] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     670000
-[2026-04-02 00:03:35.559] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     335000
-[2026-04-02 00:03:35.561] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1180000
-[2026-04-02 00:03:35.561] [error] [DEBUG_ALLOC] Type: Type                 | Total:     590000
-[2026-04-02 00:03:35.574] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1185000
-[2026-04-02 00:03:35.574] [error] [DEBUG_ALLOC] Type: PyString             | Total:     340000
-[2026-04-02 00:03:35.582] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     675000
-[2026-04-02 00:03:35.584] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     340000
-[2026-04-02 00:03:35.587] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1190000
-[2026-04-02 00:03:35.587] [error] [DEBUG_ALLOC] Type: Type                 | Total:     595000
-[2026-04-02 00:03:35.599] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1195000
-[2026-04-02 00:03:35.605] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     680000
-[2026-04-02 00:03:35.605] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     340000
-[2026-04-02 00:03:35.614] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    1200000
+[:35.364] Type: Type                 | Total:     550000
+[:35.375] Type: PyDict               | Total:    1105000
+[:35.382] Type: PyTuple              | Total:     630000
+[:35.383] Type: PyStringIterator     | Total:     315000
+[:35.389] Type: PyDict               | Total:    1110000
+[:35.389] Type: Type                 | Total:     555000
+[:35.398] Type: PyString             | Total:     320000
+[:35.401] Type: PyDict               | Total:    1115000
+[:35.405] Type: PyTuple              | Total:     635000
+[:35.408] Type: PyInteger            | Total:     320000
+[:35.413] Type: PyDict               | Total:    1120000
+[:35.413] Type: Type                 | Total:     560000
+[:35.425] Type: PyDict               | Total:    1125000
+[:35.427] Type: PyTuple              | Total:     640000
+[:35.427] Type: PyStringIterator     | Total:     320000
+[:35.437] Type: PyDict               | Total:    1130000
+[:35.438] Type: Type                 | Total:     565000
+[:35.441] Type: PyString             | Total:     325000
+[:35.449] Type: PyTuple              | Total:     645000
+[:35.450] Type: PyDict               | Total:    1135000
+[:35.451] Type: PyInteger            | Total:     325000
+[:35.462] Type: PyDict               | Total:    1140000
+[:35.462] Type: Type                 | Total:     570000
+[:35.471] Type: PyTuple              | Total:     650000
+[:35.471] Type: PyStringIterator     | Total:     325000
+[:35.475] Type: PyDict               | Total:    1145000
+[:35.485] Type: PyString             | Total:     330000
+[:35.487] Type: PyDict               | Total:    1150000
+[:35.487] Type: Type                 | Total:     575000
+[:35.493] Type: PyTuple              | Total:     655000
+[:35.495] Type: PyInteger            | Total:     330000
+[:35.499] Type: PyDict               | Total:    1155000
+[:35.511] Type: PyDict               | Total:    1160000
+[:35.512] Type: Type                 | Total:     580000
+[:35.514] Type: PyTuple              | Total:     660000
+[:35.515] Type: PyStringIterator     | Total:     330000
+[:35.523] Type: PyDict               | Total:    1165000
+[:35.529] Type: PyString             | Total:     335000
+[:35.536] Type: PyDict               | Total:    1170000
+[:35.536] Type: Type                 | Total:     585000
+[:35.537] Type: PyTuple              | Total:     665000
+[:35.539] Type: PyInteger            | Total:     335000
+[:35.548] Type: PyDict               | Total:    1175000
+[:35.559] Type: PyTuple              | Total:     670000
+[:35.559] Type: PyStringIterator     | Total:     335000
+[:35.561] Type: PyDict               | Total:    1180000
+[:35.561] Type: Type                 | Total:     590000
+[:35.574] Type: PyDict               | Total:    1185000
+[:35.574] Type: PyString             | Total:     340000
+[:35.582] Type: PyTuple              | Total:     675000
+[:35.584] Type: PyInteger            | Total:     340000
+[:35.587] Type: PyDict               | Total:    1190000
+[:35.587] Type: Type                 | Total:     595000
+[:35.599] Type: PyDict               | Total:    1195000
+[:35.605] Type: PyTuple              | Total:     680000
+[:35.605] Type: PyStringIterator     | Total:     340000
+[:35.614] [error] [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    1200000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:51:17
@@ -1518,7 +1518,7 @@ Stack trace (most recent call first):
 #21 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #22 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #23 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:35.616] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     600000
+[:35.616] [error] [DEBUG_ALLOC_TRACE] Type: Type                 | Total:     600000
 Stack trace (most recent call first):
 #0  0x0000562fd17e5a78 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:579:12
@@ -1548,21 +1548,21 @@ Stack trace (most recent call first):
 #25 0x00007ff60fa2a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
 #26 0x00007ff60fa2a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
 #27 0x0000562fd1471904 in _start at /tmp/test
-[2026-04-02 00:03:35.623] [error] [DEBUG_ALLOC] Type: PyString             | Total:     345000
-[2026-04-02 00:03:35.628] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1205000
-[2026-04-02 00:03:35.630] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     685000
-[2026-04-02 00:03:35.633] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     345000
-[2026-04-02 00:03:35.640] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1210000
-[2026-04-02 00:03:35.641] [error] [DEBUG_ALLOC] Type: Type                 | Total:     605000
-[2026-04-02 00:03:35.652] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1215000
-[2026-04-02 00:03:35.652] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     690000
-[2026-04-02 00:03:35.653] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:     345000
-[2026-04-02 00:03:35.665] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1220000
-[2026-04-02 00:03:35.666] [error] [DEBUG_ALLOC] Type: Type                 | Total:     610000
-[2026-04-02 00:03:35.668] [error] [DEBUG_ALLOC] Type: PyString             | Total:     350000
-[2026-04-02 00:03:35.675] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:     695000
-[2026-04-02 00:03:35.678] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:     350000
-[2026-04-02 00:03:35.678] [error] [DEBUG_ALLOC] Type: PyDict               | Total:    1225000
+[:35.623] Type: PyString             | Total:     345000
+[:35.628] Type: PyDict               | Total:    1205000
+[:35.630] Type: PyTuple              | Total:     685000
+[:35.633] Type: PyInteger            | Total:     345000
+[:35.640] Type: PyDict               | Total:    1210000
+[:35.641] Type: Type                 | Total:     605000
+[:35.652] Type: PyDict               | Total:    1215000
+[:35.652] Type: PyTuple              | Total:     690000
+[:35.653] Type: PyStringIterator     | Total:     345000
+[:35.665] Type: PyDict               | Total:    1220000
+[:35.666] Type: Type                 | Total:     610000
+[:35.668] Type: PyString             | Total:     350000
+[:35.675] Type: PyTuple              | Total:     695000
+[:35.678] Type: PyInteger            | Total:     350000
+[:35.678] Type: PyDict               | Total:    1225000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -1612,3 +1612,14 @@ Queue pop: 3233887 Terminal: 1
 Queue pop: 3233897 Terminal: 1
 Find completed. Results count: 9 Values: [323381, 323383, 3233803, 3233809, 3233851, 3233863, 3233873, 3233887, 3233897]
 Final Results: [323381, 323383, 3233803, 3233809, 3233851, 3233863, 3233873, 3233887, 3233897]
+
+
+
+Top Hotspots
+    Function	Module	CPU Time	% of CPU Time
+    __memset_avx2_unaligned_erms	libc.so.6	0.354s	6.5%
+    py::RtValue::flatten	test	0.344s	6.4%
+    rt_getitem	test	0.218s	4.0%
+    rt_call_method_ic_ptrs	test	0.217s	4.0%
+    rt_getattr_fast	test	0.216s	4.0%
+    [Others]	N/A*	4.051s	75.0%

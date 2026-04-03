@@ -3,10 +3,12 @@
 #include "PyObject.hpp"
 #include "runtime/Value.hpp"
 
+#include "taggered_pointer/RtValue.hpp"
+
 #include <tsl/ordered_map.h>
 #include <variant>
 
-#include "memory/GCTracingAllocator.hpp"// 新增：引入 GC 分配器
+#include "memory/GCTracingAllocator.hpp"
 
 namespace py {
 
@@ -28,8 +30,8 @@ class PyDict : public PyBaseObject
 	// 这直接斩断了极小字典(如 Node.children)造成的 GC 指针爆炸与内存碎片！
 	using MapType = tsl::ordered_map<Value,
 		Value,
-		ValueHash,
-		ValueEq,
+		RtValueHash,// [修改]: 换成无开销的 RtValueHash
+		RtValueEq,// [修改]: 换成无开销的 RtValueEq
 		py::GCTracingAllocator<std::pair<Value, Value>>,
 		py::GCVector<std::pair<Value, Value>>>;
 

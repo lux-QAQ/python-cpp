@@ -181,7 +181,11 @@ namespace {
 
 	std::unique_ptr<TypePrototype> register_slot_wrapper()
 	{
-		return std::move(klass<PySlotWrapper>("slot_wrapper").type);
+		// [核心修复]：必须把 __call__ 注册进原型！
+		// 这样 PyObject::call 在调用 slot_wrapper 包装器时，能够直接执行 C++ 的
+		// PySlotWrapper::__call__ 从而打破无限循环下坠，将调用流回发给被包装的真实原生函数
+		return std::move(
+			klass<PySlotWrapper>("slot_wrapper").def("__call__", &PySlotWrapper::__call__).type);
 	}
 }// namespace
 

@@ -86,33 +86,69 @@ namespace {
 // 	return str;
 // }
 
+// PyString *PyString::intern(const char *cstr)
+// {
+// 	if (!cstr) return nullptr;
+
+// 	std::lock_guard<std::mutex> lock(g_intern_mutex);// 保护驻留过程
+
+// 	// 第一级：指针地址直接命中 (AOT 路径)
+// 	auto &p_table = ptr_table();
+// 	if (auto it = p_table.find(cstr); it != p_table.end()) { return it->second; }
+
+// 	// 第二级：字符串内容命中
+// 	auto &i_table = intern_table();
+// 	std::string_view sv(cstr);
+// 	if (auto it = i_table.find(sv); it != i_table.end()) {
+// 		p_table[cstr] = it->second;// 顺便填入一级缓存
+// 		return it->second;
+// 	}
+
+// 	// 第三级：真正创建并“加冕”为永久对象
+// 	auto str = PyString::create(cstr).unwrap();
+
+// 	// ✅ 关键：必须放入 GCVector，否则这个 str 会被 GC 瞬间收割
+// 	intern_roots().push_back(str);
+
+// 	// 此时使用 str->value() 作为 view 的 key 是安全的，因为 str 已经永生了
+// 	i_table[str->value()] = str;
+// 	p_table[cstr] = str;
+
+// 	return str;
+// }
+
 PyString *PyString::intern(const char *cstr)
 {
 	if (!cstr) return nullptr;
 
 	std::lock_guard<std::mutex> lock(g_intern_mutex);// 保护驻留过程
 
-	// 第一级：指针地址直接命中 (AOT 路径)
-	auto &p_table = ptr_table();
-	if (auto it = p_table.find(cstr); it != p_table.end()) { return it->second; }
-
-	// 第二级：字符串内容命中
+	// [修复]：彻底删除 p_table (指针缓存) 防止临时变量 c_str() 悬空指针复用导致毒化碰撞！
+	// 唯一可靠且已足够极速的缓存：基于字符串内容 (std::string_view)
 	auto &i_table = intern_table();
 	std::string_view sv(cstr);
-	if (auto it = i_table.find(sv); it != i_table.end()) {
-		p_table[cstr] = it->second;// 顺便填入一级缓存
-		return it->second;
-	}
+	if (auto it = i_table.find(sv); it != i_table.end()) { return it->second; }
 
 	// 第三级：真正创建并“加冕”为永久对象
-	auto str = PyString::create(cstr).unwrap();
+	PyString *str = nullptr;
+	if (sv.length() == 1) {
+		auto &cache = get_char_cache();
+		uint8_t c = static_cast<uint8_t>(cstr[0]);
+		if (cache[c] != nullptr) {
+			str = cache[c];
+		} else {
+			str = PYLANG_ALLOC(PyString, std::string(cstr));
+			cache[c] = str;
+			intern_roots().push_back(str);
+		}
+	} else {
+		str = PYLANG_ALLOC(PyString, std::string(cstr));
+		// ✅ 必须放入 GCVector，否则这个 str 会被 GC 瞬间收割
+		intern_roots().push_back(str);
+	}
 
-	// ✅ 关键：必须放入 GCVector，否则这个 str 会被 GC 瞬间收割
-	intern_roots().push_back(str);
-
-	// 此时使用 str->value() 作为 view 的 key 是安全的，因为 str 已经永生了
+	// 此时使用 str->value() 作为 view 的 key 是绝对安全的，因为 str 被 intern_roots 永生固化了
 	i_table[str->value()] = str;
-	p_table[cstr] = str;
 
 	return str;
 }
@@ -207,29 +243,40 @@ namespace utf8 {
 PyString::PyString(PyType *type) : PyBaseObject(type) {}
 
 
+// PyResult<PyString *> PyString::create(const std::string &value)
+// {
+
+// 	// 单字符缓存
+// 	if (value.length() == 1) {
+// 		auto &cache = get_char_cache();
+// 		uint8_t c = static_cast<uint8_t>(value[0]);
+
+// 		if (cache[c] != nullptr) { return Ok(cache[c]); }
+
+// 		auto *result = PYLANG_ALLOC(PyString, value);
+// 		if (!result) return Err(memory_error(sizeof(PyString)));
+
+// 		cache[c] = result;
+// 		// 仍然要钉在根上，否则GC发现根里没它，下次 GC 就直接扬了
+// 		intern_roots().push_back(result);
+// 		return Ok(result);
+// 	}
+
+// 	auto *result = PYLANG_ALLOC(PyString, value);
+// 	if (!result) { return Err(memory_error(sizeof(PyString))); }
+// 	return Ok(result);
+// }
+
+
 PyResult<PyString *> PyString::create(const std::string &value)
 {
-
-	// 单字符缓存
-	if (value.length() == 1) {
-		auto &cache = get_char_cache();
-		uint8_t c = static_cast<uint8_t>(value[0]);
-
-		if (cache[c] != nullptr) { return Ok(cache[c]); }
-
-		auto *result = PYLANG_ALLOC(PyString, value);
-		if (!result) return Err(memory_error(sizeof(PyString)));
-
-		cache[c] = result;
-		// 仍然要钉在根上，否则GC发现根里没它，下次 GC 就直接扬了
-		intern_roots().push_back(result);
-		return Ok(result);
-	}
-
-	auto *result = PYLANG_ALLOC(PyString, value);
+	// [终极优化]: 把所有的字符串创建直接引入强大的 intern 机制！
+	// 从根本消灭字典指针比对的地址冲突问题，并实现全项目字符串 O(1) 比较。
+	PyString *result = intern(value);
 	if (!result) { return Err(memory_error(sizeof(PyString))); }
 	return Ok(result);
 }
+
 
 PyResult<PyString *> PyString::create(PyObject *obj)
 {
