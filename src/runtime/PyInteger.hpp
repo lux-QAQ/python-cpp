@@ -13,6 +13,8 @@ class PyInteger : public Interface<PyNumber, PyInteger>
 #endif
 	friend class ::py::Arena;
 
+	BigIntType m_value;
+
 	PyInteger(BigIntType);
 
   protected:

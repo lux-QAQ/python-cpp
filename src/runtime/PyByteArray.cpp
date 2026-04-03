@@ -43,14 +43,14 @@ template<> const PyByteArray *as(const PyObject *obj)
 
 PyByteArray::PyByteArray(PyType *type) : PyBaseObject(type) {}
 
-PyByteArray::PyByteArray(const Bytes &value)
-	: PyBaseObject(types::BuiltinTypes::the().bytearray()), m_value(value)
+PyByteArray::PyByteArray(std::vector<std::byte> value)
+	: PyBaseObject(types::BuiltinTypes::the().bytearray()), m_value(std::move(value))
 {}
 
-PyResult<PyByteArray *> PyByteArray::create(const Bytes &bytes)
+PyResult<PyByteArray *> PyByteArray::create(std::vector<std::byte> bytes)
 {
 
-	auto *obj = PYLANG_ALLOC(PyByteArray, bytes);
+	auto *obj = PYLANG_ALLOC(PyByteArray, std::move(bytes));
 	if (!obj) { return Err(memory_error(sizeof(PyByteArray))); }
 	return Ok(obj);
 }
@@ -104,12 +104,12 @@ PyResult<int32_t> PyByteArray::__init__(PyTuple *args, PyDict *kwargs)
 		auto arg0 = PyObject::from(args->elements()[0]);
 		if (arg0.is_err()) { return Err(arg0.unwrap_err()); }
 		if (auto count = as<PyInteger>(arg0.unwrap())) {
-			m_value.b.resize(count->as_size_t());
+			m_value.resize(count->as_size_t());
 		} else if (auto bytes = as<PyBytes>(arg0.unwrap())) {
 			// FIXME: should this take the iterable path?
-			m_value.b.insert(m_value.b.end(), bytes->value().b.begin(), bytes->value().b.end());
+			m_value.insert(m_value.end(), bytes->value().begin(), bytes->value().end());
 		} else if (arg0.unwrap()->iter().is_ok()) {
-			if (auto result = from_iterable(arg0.unwrap(), ByteBackInserter(m_value.b));
+			if (auto result = from_iterable(arg0.unwrap(), ByteBackInserter(m_value));
 				result.is_err()) {
 				return Err(result.unwrap_err());
 			}
@@ -126,11 +126,29 @@ PyResult<int32_t> PyByteArray::__init__(PyTuple *args, PyDict *kwargs)
 std::string PyByteArray::to_string() const
 {
 	std::ostringstream os;
-	os << "bytearray(" << m_value.to_string() << ")";
+	os << "bytearray(b'";
+	for (const auto &byte : m_value) {
+		const auto byte_ = std::to_integer<unsigned char>(byte);
+		if (byte_ == '\\') {
+			os << "\\";
+		} else if (byte_ == '\t') {
+			os << "\\t";
+		} else if (byte_ == '\n') {
+			os << "\\n";
+		} else if (byte_ == '\r') {
+			os << "\\r";
+		} else if (byte_ < ' ' || byte_ >= 0x7f) {
+			os << "\\x" << std::hex << std::setw(2) << std::setfill('0')
+			   << static_cast<uint32_t>(byte_);
+		} else {
+			os << static_cast<char>(byte_);
+		}
+	}
+	os << "')";
 	return os.str();
 }
 
-PyResult<size_t> PyByteArray::__len__() const { return Ok(m_value.b.size()); }
+PyResult<size_t> PyByteArray::__len__() const { return Ok(m_value.size()); }
 
 PyResult<PyObject *> PyByteArray::__iter__() const
 {
@@ -141,17 +159,17 @@ PyResult<PyObject *> PyByteArray::__repr__() const { return PyString::create(to_
 
 PyResult<PyObject *> PyByteArray::__getitem__(int64_t index)
 {
-	if (index < 0) { index += m_value.b.size(); }
-	if (index < 0 || static_cast<size_t>(index) >= m_value.b.size()) {
+	if (index < 0) { index += m_value.size(); }
+	if (index < 0 || static_cast<size_t>(index) >= m_value.size()) {
 		return Err(index_error("bytearray index out of range"));
 	}
-	return PyInteger::create(static_cast<int64_t>(m_value.b[index]));
+	return PyInteger::create(static_cast<int64_t>(m_value[index]));
 }
 
 PyResult<std::monostate> PyByteArray::__setitem__(int64_t index, PyObject *value)
 {
-	if (index < 0) { index += m_value.b.size(); }
-	if (index < 0 || static_cast<size_t>(index) >= m_value.b.size()) {
+	if (index < 0) { index += m_value.size(); }
+	if (index < 0 || static_cast<size_t>(index) >= m_value.size()) {
 		return Err(index_error("bytearray index out of range"));
 	}
 
@@ -166,7 +184,7 @@ PyResult<std::monostate> PyByteArray::__setitem__(int64_t index, PyObject *value
 		return Err(value_error("byte must be in range(0, 256)"));
 	}
 
-	m_value.b[index] = static_cast<std::byte>(new_value.get_ui());
+	m_value[index] = static_cast<std::byte>(new_value.get_ui());
 
 	return Ok(std::monostate{});
 }
@@ -183,17 +201,17 @@ PyResult<PyObject *> PyByteArray::__getitem__(PyObject *index)
 		const auto [start_, end_, step] = indices_.unwrap();
 
 		const auto [start, end, slice_length] =
-			PySlice::adjust_indices(start_, end_, step, m_value.b.size());
+			PySlice::adjust_indices(start_, end_, step, m_value.size());
 
 		if (slice_length == 0) { return PyByteArray::create(); }
-		if (start == 0 && end == static_cast<int64_t>(m_value.b.size()) && step == 1) {
+		if (start == 0 && end == static_cast<int64_t>(m_value.size()) && step == 1) {
 			return PyByteArray::create(m_value);
 		}
 
-		Bytes bytes;
-		bytes.b.reserve(slice_length);
+		std::vector<std::byte> bytes;
+		bytes.reserve(slice_length);
 		for (int64_t idx = start, i = 0; i < slice_length; idx += step, ++i) {
-			bytes.b.push_back(m_value.b[idx]);
+			bytes.push_back(m_value[idx]);
 		}
 
 		return PyByteArray::create(bytes);
@@ -215,12 +233,12 @@ PyResult<std::monostate> PyByteArray::__setitem__(PyObject *index, PyObject *val
 		const auto [start_, end_, step] = indices_.unwrap();
 
 		const auto [start, stop, slice_length] =
-			PySlice::adjust_indices(start_, end_, step, m_value.b.size());
+			PySlice::adjust_indices(start_, end_, step, m_value.size());
 
 		if (step == 0) { return Err(value_error("slice step cannot be zero")); }
 		if (slice_length == 0) { return Ok(std::monostate{}); }
 		if (start > stop && step > 0) { return Ok(std::monostate{}); }
-		if (start > static_cast<int64_t>(m_value.b.size()) || start < 0) {
+		if (start > static_cast<int64_t>(m_value.size()) || start < 0) {
 			return Ok(std::monostate{});
 		}
 
@@ -228,7 +246,7 @@ PyResult<std::monostate> PyByteArray::__setitem__(PyObject *index, PyObject *val
 
 		if (value->type()->issubclass(types::bytes())
 			|| value->type()->issubclass(types::bytearray())) {
-			Bytes bytes;
+			std::vector<std::byte> bytes;
 			if (value->type()->issubclass(types::bytes())) {
 				bytes = static_cast<const PyBytes &>(*value).value();
 			} else {
@@ -236,8 +254,8 @@ PyResult<std::monostate> PyByteArray::__setitem__(PyObject *index, PyObject *val
 			}
 
 			// naive implementation, we just remove values, and then insert new ones
-			auto it = m_value.b.erase(m_value.b.begin() + start, m_value.b.begin() + stop);
-			m_value.b.insert(it, bytes.b.begin(), bytes.b.end());
+			auto it = m_value.erase(m_value.begin() + start, m_value.begin() + stop);
+			m_value.insert(it, bytes.begin(), bytes.end());
 
 			return Ok(std::monostate{});
 		}
@@ -257,13 +275,13 @@ PyResult<std::monostate> PyByteArray::__setitem__(PyObject *index, PyObject *val
 PyResult<std::monostate> PyByteArray::__getbuffer__(PyBuffer &view, int)
 {
 	view.obj = this;
-	if (m_value.b.empty()) {
+	if (m_value.empty()) {
 		view.buf = std::make_unique<NonOwningStorage<std::byte>>(
 			const_cast<std::byte *>(kEmptyByteArray.data()));
 	} else {
-		view.buf = std::make_unique<NonOwningStorage<std::byte>>(m_value.b.data());
+		view.buf = std::make_unique<NonOwningStorage<std::byte>>(m_value.data());
 	}
-	view.len = m_value.b.size();
+	view.len = m_value.size();
 	view.readonly = false;
 	view.itemsize = 1;
 	view.format = "B";
@@ -277,10 +295,9 @@ PyResult<PyObject *> PyByteArray::__add__(const PyObject *other) const
 {
 	auto new_bytes = m_value;
 	if (auto bytes = as<PyBytes>(other)) {
-		new_bytes.b.insert(new_bytes.b.end(), bytes->value().b.begin(), bytes->value().b.end());
+		new_bytes.insert(new_bytes.end(), bytes->value().begin(), bytes->value().end());
 	} else if (auto bytearray = as<PyByteArray>(other)) {
-		new_bytes.b.insert(
-			new_bytes.b.end(), bytearray->value().b.begin(), bytearray->value().b.end());
+		new_bytes.insert(new_bytes.end(), bytearray->value().begin(), bytearray->value().end());
 	} else {
 		return Err(type_error("can't concat {} to bytes", other->type()->name()));
 	}
@@ -319,7 +336,7 @@ PyResult<PyObject *> PyByteArray::find(PyTuple *args, PyDict *kwargs) const
 
 	auto get_position_from_slice = [this](int64_t pos) -> PyResult<size_t> {
 		if (pos < 0) {
-			pos += m_value.b.size();
+			pos += m_value.size();
 			// TODO: handle case where the negative start index is less than size of string
 			if (pos < 0) { return Err(index_error("bytearray index out of range")); }
 		}
@@ -334,7 +351,7 @@ PyResult<PyObject *> PyByteArray::find(PyTuple *args, PyDict *kwargs) const
 	};
 
 	if (!start && !end) {
-		result = find(m_value.b, 0);
+		result = find(m_value, 0);
 	} else if (!end) {
 		auto start_ =
 			std::visit(overloaded{
@@ -348,8 +365,8 @@ PyResult<PyObject *> PyByteArray::find(PyTuple *args, PyDict *kwargs) const
 					   },
 				start->value().value);
 		if (start_.is_err()) { return Err(start_.unwrap_err()); }
-		result = find(
-			std::span{ m_value.b.begin() + start_.unwrap(), m_value.b.end() }, start_.unwrap());
+		result =
+			find(std::span{ m_value.begin() + start_.unwrap(), m_value.end() }, start_.unwrap());
 	} else {
 		auto start_ =
 			std::visit(overloaded{
@@ -375,9 +392,9 @@ PyResult<PyObject *> PyByteArray::find(PyTuple *args, PyDict *kwargs) const
 					   },
 				end->value().value);
 		if (end_.is_err()) { return Err(end_.unwrap_err()); }
-		result = find(
-			std::span{ m_value.b.begin() + start_.unwrap(), m_value.b.begin() + end_.unwrap() },
-			start_.unwrap());
+		result =
+			find(std::span{ m_value.begin() + start_.unwrap(), m_value.begin() + end_.unwrap() },
+				start_.unwrap());
 	}
 
 	return PyInteger::create(result);
@@ -385,7 +402,7 @@ PyResult<PyObject *> PyByteArray::find(PyTuple *args, PyDict *kwargs) const
 
 PyResult<PyObject *> PyByteArray::maketrans(PyObject *from, PyObject *to)
 {
-	Bytes from_bytes;
+	std::vector<std::byte> from_bytes;
 	if (from->type()->issubclass(types::bytes())) {
 		from_bytes = static_cast<const PyBytes &>(*from).value();
 	} else if (from->type()->issubclass(types::bytearray())) {
@@ -394,7 +411,7 @@ PyResult<PyObject *> PyByteArray::maketrans(PyObject *from, PyObject *to)
 		return Err(type_error("a bytes-like object is required, not '{}'", from->type()->name()));
 	}
 
-	Bytes to_bytes;
+	std::vector<std::byte> to_bytes;
 	if (to->type()->issubclass(types::bytes())) {
 		to_bytes = static_cast<const PyBytes &>(*to).value();
 	} else if (to->type()->issubclass(types::bytearray())) {
@@ -403,17 +420,17 @@ PyResult<PyObject *> PyByteArray::maketrans(PyObject *from, PyObject *to)
 		return Err(type_error("a bytes-like object is required, not '{}'", from->type()->name()));
 	}
 
-	if (from_bytes.b.size() != to_bytes.b.size()) {
+	if (from_bytes.size() != to_bytes.size()) {
 		return Err(value_error("maketrans arguments must have same length"));
 	}
 
-	Bytes result;
-	result.b.reserve(256);
-	for (size_t i = 0; i < 256; ++i) { result.b.push_back(static_cast<std::byte>(i)); }
-	for (size_t i = 0; i < 256; ++i) {
-		const auto from_byte = from_bytes.b[i];
-		const auto to_byte = to_bytes.b[i];
-		result.b[static_cast<size_t>(from_byte)] = to_byte;
+	std::vector<std::byte> result;
+	result.reserve(256);
+	for (size_t i = 0; i < 256; ++i) { result.push_back(static_cast<std::byte>(i)); }
+	for (size_t i = 0; i < from_bytes.size(); ++i) {
+		const auto from_byte = from_bytes[i];
+		const auto to_byte = to_bytes[i];
+		result[static_cast<size_t>(from_byte)] = to_byte;
 	}
 
 	return PyByteArray::create(result);
@@ -421,8 +438,8 @@ PyResult<PyObject *> PyByteArray::maketrans(PyObject *from, PyObject *to)
 
 PyResult<PyObject *> PyByteArray::translate(PyTuple *args, PyDict *kwargs) const
 {
-	Bytes table;
-	Bytes to_delete;
+	std::vector<std::byte> table;
+	std::vector<std::byte> to_delete;
 	if (!args || args->size() == 0) {
 		return Err(type_error(
 			"translate() takes at least 1 positional argument ({} given)", args->size()));
@@ -464,19 +481,19 @@ PyResult<PyObject *> PyByteArray::translate(PyTuple *args, PyDict *kwargs) const
 		}
 	}
 
-	if (!table.b.empty() && table.b.size() != 256) {
+	if (!table.empty() && table.size() != 256) {
 		return Err(value_error("translation table must be 256 characters long"));
 	}
 
-	Bytes result;
+	std::vector<std::byte> result;
 	std::ranges::remove_copy_if(
-		m_value.b, std::back_inserter(result.b), [&to_delete](const auto &el) -> bool {
-			return std::ranges::find(to_delete.b, el) != to_delete.b.end();
+		m_value, std::back_inserter(result), [&to_delete](const auto &el) -> bool {
+			return std::ranges::find(to_delete, el) != to_delete.end();
 		});
 
-	if (!table.b.empty()) {
-		std::ranges::transform(result.b, result.b.begin(), [&table](const auto el) {
-			return table.b[static_cast<size_t>(el)];
+	if (!table.empty()) {
+		std::ranges::transform(result, result.begin(), [&table](const auto el) {
+			return table[static_cast<size_t>(el)];
 		});
 	}
 
@@ -486,11 +503,10 @@ PyResult<PyObject *> PyByteArray::translate(PyTuple *args, PyDict *kwargs) const
 PyResult<PyObject *> PyByteArray::__eq__(const PyObject *other) const
 {
 	if (other->type()->issubclass(types::bytearray())) {
-		return Ok(m_value.b == static_cast<const PyByteArray &>(*other).value().b ? py_true()
-																				  : py_false());
-	} else if (other->type()->issubclass(types::bytes())) {
 		return Ok(
-			m_value.b == static_cast<const PyBytes &>(*other).value().b ? py_true() : py_false());
+			m_value == static_cast<const PyByteArray &>(*other).value() ? py_true() : py_false());
+	} else if (other->type()->issubclass(types::bytes())) {
+		return Ok(m_value == static_cast<const PyBytes &>(*other).value() ? py_true() : py_false());
 	}
 	return Ok(py_false());
 }
@@ -546,8 +562,8 @@ PyResult<PyObject *> PyByteArrayIterator::__repr__() const { return PyString::cr
 
 PyResult<PyObject *> PyByteArrayIterator::__next__()
 {
-	if (!m_bytes || m_index >= m_bytes->value().b.size()) { return Err(stop_iteration()); }
-	const auto value = m_bytes->value().b[m_index++];
+	if (!m_bytes || m_index >= m_bytes->value().size()) { return Err(stop_iteration()); }
+	const auto value = m_bytes->value()[m_index++];
 	return PyInteger::create(static_cast<int64_t>(value));
 }
 

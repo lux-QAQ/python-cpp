@@ -33,16 +33,16 @@ template<> const PyInteger *as(const PyObject *obj)
 PyInteger::PyInteger(PyType *type) : Interface(type) {}
 
 PyInteger::PyInteger(BigIntType value)
-	: Interface(Number{ std::move(value) }, types::BuiltinTypes::the().integer())
+	: Interface(types::BuiltinTypes::the().integer()), m_value(std::move(value))
 {}
 
 PyInteger::PyInteger(TypePrototype &type, BigIntType value)
-	: Interface(Number{ std::move(value) }, type)
+	: Interface(type), m_value(std::move(value))
 {}
 
 PyInteger::PyInteger(PyType *type, BigIntType value) : PyInteger(type)
 {
-	m_value = Number{ std::move(value) };
+	m_value = std::move(value);
 }
 
 PyResult<PyInteger *> PyInteger::create(int64_t value)
@@ -63,7 +63,7 @@ PyResult<PyInteger *> PyInteger::create(PyType *type, BigIntType value)
 	ASSERT(type->issubclass(types::integer()));
 	auto result = type->underlying_type().__alloc__(type);
 	return result.and_then([value = std::move(value)](PyObject *obj) -> PyResult<PyInteger *> {
-		static_cast<PyInteger &>(*obj).m_value = Number{ std::move(value) };
+		static_cast<PyInteger &>(*obj).m_value = std::move(value);
 		return Ok(static_cast<PyInteger *>(obj));
 	});
 }
@@ -217,8 +217,8 @@ PyResult<PyObject *> PyInteger::__and__(PyObject *obj)
 			type_error("unsupported operand type(s) for &: 'int' and '{}'", obj->type()->name()));
 	}
 
-	mpz_class result = std::get<BigIntType>(m_value.value);
-	result &= std::get<BigIntType>(static_cast<const PyInteger &>(*obj).value().value);
+	mpz_class result = as_big_int();
+	result &= static_cast<const PyInteger &>(*obj).as_big_int();
 	return PyInteger::create(std::move(result));
 }
 
@@ -239,8 +239,8 @@ PyResult<PyObject *> PyInteger::__or__(PyObject *obj)
 			type_error("unsupported operand type(s) for |: 'int' and '{}'", obj->type()->name()));
 	}
 
-	mpz_class result = std::get<BigIntType>(m_value.value);
-	result |= std::get<BigIntType>(static_cast<const PyInteger &>(*obj).value().value);
+	mpz_class result = as_big_int();
+	result |= static_cast<const PyInteger &>(*obj).as_big_int();
 	return PyInteger::create(std::move(result));
 }
 
@@ -248,11 +248,11 @@ PyResult<PyObject *> PyInteger::__xor__(PyObject *obj)
 {
 	if (!obj->type()->issubclass(types::integer())) {
 		return Err(
-			type_error("unsupported operand type(s) for |: 'int' and '{}'", obj->type()->name()));
+			type_error("unsupported operand type(s) for ^: 'int' and '{}'", obj->type()->name()));
 	}
 
-	mpz_class result = std::get<BigIntType>(m_value.value);
-	result ^= std::get<BigIntType>(static_cast<const PyInteger &>(*obj).value().value);
+	mpz_class result = as_big_int();
+	result ^= static_cast<const PyInteger &>(*obj).as_big_int();
 
 	return PyInteger::create(std::move(result));
 }
@@ -264,7 +264,7 @@ PyResult<PyObject *> PyInteger::__lshift__(const PyObject *obj) const
 			type_error("unsupported operand type(s) for <<: 'int' and '{}'", obj->type()->name()));
 	}
 
-	return PyNumber::create(m_value << static_cast<const PyInteger &>(*obj).value());
+	return PyInteger::create(m_value << static_cast<const PyInteger &>(*obj).as_big_int().get_ui());
 }
 
 PyResult<PyObject *> PyInteger::__rshift__(const PyObject *obj) const
@@ -274,7 +274,7 @@ PyResult<PyObject *> PyInteger::__rshift__(const PyObject *obj) const
 			type_error("unsupported operand type(s) for >>: 'int' and '{}'", obj->type()->name()));
 	}
 
-	return PyNumber::create(m_value >> static_cast<const PyInteger &>(*obj).value());
+	return PyInteger::create(m_value >> static_cast<const PyInteger &>(*obj).as_big_int().get_ui());
 }
 
 PyResult<PyObject *> PyInteger::bit_length() const
@@ -323,8 +323,7 @@ PyResult<PyObject *> PyInteger::to_bytes(PyTuple *args, PyDict *kwargs) const
 	std::unique_ptr<std::byte[]> bytes = std::make_unique<std::byte[]>(length);
 	const int32_t order = byteorder == "big" ? 1 : -1;
 	auto l = length;
-	void *result = mpz_export(
-		bytes.get(), &l, order, 1, order, 0, std::get<BigIntType>(m_value.value).get_mpz_t());
+	void *result = mpz_export(bytes.get(), &l, order, 1, order, 0, m_value.get_mpz_t());
 	ASSERT(result);
 	if (l > length) {
 		// FIXME: should be an OverflowError
@@ -410,30 +409,26 @@ PyResult<PyObject *> PyInteger::__round__(PyObject *ndigits_obj) const
 
 	if (ndigits >= 0) { return PyInteger::create(as_big_int()); }
 
-	auto result = m_value - (m_value % Number{ BigIntType{ 10 } }.exp(Number{ -ndigits }));
+	mpz_class power_of_10;
+	mpz_pow_ui(power_of_10.get_mpz_t(), BigIntType(10).get_mpz_t(), (-ndigits).get_ui());
+	auto result = m_value - (m_value % power_of_10);
 
-	return PyInteger::create(std::visit([](auto el) { return BigIntType{ el }; }, result.value));
+	return PyInteger::create(std::move(result));
 }
 
 int64_t PyInteger::as_i64() const
 {
-	ASSERT(std::holds_alternative<BigIntType>(m_value.value));
-	ASSERT(std::get<BigIntType>(m_value.value).fits_slong_p());
-	return std::get<BigIntType>(m_value.value).get_si();
+	ASSERT(m_value.fits_slong_p());
+	return m_value.get_si();
 }
 
 size_t PyInteger::as_size_t() const
 {
-	ASSERT(std::holds_alternative<BigIntType>(m_value.value));
-	ASSERT(std::get<BigIntType>(m_value.value).fits_ulong_p());
-	return std::get<BigIntType>(m_value.value).get_ui();
+	ASSERT(m_value.fits_ulong_p());
+	return m_value.get_ui();
 }
 
-BigIntType PyInteger::as_big_int() const
-{
-	ASSERT(std::holds_alternative<BigIntType>(m_value.value));
-	return std::get<BigIntType>(m_value.value);
-}
+BigIntType PyInteger::as_big_int() const { return m_value; }
 
 /*
 PyType *PyInteger::static_type() const { return types::integer(); }

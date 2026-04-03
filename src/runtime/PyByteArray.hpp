@@ -14,12 +14,12 @@ class PyByteArray : public PyBaseObject
 #endif
 	friend class ::py::Arena;
 
-	Bytes m_value;
+	std::vector<std::byte> m_value;
 
 	PyByteArray(PyType *);
 
   public:
-	static PyResult<PyByteArray *> create(const Bytes &bytes);
+	static PyResult<PyByteArray *> create(std::vector<std::byte> bytes);
 	static PyResult<PyByteArray *> create();
 
 	~PyByteArray() = default;
@@ -43,7 +43,8 @@ class PyByteArray : public PyBaseObject
 	PyResult<std::monostate> __getbuffer__(PyBuffer &, int);
 	PyResult<std::monostate> __releasebuffer__(PyBuffer &);
 
-	const Bytes &value() const { return m_value; }
+	const std::vector<std::byte> &value() const { return m_value; }
+	std::vector<std::byte> &value() { return m_value; }
 
 	PyResult<PyObject *> find(PyTuple *args, PyDict *kwargs) const;
 	static PyResult<PyObject *> maketrans(PyObject *from, PyObject *to);
@@ -53,7 +54,7 @@ class PyByteArray : public PyBaseObject
 	// PyType *static_type() const override;;
 
   private:
-	PyByteArray(const Bytes &value);
+	PyByteArray(std::vector<std::byte> value);
 };
 
 class PyByteArrayIterator : public PyBaseObject

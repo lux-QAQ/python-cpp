@@ -14,12 +14,12 @@ class PyBytes : public PyBaseObject
 #endif
 	friend class ::py::Arena;
 
-	Bytes m_value;
+	std::vector<std::byte> m_value;
 
 	PyBytes(PyType *);
 
   public:
-	static PyResult<PyBytes *> create(Bytes number);
+	static PyResult<PyBytes *> create(std::vector<std::byte> value);
 	static PyResult<PyBytes *> create();
 
 	static PyResult<PyObject *> __new__(const PyType *type, PyTuple *args, PyDict *kwargs);
@@ -44,7 +44,7 @@ class PyBytes : public PyBaseObject
 
 	PyResult<std::monostate> __getbuffer__(PyBuffer &, int);
 
-	const Bytes &value() const { return m_value; }
+	const std::vector<std::byte> &value() const { return m_value; }
 
 	PyResult<PyObject *> decode(const std::string &encoding, const std::string &errors) const;
 
@@ -53,7 +53,7 @@ class PyBytes : public PyBaseObject
 
   private:
 	PyBytes();
-	PyBytes(Bytes number);
+	PyBytes(std::vector<std::byte> value);
 };
 
 class PyBytesIterator : public PyBaseObject
