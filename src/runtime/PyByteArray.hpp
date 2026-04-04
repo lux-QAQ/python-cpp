@@ -3,7 +3,6 @@
 #include "PyObject.hpp"
 #include "runtime/PyDict.hpp"
 #include "runtime/PyTuple.hpp"
-#include <variant>
 
 namespace py {
 

@@ -32,7 +32,7 @@ void compare_constant(const std::shared_ptr<ASTNode> &result,
 	if (result_value->type() == py::types::integer()) {
 		EXPECT_EQ(as<py::PyInteger>(result_value)->as_i64(), 20);
 	} else if (result_value->type() == py::types::float_()) {
-		EXPECT_EQ(std::get<double>(as<py::PyFloat>(result_value)->value().value), 20.0);
+		EXPECT_EQ(as<py::PyFloat>(result_value)->as_f64(), 20.0);
 	} else if (result_value->type() == py::types::str()) {
 		EXPECT_EQ(as<py::PyString>(result_value)->value(), "20");
 	} else {

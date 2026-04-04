@@ -16,7 +16,6 @@ class PyInteger;
 class PyList;
 class PyNativeFunction;
 class PyNone;
-class PyNumber;
 class PyMethodDescriptor;
 class PyModule;
 class PyObject;

@@ -6,12 +6,13 @@
 
 namespace py {
 
-class PyInteger : public Interface<PyNumber, PyInteger>
+class PyInteger : public PyNumber
 {
 #ifndef PYLANG_USE_ARENA
 	friend class ::Heap;
 #endif
 	friend class ::py::Arena;
+	friend class PyBool;
 
 	BigIntType m_value;
 
@@ -20,7 +21,7 @@ class PyInteger : public Interface<PyNumber, PyInteger>
   protected:
 	PyInteger(PyType *);
 
-	PyInteger(TypePrototype &, BigIntType);
+	// PyInteger(TypePrototype &, BigIntType);
 
 	PyInteger(PyType *, BigIntType);
 

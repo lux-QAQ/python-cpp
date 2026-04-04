@@ -6,7 +6,6 @@
 #include "ValueError.hpp"
 #include "runtime/PyByteArray.hpp"
 #include "runtime/PyObject.hpp"
-#include "runtime/Value.hpp"
 #include "runtime/compat.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
@@ -30,20 +29,16 @@ template<> const PyInteger *as(const PyObject *obj)
 	return nullptr;
 }
 
-PyInteger::PyInteger(PyType *type) : Interface(type) {}
+PyInteger::PyInteger(PyType *type) : PyNumber(type) {}
 
-PyInteger::PyInteger(BigIntType value)
-	: Interface(types::BuiltinTypes::the().integer()), m_value(std::move(value))
-{}
+PyInteger::PyInteger(BigIntType value) : PyNumber(types::integer()), m_value(std::move(value)) {}
 
-PyInteger::PyInteger(TypePrototype &type, BigIntType value)
-	: Interface(type), m_value(std::move(value))
-{}
 
-PyInteger::PyInteger(PyType *type, BigIntType value) : PyInteger(type)
-{
-	m_value = std::move(value);
-}
+// PyInteger::PyInteger(TypePrototype &type, BigIntType value)
+// 	: Interface(type), m_value(std::move(value))
+// {}
+
+PyInteger::PyInteger(PyType *type, BigIntType value) : PyNumber(type), m_value(std::move(value)) {}
 
 PyResult<PyInteger *> PyInteger::create(int64_t value)
 {
@@ -102,13 +97,13 @@ PyResult<PyObject *> PyInteger::__new__(const PyType *type, PyTuple *args, PyDic
 			auto str_value = static_cast<PyString *>(value);
 			str = str_value->value();
 		} else {
-			Bytes bytes;
+			std::vector<std::byte> bytes;
 			if (value->type()->issubclass(types::bytes())) {
 				bytes = static_cast<const PyBytes &>(*value).value();
 			} else {
 				bytes = static_cast<const PyByteArray &>(*value).value();
 			}
-			str = bytes.to_string();
+			str = PyBytes::create(bytes).unwrap()->to_string();
 			// remove b' and trailing ' from byte string representation
 			str.erase(0, 2);
 			str.erase(str.size() - 1);
@@ -221,7 +216,6 @@ PyResult<PyObject *> PyInteger::__and__(PyObject *obj)
 	result &= static_cast<const PyInteger &>(*obj).as_big_int();
 	return PyInteger::create(std::move(result));
 }
-
 // PyResult<PyObject *> PyInteger::__or__(PyObject *obj)
 // {
 // 	if (!obj->type()->issubclass(types::integer())) {
@@ -339,7 +333,7 @@ PyResult<PyObject *> PyInteger::to_bytes(PyTuple *args, PyDict *kwargs) const
 		bytes_result.insert(bytes_result.end(), bytes.get(), bytes.get() + l);
 	}
 
-	return PyBytes::create(Bytes{ std::move(bytes_result) });
+	return PyBytes::create(std::move(bytes_result));
 }
 
 PyResult<PyObject *> PyInteger::from_bytes(PyType *type, PyTuple *args, PyDict *kwargs)
@@ -371,15 +365,15 @@ PyResult<PyObject *> PyInteger::from_bytes(PyType *type, PyTuple *args, PyDict *
 		return Err(value_error("byteorder must be either 'little' or 'big'"));
 	}
 
-	if (bytes->value().b.size() > 8) { TODO(); }
+	if (bytes->value().size() > 8) { TODO(); }
 
 	uint64_t value{ 0 };
 	if (byteorder != "big") {
-		for (size_t i = 0; i < bytes->value().b.size(); ++i) {
-			value |= static_cast<uint64_t>(bytes->value().b[i]) << i * 8;
+		for (size_t i = 0; i < bytes->value().size(); ++i) {
+			value |= static_cast<uint64_t>(bytes->value()[i]) << i * 8;
 		}
 	} else {
-		const auto &bytes_ = bytes->value().b;
+		const auto &bytes_ = bytes->value();
 		for (size_t i = 0; auto el : bytes_ | std::ranges::views::reverse) {
 			value |= static_cast<uint64_t>(el) << i * 8;
 			++i;
@@ -410,8 +404,13 @@ PyResult<PyObject *> PyInteger::__round__(PyObject *ndigits_obj) const
 	if (ndigits >= 0) { return PyInteger::create(as_big_int()); }
 
 	mpz_class power_of_10;
-	mpz_pow_ui(power_of_10.get_mpz_t(), BigIntType(10).get_mpz_t(), (-ndigits).get_ui());
-	auto result = m_value - (m_value % power_of_10);
+	mpz_class neg_ndigits = -ndigits;
+	mpz_pow_ui(power_of_10.get_mpz_t(), BigIntType(10).get_mpz_t(), neg_ndigits.get_ui());
+
+	mpz_class val_copy = m_value;
+	mpz_class rem;
+	mpz_mod(rem.get_mpz_t(), val_copy.get_mpz_t(), power_of_10.get_mpz_t());
+	auto result = val_copy - rem;
 
 	return PyInteger::create(std::move(result));
 }

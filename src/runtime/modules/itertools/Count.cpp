@@ -76,9 +76,9 @@ namespace itertools {
 
 		if (start && start != py_none()) {
 			if (start->type()->issubclass(types::integer())) {
-				start_ = static_cast<const PyInteger &>(*start).value();
+				start_ = Number{ static_cast<const PyInteger &>(*start).as_big_int() };
 			} else if (start->type()->issubclass(types::float_())) {
-				start_ = static_cast<const PyFloat &>(*start).value();
+				start_ = Number{ static_cast<const PyFloat &>(*start).as_f64() };
 			} else {
 				// TODO also handle complex
 				return Err(type_error("a number is required"));
@@ -87,9 +87,9 @@ namespace itertools {
 
 		if (step && step != py_none()) {
 			if (step->type()->issubclass(types::integer())) {
-				step_ = static_cast<const PyInteger &>(*step).value();
+				step_ = Number{ static_cast<const PyInteger &>(*step).as_big_int() };
 			} else if (step->type()->issubclass(types::float_())) {
-				step_ = static_cast<const PyFloat &>(*step).value();
+				step_ = Number{ static_cast<const PyFloat &>(*step).as_f64() };
 			} else {
 				// TODO also handle complex
 				return Err(type_error("a number is required"));
@@ -105,9 +105,22 @@ namespace itertools {
 	{
 		auto to_return = m_current;
 
-		m_current += m_step;
+		if (std::holds_alternative<BigIntType>(m_current.value)
+			&& std::holds_alternative<BigIntType>(m_step.value)) {
+			m_current.value =
+				std::get<BigIntType>(m_current.value) + std::get<BigIntType>(m_step.value);
+		} else {
+			double curr = std::holds_alternative<BigIntType>(m_current.value)
+							  ? std::get<BigIntType>(m_current.value).get_d()
+							  : std::get<double>(m_current.value);
+			double step = std::holds_alternative<BigIntType>(m_step.value)
+							  ? std::get<BigIntType>(m_step.value).get_d()
+							  : std::get<double>(m_step.value);
+			m_current.value = curr + step;
+		}
 
-		return PyObject::from(to_return);
+		return PyNumber::create(to_return).and_then(
+			[](PyNumber *p) { return Ok(static_cast<PyObject *>(p)); });
 	}
 
 	void Count::visit_graph(Visitor &visitor) { PyObject::visit_graph(visitor); }

@@ -561,12 +561,8 @@ class PyObject : public Cell
 
 // avoid explicit specialization after instantiations
 template<> PyResult<PyObject *> PyObject::from(PyObject *const &value);
-template<> PyResult<PyObject *> PyObject::from(const Number &value);
 template<> PyResult<PyObject *> PyObject::from(const int64_t &value);
-template<> PyResult<PyObject *> PyObject::from(const String &value);
-template<> PyResult<PyObject *> PyObject::from(const Bytes &value);
-template<> PyResult<PyObject *> PyObject::from(const Ellipsis &value);
-template<> PyResult<PyObject *> PyObject::from(const NameConstant &value);
+template<> PyResult<PyObject *> PyObject::from(const size_t &value);
 template<> PyResult<PyObject *> PyObject::from(const Value &value);
 
 
@@ -997,19 +993,8 @@ std::unique_ptr<TypePrototype> TypePrototype::create(std::string_view name, Args
 class PyBaseObject : public PyObject
 {
   public:
-	// PyBaseObject(const TypePrototype &type) : PyObject(type) {}
-	PyBaseObject(const TypePrototype &type);
+	PyBaseObject(const TypePrototype &type) : PyObject(type) {}
 	PyBaseObject(PyType *type) : PyObject(type) {}
-};
-
-struct ValueHash
-{
-	size_t operator()(const Value &value) const;
-};
-
-struct ValueEq
-{
-	bool operator()(const Value &lhs, const Value &rhs) const;
 };
 
 }// namespace py

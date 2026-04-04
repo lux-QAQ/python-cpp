@@ -11,12 +11,10 @@ class PyNumber : public PyBaseObject
 	friend class ::Heap;
 #endif
 	friend class ::py::Arena;
-	friend Interface<PyNumber, PyInteger>;
+	friend class PyInteger;
 	friend class PyFloat;
 
   protected:
-	Number m_value;
-
 	PyNumber(PyType *);
 
   public:
@@ -47,12 +45,10 @@ class PyNumber : public PyBaseObject
 
 	PyResult<bool> __bool__() const;
 
-	const Number &value() const { return m_value; }
-
 	static const PyNumber *as_number(const PyObject *obj);
 
   private:
-	PyNumber(Number number, const TypePrototype &type) : PyBaseObject(type), m_value(number) {}
+	PyNumber(Number number, const TypePrototype &type);
 };
 
 }// namespace py

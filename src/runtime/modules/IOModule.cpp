@@ -194,7 +194,12 @@ class IOBase : public PyBaseObject
 
 	PyResult<PyObject *> fileno() const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "fileno" }).unwrap(), nullptr));
+		auto result = const_cast<IOBase *>(this)->get_method(PyString::create("fileno").unwrap());
+		if (result.is_err()) {
+			return Err(unsupported_operation(
+				PyTuple::create(PyString::create("fileno").unwrap()).unwrap(), nullptr));
+		}
+		return result.unwrap()->call(PyTuple::create().unwrap(), PyDict::create().unwrap());
 	}
 
 	PyResult<PyObject *> flush() const
@@ -229,8 +234,8 @@ class IOBase : public PyBaseObject
 						readahead.unwrap()->type()->name()));
 				}
 				auto readahead_bytes = as<PyBytes>(readahead.unwrap());
-				if (!readahead_bytes->value().b.empty()) {
-					const auto &bytes = readahead_bytes->value().b;
+				if (!readahead_bytes->value().empty()) {
+					const auto &bytes = readahead_bytes->value();
 					const auto upper = limit == -1
 										   ? bytes.size()
 										   : std::min(static_cast<int64_t>(bytes.size()), limit);
@@ -250,13 +255,13 @@ class IOBase : public PyBaseObject
 					b.unwrap()->type()->name()));
 			}
 			auto *new_bytes = as<PyBytes>(b.unwrap());
-			if (new_bytes->value().b.size() == 0) { break; }
+			if (new_bytes->value().size() == 0) { break; }
 
-			buffer.insert(buffer.end(), new_bytes->value().b.begin(), new_bytes->value().b.end());
+			buffer.insert(buffer.end(), new_bytes->value().begin(), new_bytes->value().end());
 			if (static_cast<char>(buffer.back()) == '\n') { break; }
 		}
 
-		return PyBytes::create(Bytes{ std::move(buffer) });
+		return PyBytes::create(std::move(buffer));
 	}
 
 	PyResult<PyObject *> readlines(int64_t hint) const
@@ -301,8 +306,12 @@ class IOBase : public PyBaseObject
 
 	PyResult<PyObject *> seek() const
 	{
-		// FIXME
-		return Err(unsupported_operation(PyTuple::create(String{ "seek" }).unwrap(), nullptr));
+		auto result = const_cast<IOBase *>(this)->get_method(PyString::create("seek").unwrap());
+		if (result.is_err()) {
+			return Err(unsupported_operation(
+				PyTuple::create(PyString::create("seek").unwrap()).unwrap(), nullptr));
+		}
+		return result.unwrap()->call(PyTuple::create().unwrap(), PyDict::create().unwrap());
 	}
 
 	PyResult<PyObject *> seekable() const { return Ok(py_false()); }
@@ -317,7 +326,12 @@ class IOBase : public PyBaseObject
 
 	PyResult<PyObject *> truncate() const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "truncate" }).unwrap(), nullptr));
+		auto result = const_cast<IOBase *>(this)->get_method(PyString::create("truncate").unwrap());
+		if (result.is_err()) {
+			return Err(unsupported_operation(
+				PyTuple::create(PyString::create("truncate").unwrap()).unwrap(), nullptr));
+		}
+		return result.unwrap()->call(PyTuple::create().unwrap(), PyDict::create().unwrap());
 	}
 
 	PyResult<PyObject *> writable() const { return Ok(py_false()); }
@@ -468,7 +482,9 @@ class IOBase : public PyBaseObject
 			.and_then([](auto *result) -> PyResult<PyObject *> {
 				if (result != py_true()) {
 					return Err(unsupported_operation(
-						PyTuple::create(String{ "File or stream is not seekable." }).unwrap(),
+						PyTuple::create(
+							PyString::create("File or stream is not seekable.").unwrap())
+							.unwrap(),
 						nullptr));
 				}
 				return Ok(py_true());
@@ -482,7 +498,9 @@ class IOBase : public PyBaseObject
 			.and_then([](auto *result) -> PyResult<PyObject *> {
 				if (result != py_true()) {
 					return Err(unsupported_operation(
-						PyTuple::create(String{ "File or stream is not readable." }).unwrap(),
+						PyTuple::create(
+							PyString::create("File or stream is not readable.").unwrap())
+							.unwrap(),
 						nullptr));
 				}
 				return Ok(py_true());
@@ -496,7 +514,9 @@ class IOBase : public PyBaseObject
 			.and_then([](auto *result) -> PyResult<PyObject *> {
 				if (result != py_true()) {
 					return Err(unsupported_operation(
-						PyTuple::create(String{ "File or stream is not writable." }).unwrap(),
+						PyTuple::create(
+							PyString::create("File or stream is not writable.").unwrap())
+							.unwrap(),
 						nullptr));
 				}
 				return Ok(py_true());
@@ -559,9 +579,9 @@ class RawIOBase : public IOBase
 				return Ok(as<PyInteger>(res)->as_i64());
 			})
 			.and_then([bytes](const int64_t &n) {
-				const auto &b = bytes->value().b;
+				const auto &b = bytes->value();
 				std::vector<std::byte> result{ b.begin(), b.begin() + n };
-				return PyBytes::create(Bytes{ std::move(result) });
+				return PyBytes::create(std::move(result));
 			});
 	}
 
@@ -652,17 +672,35 @@ class BufferedIOBase : public IOBase
 
 	PyResult<PyObject *> detach() const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "detach" }).unwrap(), nullptr));
+		auto result =
+			const_cast<BufferedIOBase *>(this)->get_method(PyString::create("detach").unwrap());
+		if (result.is_err()) {
+			return Err(unsupported_operation(
+				PyTuple::create(PyString::create("detach").unwrap()).unwrap(), nullptr));
+		}
+		return result.unwrap()->call(PyTuple::create().unwrap(), PyDict::create().unwrap());
 	}
 
 	PyResult<PyObject *> read(PyTuple *, PyDict *) const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "read" }).unwrap(), nullptr));
+		auto result =
+			const_cast<BufferedIOBase *>(this)->get_method(PyString::create("read").unwrap());
+		if (result.is_err()) {
+			return Err(unsupported_operation(
+				PyTuple::create(PyString::create("read").unwrap()).unwrap(), nullptr));
+		}
+		return result.unwrap()->call(PyTuple::create().unwrap(), PyDict::create().unwrap());
 	}
 
 	PyResult<PyObject *> read1(PyTuple *, PyDict *) const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "read1" }).unwrap(), nullptr));
+		auto result =
+			const_cast<BufferedIOBase *>(this)->get_method(PyString::create("read1").unwrap());
+		if (result.is_err()) {
+			return Err(unsupported_operation(
+				PyTuple::create(PyString::create("read1").unwrap()).unwrap(), nullptr));
+		}
+		return result.unwrap()->call(PyTuple::create().unwrap(), PyDict::create().unwrap());
 	}
 
 	PyResult<PyObject *> readinto_generic(PyBuffer &buffer, bool readinto1) const
@@ -676,7 +714,7 @@ class BufferedIOBase : public IOBase
 		if (data.is_err()) return data;
 
 		if (!as<PyBytes>(data.unwrap())) { return Err(type_error("read() should return bytes")); }
-		auto data_bytes = as<PyBytes>(data.unwrap())->value().b;
+		auto data_bytes = as<PyBytes>(data.unwrap())->value();
 
 		const auto len = data_bytes.size();
 
@@ -707,7 +745,13 @@ class BufferedIOBase : public IOBase
 
 	PyResult<PyObject *> write(PyTuple *, PyDict *) const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "write" }).unwrap(), nullptr));
+		auto result =
+			const_cast<BufferedIOBase *>(this)->get_method(PyString::create("write").unwrap());
+		if (result.is_err()) {
+			return Err(unsupported_operation(
+				PyTuple::create(PyString::create("write").unwrap()).unwrap(), nullptr));
+		}
+		return result.unwrap()->call(PyTuple::create().unwrap(), PyDict::create().unwrap());
 	}
 
 	// PyType *static_type() const override; { return s_io_buffered_io_base; }
@@ -1098,10 +1142,10 @@ class BufferedReader
 			if (current_size == 0) {
 				return tmp;
 			} else if (tmp.unwrap() != py_none()) {
-				const auto &bytes = as<PyBytes>(tmp.unwrap())->value().b;
+				const auto &bytes = as<PyBytes>(tmp.unwrap())->value();
 				data.insert(data.end(), bytes.begin(), bytes.end());
 			}
-			return PyBytes::create(Bytes{ std::move(data) });
+			return PyBytes::create(std::move(data));
 		}
 
 		// no readall implementation provided so call read until the end
@@ -1115,17 +1159,16 @@ class BufferedReader
 				return Err(type_error("read() should return bytes or None, not {}",
 					new_data.unwrap()->type()->name()));
 			}
-			if (new_data.unwrap() == py_none()
-				|| as<PyBytes>(new_data.unwrap())->value().b.empty()) {
+			if (new_data.unwrap() == py_none() || as<PyBytes>(new_data.unwrap())->value().empty()) {
 				if (current_size == 0) {
 					return new_data;
 				} else if (new_data.unwrap() != py_none()) {
-					const auto &bytes = as<PyBytes>(new_data.unwrap())->value().b;
+					const auto &bytes = as<PyBytes>(new_data.unwrap())->value();
 					data.insert(data.end(), bytes.begin(), bytes.end());
 				}
-				return PyBytes::create(Bytes{ std::move(data) });
+				return PyBytes::create(std::move(data));
 			} else {
-				const auto &bytes = as<PyBytes>(new_data.unwrap())->value().b;
+				const auto &bytes = as<PyBytes>(new_data.unwrap())->value();
 				current_size += bytes.size();
 				data.insert(data.end(), bytes.begin(), bytes.end());
 			}
@@ -1140,7 +1183,7 @@ class BufferedReader
 			std::vector<std::byte> data;
 			data.resize(current_size);
 			buffer->sgetn(::bit_cast<char *>(data.begin().base()), current_size);
-			return PyBytes::create(Bytes{ std::move(data) });
+			return PyBytes::create(std::move(data));
 		}
 		return Ok(py_none());
 	}
@@ -1770,7 +1813,7 @@ class BytesIO : public BufferedIOBase
 			return PyObject::from(args->elements()[0]).and_then([this](PyObject *initial_bytes) {
 				if (as<PyBytes>(initial_bytes)) {
 					m_buf = initial_bytes;
-					m_string_size = as<PyBytes>(initial_bytes)->value().b.size();
+					m_string_size = as<PyBytes>(initial_bytes)->value().size();
 					return Ok(0);
 				} else if (initial_bytes == py_none()) {
 					return Ok(0);
@@ -1780,7 +1823,7 @@ class BytesIO : public BufferedIOBase
 			});
 		}
 
-		return PyBytes::create(Bytes{}).and_then([this](auto *initial_bytes) -> PyResult<int32_t> {
+		return PyBytes::create({}).and_then([this](auto *initial_bytes) -> PyResult<int32_t> {
 			m_buf = initial_bytes;
 			return Ok(0);
 		});
@@ -1804,17 +1847,16 @@ class BytesIO : public BufferedIOBase
 		n = n < 0 ? size : n;
 		n = std::clamp(n, int64_t{ 0 }, size);
 
-		if (n > 1 && m_pos == 0
-			&& n == static_cast<int64_t>(as<PyBytes>(m_buf)->value().b.size())) {
+		if (n > 1 && m_pos == 0 && n == static_cast<int64_t>(as<PyBytes>(m_buf)->value().size())) {
 			m_pos += n;
 			return Ok(m_buf);
 		}
 
 		std::vector<std::byte> output;
-		const auto &bytes = as<PyBytes>(m_buf)->value().b;
+		const auto &bytes = as<PyBytes>(m_buf)->value();
 		output.insert(output.end(), bytes.begin() + m_pos, bytes.begin() + m_pos + n);
 		m_pos += n;
-		return PyBytes::create(Bytes{ std::move(output) });
+		return PyBytes::create(std::move(output));
 	}
 
 	PyResult<PyObject *> read1(int64_t n) { return read(n); }
@@ -2066,7 +2108,7 @@ class FileIO : public RawIOBase
 		// make sure that we are not failing anymore
 		if (m_filestream.fail()) { TODO(); }
 
-		return PyBytes::create(Bytes{ std::move(result) });
+		return PyBytes::create(std::move(result));
 	}
 
 	PyResult<PyObject *> close()
@@ -2277,22 +2319,27 @@ class TextIOBase : public IOBase
 
 	PyResult<PyObject *> detach() const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "detach" }).unwrap(), nullptr));
+		return Err(unsupported_operation(
+			PyTuple::create(PyString::create("detach").unwrap()).unwrap(), nullptr));
 	}
+
 
 	PyResult<PyObject *> read(PyTuple *, PyDict *) const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "read" }).unwrap(), nullptr));
+		return Err(unsupported_operation(
+			PyTuple::create(PyString::create("read").unwrap()).unwrap(), nullptr));
 	}
 
 	PyResult<PyObject *> readline(PyTuple *, PyDict *) const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "readline" }).unwrap(), nullptr));
+		return Err(unsupported_operation(
+			PyTuple::create(PyString::create("readline").unwrap()).unwrap(), nullptr));
 	}
 
 	PyResult<PyObject *> write(PyTuple *, PyDict *) const
 	{
-		return Err(unsupported_operation(PyTuple::create(String{ "write" }).unwrap(), nullptr));
+		return Err(unsupported_operation(
+			PyTuple::create(PyString::create("write").unwrap()).unwrap(), nullptr));
 	}
 
 	// PyType *static_type() const override; { return s_io_textiobase; }
@@ -2748,7 +2795,7 @@ class TextIOWrapper : public TextIOBase
 	bool m_line_buffering;
 	bool m_write_through;
 
-	std::optional<Bytes> m_buffer_bytes;
+	std::optional<std::vector<std::byte>> m_buffer_bytes;
 	size_t m_position;
 
 	TextIOWrapper(PyType *type) : TextIOBase(type) {}
@@ -2897,8 +2944,8 @@ class TextIOWrapper : public TextIOBase
 			return 0;
 		};
 
-		std::string_view remaining{ bit_cast<const char *>(m_buffer_bytes->b.data()) + m_position,
-			m_buffer_bytes->b.size() - m_position };
+		std::string_view remaining{ bit_cast<const char *>(m_buffer_bytes->data()) + m_position,
+			m_buffer_bytes->size() - m_position };
 
 		// TODO: use utf8 codepoints
 		std::string line;
@@ -2922,7 +2969,7 @@ class TextIOWrapper : public TextIOBase
 		auto result_ = PyList::create();
 		if (result_.is_err()) { return result_; }
 		auto *result = result_.unwrap();
-		while (m_position < m_buffer_bytes->b.size()) {
+		while (m_position < m_buffer_bytes->size()) {
 			auto line = readline(nullptr, nullptr);
 			if (line.is_err()) { return line; }
 			result->append(line.unwrap());
@@ -2984,7 +3031,7 @@ class TextIOWrapper : public TextIOBase
 			auto *buffer = buffer_.unwrap();
 
 			ASSERT(buffer->type()->issubclass(types::bytes()));
-			m_buffer_bytes = Bytes{ static_cast<const PyBytes &>(*buffer).value() };
+			m_buffer_bytes = static_cast<const PyBytes &>(*buffer).value();
 		}
 		return Ok(std::monostate{});
 	}

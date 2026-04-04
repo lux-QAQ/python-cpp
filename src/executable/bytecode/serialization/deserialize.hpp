@@ -111,7 +111,7 @@ inline auto deserialize(std::span<const uint8_t> &buffer)
 			byte_vec_cast.reserve(bytes_vec.size());
 			for (auto b : bytes_vec) byte_vec_cast.push_back(static_cast<std::byte>(b));
 			return py::Value{ py::RtValue::from_ptr(
-				py::PyBytes::create(py::Bytes{ std::move(byte_vec_cast) }).unwrap()) };
+				py::PyBytes::create(std::move(byte_vec_cast)).unwrap()) };
 		} break;
 		case ValueType::ELLIPSIS: {
 			return py::RtValue::from_ptr(py_ellipsis());

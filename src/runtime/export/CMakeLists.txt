@@ -73,6 +73,10 @@ if(DEFINED spdlog_SOURCE_DIR)
   list(APPEND BC_INC "-isystem" "${spdlog_SOURCE_DIR}/include")
 endif()
 
+if(DEFINED spdlog_SOURCE_DIR)
+  list(APPEND BC_INC "-isystem" "${spdlog_BINARY_DIR}")
+endif()
+
 foreach(_var "ordered-map_SOURCE_DIR" "tsl-ordered-map_SOURCE_DIR" "ordered_map_SOURCE_DIR")
   if(DEFINED ${_var})
     list(APPEND BC_INC "-isystem" "${${_var}}/include")

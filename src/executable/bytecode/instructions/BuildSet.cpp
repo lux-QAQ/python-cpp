@@ -6,7 +6,7 @@ using namespace py;
 
 PyResult<Value> BuildSet::execute(VirtualMachine &vm, Interpreter &) const
 {
-	PySet::SetType elements;
+	SetType elements;
 	elements.reserve(m_size);
 	if (m_size > 0) {
 		auto *start = vm.sp() - m_size;

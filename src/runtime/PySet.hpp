@@ -1,9 +1,12 @@
 #pragma once
 
 #include "PyObject.hpp"
+#include <tsl/ordered_set.h>
 #include <unordered_set>
 
 namespace py {
+
+using SetType = tsl::ordered_set<Value, RtValueHash, RtValueEq>;
 
 class PySet : public PyBaseObject
 {
@@ -12,10 +15,6 @@ class PySet : public PyBaseObject
 #endif
 	friend class ::py::Arena;
 
-  public:
-	using SetType = std::unordered_set<Value, ValueHash>;
-
-  private:
 	SetType m_elements;
 
 	PySet(PyType *);

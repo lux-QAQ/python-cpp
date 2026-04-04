@@ -502,8 +502,7 @@ ast::Value *PylangCodegen::visit(const ast::Constant *node)
 		result = m_emitter.create_string(py::as<py::PyString>(val)->value());
 	} else if (val->type() == py::types::bytes()) {
 		auto *b = py::as<py::PyBytes>(val);
-		std::string_view data(
-			reinterpret_cast<const char *>(b->value().b.data()), b->value().b.size());
+		std::string_view data(reinterpret_cast<const char *>(b->value().data()), b->value().size());
 		result = m_emitter.create_bytes(data);
 	} else if (val->type() == py::types::bool_()) {
 		result = py::as<py::PyBool>(val)->value() ? m_emitter.get_true() : m_emitter.get_false();

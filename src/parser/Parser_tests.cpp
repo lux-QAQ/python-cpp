@@ -3441,13 +3441,14 @@ TEST(Parser, Bytes)
 	constexpr std::string_view program = "b\"hello\"\n";
 
 	auto expected_ast = create_test_module();
-	expected_ast->emplace(std::make_shared<Constant>(py::PyBytes::create(Bytes{ { std::byte{ 'h' },
-																			 std::byte{ 'e' },
-																			 std::byte{ 'l' },
-																			 std::byte{ 'l' },
-																			 std::byte{ 'o' } } })
-														 .unwrap(),
-		SourceLocation{}));
+	expected_ast->emplace(
+		std::make_shared<Constant>(py::PyBytes::create(std::vector<std::byte>{ std::byte{ 'h' },
+														   std::byte{ 'e' },
+														   std::byte{ 'l' },
+														   std::byte{ 'l' },
+														   std::byte{ 'o' } })
+									   .unwrap(),
+			SourceLocation{}));
 	assert_generates_ast(program, expected_ast);
 }
 

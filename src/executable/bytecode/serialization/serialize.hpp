@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/AST.hpp"
 #include "runtime/PyBool.hpp"
 #include "runtime/PyEllipsis.hpp"
 #include "runtime/PyTuple.hpp"
@@ -78,10 +79,16 @@ inline void serialize(const VectorType &value, std::vector<uint8_t> &result)
 	for (const auto &el : value) { serialize(el, result); }
 }
 
-template<> inline void serialize<Tuple>(const Tuple &value, std::vector<uint8_t> &result)
+// template<> inline void serialize<Tuple>(const Tuple &value, std::vector<uint8_t> &result)
+// {
+// 	serialize(value.elements.size(), result);
+// 	for (const auto &el : value.elements) { serialize(el, result); }
+// }
+
+template<> inline void serialize<ast::Tuple>(const ast::Tuple &value, std::vector<uint8_t> &result)
 {
-	serialize(value.elements.size(), result);
-	for (const auto &el : value.elements) { serialize(el, result); }
+	serialize(value.elements().size(), result);
+	for (const auto &el : value.elements()) { serialize(el, result); }
 }
 
 template<> inline void serialize<PyTuple *>(PyTuple *const &value, std::vector<uint8_t> &result)

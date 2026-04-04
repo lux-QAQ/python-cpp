@@ -72,13 +72,10 @@ RtValue RtValue::flatten(PyObject *ptr)
 	// [优化] 使用明确的纯指针比对替换巨慢的 py::as<T> RTTI 检查
 	if (type == types::integer()) {
 		auto *pyint = static_cast<PyInteger *>(ptr);
-		const auto &num = pyint->value();
-		if (std::holds_alternative<mpz_class>(num.value)) {
-			const auto &gmp_val = std::get<mpz_class>(num.value);
-			if (gmp_val.fits_slong_p()) {
-				long raw_val = gmp_val.get_si();
-				if (fits_tagged_int(raw_val)) { return from_int(raw_val); }
-			}
+		const auto &gmp_val = pyint->as_big_int();
+		if (gmp_val.fits_slong_p()) {
+			long raw_val = gmp_val.get_si();
+			if (fits_tagged_int(raw_val)) { return from_int(raw_val); }
 		}
 	}
 

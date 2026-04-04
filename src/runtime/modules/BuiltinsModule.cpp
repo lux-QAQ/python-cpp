@@ -546,9 +546,9 @@ PyResult<PyObject *> hex(const PyTuple *args, const PyDict *)
 	if (obj_.is_err()) return obj_;
 	auto *obj = obj_.unwrap();
 	if (auto pynumber = PyNumber::as_number(obj)) {
-		if (std::holds_alternative<BigIntType>(pynumber->value().value)) {
+		if (auto pyinteger = as<PyInteger>(pynumber)) {
 			std::ostringstream os;
-			os << std::hex << std::ios::showbase << std::get<BigIntType>(pynumber->value().value);
+			os << std::hex << std::ios::showbase << pyinteger->as_big_int();
 			return PyString::create(os.str());
 		} else {
 			return Err(type_error(
@@ -591,10 +591,10 @@ PyResult<PyObject *> chr(const PyTuple *args, const PyDict *)
 	auto *obj = obj_.unwrap();
 
 	if (auto cp = PyNumber::as_number(obj)) {
-		if (std::holds_alternative<double>(cp->value().value)) {
+		if (auto flt = as<PyFloat>(obj)) {
 			return Err(type_error("'float' object cannot be interpreted as an integer"));
 		}
-		return PyString::chr(std::get<BigIntType>(cp->value().value));
+		return PyString::chr(as<PyInteger>(cp)->as_big_int());
 	} else {
 		return Err(
 			type_error("'{}' object cannot be interpreted as an integer", obj->type()->name()));
@@ -1076,7 +1076,7 @@ PyResult<PyObject *> compile(const PyTuple *args, const PyDict *)
 
 	auto source_str = [source]() {
 		if (as<PyString>(source)) { return as<PyString>(source)->value(); }
-		const auto &bytes = as<PyBytes>(source)->value().b;
+		const auto &bytes = as<PyBytes>(source)->value();
 		std::string source_str;
 		source_str.reserve(bytes.size());
 		std::transform(bytes.begin(),

@@ -1471,7 +1471,7 @@ ast::Value *MLIRGenerator::visit(const ast::Constant *node)
 			load_const(m_context.builder(), s, m_context.filename(), node->source_location()));
 	} else if (val->type() == py::types::bytes()) {
 		// 修改：正确访问 PyBytes 内部的 Bytes 结构，并抽取内部的 vector 容器 .b
-		auto b = py::as<py::PyBytes>(val)->value().b;
+		auto b = py::as<py::PyBytes>(val)->value();
 		// 修改：直接使用 std::vector<std::byte> 进行传递给 ConstantOp
 		mlir::py::ConstantOp op = m_context.builder().create<mlir::py::ConstantOp>(
 			loc(m_context.builder(), m_context.filename(), node->source_location()),

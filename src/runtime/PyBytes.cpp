@@ -36,9 +36,14 @@ template<> const PyBytes *as(const PyObject *obj)
 	return nullptr;
 }
 
+
 PyBytes::PyBytes(PyType *type) : PyBaseObject(type) {}
 
-PyBytes::PyBytes(std::vector<std::byte> value)
+PyBytes::PyBytes(const std::vector<std::byte> &value)
+	: PyBaseObject(types::BuiltinTypes::the().bytes()), m_value(value)
+{}
+
+PyBytes::PyBytes(std::vector<std::byte> &&value)
 	: PyBaseObject(types::BuiltinTypes::the().bytes()), m_value(std::move(value))
 {}
 
@@ -109,7 +114,14 @@ PyResult<PyObject *> PyBytes::__new__(const PyType *type, PyTuple *, PyDict *)
 	return PyBytes::create();
 }
 
-PyResult<PyBytes *> PyBytes::create(std::vector<std::byte> value)
+PyResult<PyBytes *> PyBytes::create(const std::vector<std::byte> &value)
+{
+	auto *obj = PYLANG_ALLOC(PyBytes, value);
+	if (!obj) { return Err(memory_error(sizeof(PyBytes))); }
+	return Ok(obj);
+}
+
+PyResult<PyBytes *> PyBytes::create(std::vector<std::byte> &&value)
 {
 
 	auto *obj = PYLANG_ALLOC(PyBytes, std::move(value));
@@ -123,6 +135,103 @@ PyResult<PyBytes *> PyBytes::create()
 	auto *obj = PYLANG_ALLOC(PyBytes, );
 	if (!obj) { return Err(memory_error(sizeof(PyBytes))); }
 	return Ok(obj);
+}
+
+namespace {
+	constexpr unsigned char to_digit_value(char value)
+	{
+		if (value >= '0' && value <= '9') { return value - '0'; }
+		if (value >= 'a' && value <= 'z') { return static_cast<unsigned char>((value - 'a') + 10); }
+		if (value >= 'A' && value <= 'Z') { return static_cast<unsigned char>((value - 'A') + 10); }
+		return 37;
+	}
+}// namespace
+
+std::vector<std::byte> PyBytes::from_unescaped_string(const std::string &str)
+{
+	std::vector<std::byte> bytes;
+	auto it = str.begin();
+	const auto end = str.end();
+	while (it != end) {
+		if (auto c = *it++; c != '\\') {
+			bytes.push_back(std::byte{ static_cast<unsigned char>(c) });
+			continue;
+		}
+
+		if (it == end) {
+			// return Err(value_error("Trailing \\ in string"));
+			TODO();
+		}
+
+		switch (*it++) {
+		case '\n':
+			break;
+		case '\\': {
+			bytes.emplace_back(std::byte{ '\\' });
+		} break;
+		case '\'': {
+			bytes.emplace_back(std::byte{ '\'' });
+		} break;
+		case '\"': {
+			bytes.emplace_back(std::byte{ '\"' });
+		} break;
+		case 'b': {
+			bytes.emplace_back(std::byte{ '\b' });
+		} break;
+		case 'f': {
+			bytes.emplace_back(std::byte{ '\014' });
+		} break;
+		case 't': {
+			bytes.emplace_back(std::byte{ '\t' });
+		} break;
+		case 'n': {
+			bytes.emplace_back(std::byte{ '\n' });
+		} break;
+		case 'r': {
+			bytes.emplace_back(std::byte{ '\r' });
+		} break;
+		case 'v': {
+			bytes.emplace_back(std::byte{ '\013' });
+		} break;
+		case 'a': {
+			bytes.emplace_back(std::byte{ '\007' });
+		} break;
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7': {
+			auto c = *(it - 1) - '0';
+			if (it != end && '0' <= *it && *it <= '7') {
+				c = (c << 3) + *it++ - '0';
+				if (it != end && '0' <= *it && *it <= '7') { c = (c << 3) + *it++ - '0'; }
+			}
+			ASSERT(c < static_cast<int>(std::numeric_limits<unsigned char>::max()));
+			bytes.push_back(std::byte{ static_cast<unsigned char>(c) });
+		} break;
+		case 'x': {
+			if (it + 1 < end) {
+				const auto digit1 = to_digit_value(*it);
+				const auto digit2 = to_digit_value(*(it + 1));
+				if (digit1 < 16 && digit2 < 16) {
+					it += 2;
+					const auto c = static_cast<unsigned char>((digit1 << 4) + digit2);
+					bytes.push_back(std::byte{ c });
+				}
+			} else {
+				TODO();
+			}
+		} break;
+		default: {
+			bytes.push_back(std::byte{ '\\' });
+			bytes.push_back(std::byte{ static_cast<unsigned char>(*(it - 1)) });
+		} break;
+		}
+	}
+	return bytes;
 }
 
 std::string PyBytes::to_string() const

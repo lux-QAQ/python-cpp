@@ -86,7 +86,7 @@ py::PyObject *rt_build_dict(int32_t count, py::PyObject **keys, py::PyObject **v
 PYLANG_EXPORT_CREATE("build_set", "obj", "i32,ptr")
 py::PyObject *rt_build_set(int32_t count, py::PyObject **items)
 {
-	py::PySet::SetType elements;
+	py::SetType elements;
 	elements.reserve(static_cast<size_t>(count));
 
 	for (int32_t i = 0; i < count; ++i) { elements.insert(py::ensure_box(items[i])); }
@@ -110,7 +110,7 @@ py::PyObject *rt_bytes_from_buffer(const char *data, int64_t length)
 {
 	std::vector<std::byte> bytes(static_cast<size_t>(length));
 	std::memcpy(bytes.data(), data, static_cast<size_t>(length));
-	return rt_unwrap(py::PyBytes::create(py::Bytes{ std::move(bytes) }));
+	return rt_unwrap(py::PyBytes::create(std::move(bytes)));
 }
 
 PYLANG_EXPORT_CREATE("complex_from_doubles", "obj", "f64,f64")

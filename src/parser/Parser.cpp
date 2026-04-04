@@ -1587,7 +1587,7 @@ std::shared_ptr<Constant> parse_bytes(Token string)
 		}
 	}();
 	return std::make_shared<Constant>(
-		py::PyBytes::create(py::Bytes::from_unescaped_string(value)).unwrap(),
+		py::PyBytes::create(py::PyBytes::from_unescaped_string(value)).unwrap(),
 		SourceLocation{ string.start(), string.end() });
 }
 
@@ -1764,7 +1764,7 @@ struct FStringMiddlePattern : PatternV2<FStringMiddlePattern>
 				}
 			}
 			return std::make_shared<Constant>(
-				py::PyString::create(py::String::from_unescaped_string(std::move(str)).s).unwrap(),
+				py::PyString::create(py::PyString::from_unescaped_string(std::move(str))).unwrap(),
 				SourceLocation{ middle.token.start(), middle.token.end() });
 		}
 
@@ -1890,7 +1890,7 @@ struct StringPattern : PatternV2<StringPattern>
 					SourceLocation{ str.token.start(), str.token.end() });
 			}
 			return std::make_shared<Constant>(
-				py::PyString::create(py::String::from_unescaped_string(std::string{ value }).s)
+				py::PyString::create(py::PyString::from_unescaped_string(std::string{ value }))
 					.unwrap(),
 				SourceLocation{ str.token.start(), str.token.end() });
 		}
@@ -1946,9 +1946,9 @@ struct StringsPattern : PatternV2<StringsPattern>
 						py::PyBytes *b1 = static_cast<py::PyBytes *>(bytes_obj);
 						py::PyBytes *b2 = static_cast<py::PyBytes *>(c->value());
 
-						std::vector<std::byte> new_b = b1->value().b;
-						new_b.insert(new_b.end(), b2->value().b.begin(), b2->value().b.end());
-						bytes_obj = py::PyBytes::create(py::Bytes{ std::move(new_b) }).unwrap();
+						std::vector<std::byte> new_b = b1->value();
+						new_b.insert(new_b.end(), b2->value().begin(), b2->value().end());
+						bytes_obj = py::PyBytes::create(std::move(new_b)).unwrap();
 					}
 					return std::make_shared<Constant>(bytes_obj, sl);
 				} else {

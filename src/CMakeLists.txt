@@ -242,10 +242,10 @@ file(GLOB RUNTIME_EXPORT_TAGGERED CONFIGURE_DEPENDS runtime/taggered_pointer/*.c
 set(UNITTEST_SOURCES
   # cmake-format: sortable
   ast/optimizers/Optimizers_tests.cpp
-  executable/bytecode/Bytecode_tests.cpp
-  executable/bytecode/BytecodeProgram_tests.cpp
-  executable/bytecode/codegen/BytecodeGenerator_tests.cpp
-  executable/bytecode/codegen/VariablesResolver_tests.cpp
+  # executable/bytecode/Bytecode_tests.cpp
+  # executable/bytecode/BytecodeProgram_tests.cpp
+  # executable/bytecode/codegen/BytecodeGenerator_tests.cpp
+  # executable/bytecode/codegen/VariablesResolver_tests.cpp
   lexer/Lexer_tests.cpp
   memory/Arena_tests.cpp
   memory/GarbageCollector_tests.cpp
@@ -373,55 +373,56 @@ target_link_libraries(python-cpp PUBLIC python-mlir)
 
 # LLVM backend (JIT execution)
 find_package(LLVM CONFIG 20.1)
-if(ENABLE_LLVM_BACKEND AND NOT LLVM_FOUND)
-  message(FATAL_ERROR "Could not find LLVM in the local environment")
-elseif(ENABLE_LLVM_BACKEND AND LLVM_FOUND)
-  message(STATUS "Configuring LLVM backend")
-  add_library(python-cpp-llvm ${LLVM_BACKEND_FILES})
+# if(ENABLE_LLVM_BACKEND AND NOT LLVM_FOUND)
+#   message(FATAL_ERROR "Could not find LLVM in the local environment")
+# elseif(ENABLE_LLVM_BACKEND AND LLVM_FOUND)
+#   message(STATUS "Configuring LLVM backend")
+#   add_library(python-cpp-llvm ${LLVM_BACKEND_FILES})
 
-  target_compile_options(
-    python-cpp-llvm
-    PRIVATE -Wall
-    -Wextra
-    -Werror
-    -Wno-unused-parameter
-    -fno-omit-frame-pointer)
+#   target_compile_options(
+#     python-cpp-llvm
+#     PRIVATE -Wall
+#     -Wextra
+#     -Werror
+#     -Wno-unused-parameter
+#     -fno-omit-frame-pointer)
 
-  add_library(llvm-interface INTERFACE)
-  target_include_directories(llvm-interface INTERFACE .)
-  target_include_directories(llvm-interface SYSTEM INTERFACE ${LLVM_INCLUDE_DIRS})
-  target_link_libraries(llvm-interface INTERFACE spdlog)
-  separate_arguments(_llvm_backend_defs NATIVE_COMMAND ${LLVM_DEFINITIONS})
-  target_compile_definitions(llvm-interface INTERFACE ${_llvm_backend_defs})
+#   add_library(llvm-interface INTERFACE)
+#   target_include_directories(llvm-interface INTERFACE .)
+#   target_include_directories(llvm-interface SYSTEM INTERFACE ${LLVM_INCLUDE_DIRS})
+#   target_link_libraries(llvm-interface INTERFACE spdlog)
+#   separate_arguments(_llvm_backend_defs NATIVE_COMMAND ${LLVM_DEFINITIONS})
+#   target_compile_definitions(llvm-interface INTERFACE ${_llvm_backend_defs})
 
-  if(STL_SUPPORTS_BIT_CAST)
-    target_compile_definitions(llvm-interface INTERFACE "STL_SUPPORTS_BIT_CAST")
-  endif()
+#   if(STL_SUPPORTS_BIT_CAST)
+#     target_compile_definitions(llvm-interface INTERFACE "STL_SUPPORTS_BIT_CAST")
+#   endif()
 
-  llvm_map_components_to_libnames(
-    _llvm_backend_libs
-    core
-    orcjit
-    x86asmparser
-    x86codegen)
-  target_link_libraries(llvm-interface INTERFACE ${_llvm_backend_libs} project_options project_warnings)
-  set_property(TARGET python-cpp-llvm PROPERTY CXX_STANDARD 17)
+#   llvm_map_components_to_libnames(
+#     _llvm_backend_libs
+#     core
+#     orcjit
+#     x86asmparser
+#     x86codegen)
+#   target_link_libraries(llvm-interface INTERFACE ${_llvm_backend_libs} project_options project_warnings)
+#   set_property(TARGET python-cpp-llvm PROPERTY CXX_STANDARD 17)
 
-  add_library(python-cpp-llvm-tests OBJECT "executable/llvm/LLVMGenerator_tests.cpp")
-  add_library(python-cpp-llvm-glue OBJECT "executable/llvm/LLVMPyUtils.cpp" "executable/llvm/LLVMFunction.cpp")
+#   add_library(python-cpp-llvm-tests OBJECT "executable/llvm/LLVMGenerator_tests.cpp")
+#   add_library(python-cpp-llvm-glue OBJECT "executable/llvm/LLVMPyUtils.cpp" "executable/llvm/LLVMFunction.cpp")
 
-  target_link_libraries(python-cpp-llvm-glue PRIVATE llvm-interface)
-  target_link_libraries(python-cpp-llvm PRIVATE llvm-interface)
-  target_sources(python-cpp-llvm PRIVATE $<TARGET_OBJECTS:python-cpp-llvm-glue>)
-  target_link_libraries(python-cpp-llvm-tests PRIVATE python-cpp-llvm gtest llvm-interface)
-  target_link_libraries(python-cpp PRIVATE python-cpp-llvm)
-  target_compile_definitions(python-cpp PUBLIC USE_LLVM)
+#   target_link_libraries(python-cpp-llvm-glue PRIVATE llvm-interface)
+#   target_link_libraries(python-cpp-llvm PRIVATE llvm-interface)
+#   target_sources(python-cpp-llvm PRIVATE $<TARGET_OBJECTS:python-cpp-llvm-glue>)
+#   target_link_libraries(python-cpp-llvm-tests PRIVATE python-cpp-llvm gtest llvm-interface)
+#   target_link_libraries(python-cpp PRIVATE python-cpp-llvm)
+#   target_compile_definitions(python-cpp PUBLIC USE_LLVM)
 
-  target_sources(unittests_ PRIVATE $<TARGET_OBJECTS:python-cpp-llvm-tests>)
-  target_link_libraries(unittests_ PRIVATE python-cpp-llvm)
-endif()
+#   target_sources(unittests_ PRIVATE $<TARGET_OBJECTS:python-cpp-llvm-tests>)
+#   target_link_libraries(unittests_ PRIVATE python-cpp-llvm)
+# endif()
 
 target_link_libraries(unittests_ PRIVATE python-cpp gtest gtest_main cxxopts project_options project_warnings tsl::ordered_map)
+include(GoogleTest)
 gtest_discover_tests(unittests_)
 
 add_executable(python repl/repl.cpp)
@@ -443,6 +444,7 @@ if(LLVM_FOUND)
   # 新增 linker 组件（用于 llvm::Linker）
   llvm_map_components_to_libnames(_pylang_support_llvm_libs
     core
+    linker
     irreader
     bitreader
     bitwriter

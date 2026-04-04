@@ -70,7 +70,7 @@ CPMAddPackage(
     "enable_threads ON" # 允许无 GIL 的多线程分配
     "enable_parallel_mark ON" # 强制开启并行标记（如果系统支持）
     "enable_handle_fork ON" # 确保多线程环境下的进程安全
-    "enable_cplusplus ON" # 启用兼容性
+    "enable_cplusplus OFF" # 启用兼容性
     "build_tests OFF" # 不要编译它的测试
     "build_docs OFF"
     # [删除] 之前建议的 target 补丁代码现在是多余的了，因为全局 Flag 已经覆盖了

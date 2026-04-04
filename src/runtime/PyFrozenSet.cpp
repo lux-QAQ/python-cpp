@@ -29,7 +29,7 @@ PyFrozenSet::PyFrozenSet(SetType elements) : PyFrozenSet() { m_elements = std::m
 
 PyResult<PyFrozenSet *> PyFrozenSet::create(SetType elements)
 {
-	auto *result = PYLANG_ALLOC(PyFrozenSet, elements);
+	auto *result = PYLANG_ALLOC(PyFrozenSet, std::move(elements));
 	if (!result) { return Err(memory_error(sizeof(PyFrozenSet))); }
 	return Ok(result);
 }

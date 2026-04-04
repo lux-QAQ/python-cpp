@@ -84,7 +84,7 @@ namespace {
 	{
 		if (auto *str = as<PyString>(value)) { return Ok(str); }
 		if (auto *bytes = as<PyBytes>(value)) {
-			return PyString::decode(bytes->value().b, "ascii", "strict");
+			return PyString::decode(bytes->value(), "ascii", "strict");
 		}
 		return Err(type_error("{}() argument must be a string or bytes-like object, not '{}'",
 			function_name,
@@ -95,7 +95,7 @@ namespace {
 
 PyFloat::PyFloat(PyType *type) : PyNumber(type) {}
 
-PyFloat::PyFloat(double value) : PyNumber(Number{ value }, types::BuiltinTypes::the().float_()) {}
+PyFloat::PyFloat(double value) : PyNumber(types::float_()), m_value(value) {}
 
 PyResult<PyObject *> PyFloat::__new__(const PyType *type, PyTuple *args, PyDict *kwargs)
 {
@@ -133,7 +133,7 @@ PyResult<PyObject *> PyFloat::__new__(const PyType *type, PyTuple *args, PyDict 
 		return PyFloat::create(parsed);
 	}
 	if (auto *bytes_value = as<PyBytes>(value)) {
-		return PyString::decode(bytes_value->value().b, "ascii", "strict")
+		return PyString::decode(bytes_value->value(), "ascii", "strict")
 			.and_then([type](PyString *decoded) -> PyResult<PyObject *> {
 				auto decoded_args = PyTuple::create(decoded);
 				if (decoded_args.is_err()) { return Err(decoded_args.unwrap_err()); }
@@ -159,7 +159,7 @@ PyResult<PyFloat *> PyFloat::create(PyType *type, double value)
 	ASSERT(type->issubclass(types::float_()));
 	auto result = type->underlying_type().__alloc__(type);
 	return result.and_then([value](PyObject *obj) -> PyResult<PyFloat *> {
-		static_cast<PyFloat &>(*obj).m_value = Number{ value };
+		static_cast<PyFloat &>(*obj).m_value = value;
 		return Ok(static_cast<PyFloat *>(obj));
 	});
 }
@@ -341,11 +341,7 @@ PyResult<PyObject *> PyFloat::fromhex(PyType *type, PyTuple *args, PyDict *kwarg
 PyType *PyFloat::static_type() const { return types::float_(); }
 */
 
-double PyFloat::as_f64() const
-{
-	ASSERT(std::holds_alternative<double>(m_value.value));
-	return std::get<double>(m_value.value);
-}
+double PyFloat::as_f64() const { return m_value; }
 
 namespace {
 

@@ -12,8 +12,6 @@ class PyEllipsis : public PyBaseObject
 	friend class ::py::Arena;
 	friend PyObject *py_ellipsis();
 
-	static constexpr Ellipsis m_value{};
-
 	PyEllipsis(PyType *);
 
   public:
@@ -21,8 +19,6 @@ class PyEllipsis : public PyBaseObject
 
 	PyResult<PyObject *> __add__(const PyObject *obj) const;
 	PyResult<PyObject *> __repr__() const;
-
-	const Ellipsis &value() const { return m_value; }
 
 	static std::function<std::unique_ptr<TypePrototype>()> type_factory();
 	// PyType *static_type() const override;;

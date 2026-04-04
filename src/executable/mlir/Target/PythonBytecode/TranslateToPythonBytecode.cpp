@@ -948,14 +948,17 @@ struct PythonBytecodeEmitter
 					return ::py::Value{ ::py::RtValue::from_ptr(
 						::py::PyInteger::create(big_int_value).unwrap()) };
 				})
-				.Case<DenseIntElementsAttr>([](DenseIntElementsAttr bytes_attr) {
-					std::vector<std::byte> bytes;
-					for (const auto &el : bytes_attr) {
-						bytes.push_back(static_cast<std::byte>(el.getZExtValue()));
-					}
-					return ::py::Value{ ::py::RtValue::from_ptr(
-						::py::PyBytes::create(::py::Bytes{ std::move(bytes) }).unwrap()) };
-				})
+				.Case<mlir::DenseIntElementsAttr>(
+					[&](mlir::DenseIntElementsAttr bytes_attr) -> ::py::Value {
+						std::vector<std::byte> bytes;
+						bytes.reserve(bytes_attr.size());
+						for (const auto &b : bytes_attr.getValues<mlir::APInt>()) {
+							bytes.push_back(static_cast<std::byte>(b.getZExtValue()));
+						}
+						// 修复点: 直接传入 std::move(bytes) 并调用 from_ptr 包裹
+						return ::py::RtValue::from_ptr(
+							::py::PyBytes::create(std::move(bytes)).unwrap());
+					})
 				.Case<ArrayAttr>([this](ArrayAttr arr) {
 					std::vector<::py::Value> elements;
 					elements.reserve(arr.size());

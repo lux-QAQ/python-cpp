@@ -3,7 +3,7 @@
 #include "PyObject.hpp"
 #include "runtime/PyDict.hpp"
 #include "runtime/PyTuple.hpp"
-#include "runtime/Value.hpp"
+// #include "runtime/Value.hpp"
 
 namespace py {
 
@@ -19,8 +19,11 @@ class PyBytes : public PyBaseObject
 	PyBytes(PyType *);
 
   public:
-	static PyResult<PyBytes *> create(std::vector<std::byte> value);
+	static PyResult<PyBytes *> create(const std::vector<std::byte> &value);
+	static PyResult<PyBytes *> create(std::vector<std::byte> &&value);
 	static PyResult<PyBytes *> create();
+
+	static std::vector<std::byte> from_unescaped_string(const std::string &s);
 
 	static PyResult<PyObject *> __new__(const PyType *type, PyTuple *args, PyDict *kwargs);
 	PyResult<int32_t> __init__(PyTuple *args, PyDict *kwargs);
@@ -53,7 +56,8 @@ class PyBytes : public PyBaseObject
 
   private:
 	PyBytes();
-	PyBytes(std::vector<std::byte> value);
+	PyBytes(const std::vector<std::byte> &value);
+	PyBytes(std::vector<std::byte> &&value);
 };
 
 class PyBytesIterator : public PyBaseObject

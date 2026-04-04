@@ -77,24 +77,24 @@ void TypePrototype::visit_graph(::Cell::Visitor &visitor)
 	if (__class__) { visitor.visit(*__class__); }
 	if (__dict__) { visitor.visit(*__dict__); }
 	if (__base__) { visitor.visit(*__base__); }
-	for (auto *b : __bases__) {
-		if (b) visitor.visit(*b);
-	}
+	for (auto *b : __bases__) { visitor.visit(*b); }
 }
 
-size_t ValueHash::operator()(const Value &value) const
-{
-	auto val = value.box()->hash();
-	ASSERT(val.is_ok());
-	return val.unwrap();
-}
+// size_t RtValueHash::operator()(const RtValue &value) const
+// {
+//     auto val = value.hash();
+//     ASSERT(val.is_ok());
+//     return val.unwrap();
+// }
 
-bool ValueEq::operator()(const Value &lhs, const Value &rhs) const
-{
-	auto result = equals(lhs, rhs).and_then([](const auto &result) { return truthy(result); });
-	if (result.is_err()) { return false; }
-	return result.unwrap();
-}
+// bool RtValueEq::operator()(const RtValue &lhs, const RtValue &rhs) const
+// {
+//     auto result = equals(lhs, rhs).and_then([](const auto &result) {
+//         return truthy(result);
+//     });
+//     if (result.is_err()) { return false; }
+//     return result.unwrap();
+// }
 
 namespace {
 	inline bool may_break_reflexive_equality(const PyObject *obj) noexcept
@@ -362,46 +362,20 @@ template<> PyResult<PyObject *> PyObject::from(PyObject *const &value)
 	return Ok(value);
 }
 
-template<> PyResult<PyObject *> PyObject::from(const Number &value)
-{
-	return PyNumber::create(value);
-}
+// template<> PyResult<PyObject *> PyObject::from(const Number &value)
+// {
+// 	return PyNumber::create(value);
+// }
+
 
 template<> PyResult<PyObject *> PyObject::from(const int64_t &value)
 {
-	return PyNumber::create(Number{ value });
+	return PyInteger::create(value);
 }
 
 template<> PyResult<PyObject *> PyObject::from(const size_t &value)
 {
-	return PyNumber::create(Number{ value });
-}
-
-template<> PyResult<PyObject *> PyObject::from(const String &value)
-{
-	return PyString::create(value.s);
-}
-
-template<> PyResult<PyObject *> PyObject::from(const Bytes &value)
-{
-	return PyBytes::create(value);
-}
-
-template<> PyResult<PyObject *> PyObject::from(const Ellipsis &) { return Ok(py_ellipsis()); }
-
-template<> PyResult<PyObject *> PyObject::from(const NameConstant &value)
-{
-	if (std::holds_alternative<NoneType>(value.value)) {
-		return Ok(py_none());
-	} else {
-		const bool bool_value = std::get<bool>(value.value);
-		return Ok(bool_value ? py_true() : py_false());
-	}
-}
-
-template<> PyResult<PyObject *> PyObject::from(const Tuple &tuple)
-{
-	return PyTuple::create(tuple.elements);
+	return PyInteger::create(static_cast<int64_t>(value));
 }
 
 template<> PyResult<PyObject *> PyObject::from(const Value &value) { return Ok(value.box()); }
@@ -430,7 +404,7 @@ PyObject::PyObject(PyType *type) : Cell(), m_bits_type(type) { /* ASSERT(type); 
 const TypePrototype &PyObject::type_prototype() const { return m_bits_type->underlying_type(); }
 
 
-PyBaseObject::PyBaseObject(const TypePrototype &type) : PyObject(type) {}
+// PyBaseObject::PyBaseObject(const TypePrototype &type) : PyObject(type) {}
 
 
 // void PyObject::visit_graph(Visitor &visitor)
@@ -1411,29 +1385,66 @@ PyResult<PyObject *> PyType::call_fast_ptrs(PyObject **args, size_t argc, PyDict
 // }
 // ===================================
 // 原版 init_raw 保留兼容
+// PyResult<int32_t> PyObject::init_raw(std::span<const Value> args, PyDict *kwargs)
+// {
+// 	auto *init_str = PyString::intern("__init__");
+// 	auto [res, found] = type()->lookup_attribute(init_str);
+
+// 	if (found == LookupAttrResult::FOUND) {
+// 		auto *init_method = res.unwrap();
+// 		size_t total_argc = args.size() + 1;
+// 		// 使用 alloca 在栈上分配，不触发 GC 分配
+// 		Value *stack_args = static_cast<Value *>(alloca(sizeof(Value) * total_argc));
+// 		new (&stack_args[0]) Value(this);
+// 		for (size_t i = 0; i < args.size(); ++i) new (&stack_args[i + 1]) Value(args[i]);
+
+// 		auto call_res =
+// 			init_method->call_raw(std::span<const Value>(stack_args, total_argc), kwargs);
+
+// 		for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&stack_args[i]);
+
+// 		// 显式转换返回类型
+// 		if (call_res.is_err()) return Err(call_res.unwrap_err());
+// 		return Ok(static_cast<int32_t>(0));
+// 	}
+// 	return Ok(static_cast<int32_t>(0));
+// }
+
+
 PyResult<int32_t> PyObject::init_raw(std::span<const Value> args, PyDict *kwargs)
 {
 	auto *init_str = PyString::intern("__init__");
 	auto [res, found] = type()->lookup_attribute(init_str);
 
 	if (found == LookupAttrResult::FOUND) {
+		if (res.is_err()) return Err(res.unwrap_err());
 		auto *init_method = res.unwrap();
+
+		// 准备参数：[self, ...args]
 		size_t total_argc = args.size() + 1;
-		// 使用 alloca 在栈上分配，不触发 GC 分配
 		Value *stack_args = static_cast<Value *>(alloca(sizeof(Value) * total_argc));
-		new (&stack_args[0]) Value(this);
-		for (size_t i = 0; i < args.size(); ++i) new (&stack_args[i + 1]) Value(args[i]);
+
+		new (&stack_args[0]) Value(Value::from_ptr(this));
+		for (size_t i = 0; i < args.size(); ++i) { new (&stack_args[i + 1]) Value(args[i]); }
 
 		auto call_res =
 			init_method->call_raw(std::span<const Value>(stack_args, total_argc), kwargs);
 
 		for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&stack_args[i]);
 
-		// 显式转换返回类型
 		if (call_res.is_err()) return Err(call_res.unwrap_err());
-		return Ok(static_cast<int32_t>(0));
+		return Ok(0);
 	}
-	return Ok(static_cast<int32_t>(0));
+
+	// 回退到 C++ slot
+	if (type_prototype().__init__.has_value()) {
+		// 注意：Slot 接口目前仍需要 Tuple，但绝大多数 AOT 类不走这里
+		auto args_tuple = PyTuple::create(py::GCVector<Value>(args.begin(), args.end()));
+		if (args_tuple.is_err()) return Err(args_tuple.unwrap_err());
+		return call_slot(*type_prototype().__init__, "", this, args_tuple.unwrap(), kwargs);
+	}
+
+	return Ok(0);
 }
 
 // 高速 C ABI init

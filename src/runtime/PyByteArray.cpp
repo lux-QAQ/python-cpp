@@ -248,7 +248,12 @@ PyResult<std::monostate> PyByteArray::__setitem__(PyObject *index, PyObject *val
 			|| value->type()->issubclass(types::bytearray())) {
 			std::vector<std::byte> bytes;
 			if (value->type()->issubclass(types::bytes())) {
-				bytes = static_cast<const PyBytes &>(*value).value();
+				const auto &old_bytes = static_cast<const PyBytes &>(*value).value();
+				bytes.resize(old_bytes.size());
+				std::transform(
+					old_bytes.begin(), old_bytes.end(), bytes.begin(), [](const auto &b) {
+						return static_cast<std::byte>(b);
+					});
 			} else {
 				bytes = static_cast<const PyByteArray &>(*value).value();
 			}
@@ -350,51 +355,41 @@ PyResult<PyObject *> PyByteArray::find(PyTuple *args, PyDict *kwargs) const
 		return start + std::distance(bytes.begin(), it);
 	};
 
-	if (!start && !end) {
-		result = find(m_value, 0);
-	} else if (!end) {
-		auto start_ =
-			std::visit(overloaded{
-						   [get_position_from_slice](const auto &val) -> PyResult<size_t> {
-							   return get_position_from_slice(static_cast<int64_t>(val));
-						   },
-						   [get_position_from_slice](const mpz_class &val) -> PyResult<size_t> {
-							   ASSERT(val.fits_slong_p());
-							   return get_position_from_slice(val.get_si());
-						   },
-					   },
-				start->value().value);
-		if (start_.is_err()) { return Err(start_.unwrap_err()); }
-		result =
-			find(std::span{ m_value.begin() + start_.unwrap(), m_value.end() }, start_.unwrap());
+	auto get_start_end = [this](PyInteger *start_obj,
+							 PyInteger *end_obj) -> PyResult<std::pair<size_t, size_t>> {
+		size_t start = 0;
+		size_t end = m_value.size();
+		if (start_obj) {
+			auto start_val = start_obj->as_i64();
+			if (start_val < 0) { start_val += m_value.size(); }
+			if (start_val < 0) {
+				start = 0;
+			} else {
+				start = std::min(static_cast<size_t>(start_val), m_value.size());
+			}
+		}
+		if (end_obj) {
+			auto end_val = end_obj->as_i64();
+			if (end_val < 0) { end_val += m_value.size(); }
+			if (end_val < 0) {
+				end = 0;
+			} else {
+				end = std::min(static_cast<size_t>(end_val), m_value.size());
+			}
+		}
+		return Ok(std::make_pair(start, end));
+	};
+
+	auto start_end_ = get_start_end(start, end);
+	if (start_end_.is_err()) { return Err(start_end_.unwrap_err()); }
+
+	const auto [start_pos, end_pos] = start_end_.unwrap();
+
+	if (start_pos > end_pos) {
+		result = -1;
 	} else {
-		auto start_ =
-			std::visit(overloaded{
-						   [get_position_from_slice](const auto &val) -> PyResult<size_t> {
-							   return get_position_from_slice(static_cast<int64_t>(val));
-						   },
-						   [get_position_from_slice](const mpz_class &val) -> PyResult<size_t> {
-							   ASSERT(val.fits_slong_p());
-							   return get_position_from_slice(val.get_si());
-						   },
-					   },
-				start->value().value);
-		if (start_.is_err()) { return Err(start_.unwrap_err()); }
-		auto end_ =
-			std::visit(overloaded{
-						   [get_position_from_slice](const auto &val) -> PyResult<size_t> {
-							   return get_position_from_slice(static_cast<int64_t>(val));
-						   },
-						   [get_position_from_slice](const mpz_class &val) -> PyResult<size_t> {
-							   ASSERT(val.fits_slong_p());
-							   return get_position_from_slice(val.get_si());
-						   },
-					   },
-				end->value().value);
-		if (end_.is_err()) { return Err(end_.unwrap_err()); }
 		result =
-			find(std::span{ m_value.begin() + start_.unwrap(), m_value.begin() + end_.unwrap() },
-				start_.unwrap());
+			find(std::span{ m_value.begin() + start_pos, m_value.begin() + end_pos }, start_pos);
 	}
 
 	return PyInteger::create(result);

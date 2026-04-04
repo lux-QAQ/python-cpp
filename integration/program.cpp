@@ -41,7 +41,7 @@ template<typename T> void check_value(const PyObject *obj, T expected_value)
 		ASSERT_EQ(obj->type(), types::integer());
 		auto pynum = as<PyInteger>(obj);
 		ASSERT_TRUE(pynum);
-		ASSERT_EQ(std::get<BigIntType>(pynum->value().value), expected_value);
+		ASSERT_EQ(pynum->as_big_int(), expected_value);
 	} else if constexpr (std::is_same_v<T, const char *> || std::is_same_v<T, std::string>) {
 		ASSERT_EQ(obj->type(), types::str());
 		auto pystring = as<PyString>(obj);
@@ -83,12 +83,12 @@ template<typename T> void assert_interpreter_object_value(std::string name, T ex
 		//		  for (const auto &p : pydict->items()) {...}
 		auto items = pydict->items();
 		for (const auto &p : *items) {
-			auto key_ = p->operator[](0);
-			auto value_ = p->operator[](1);
+			auto key_ = PyObject::from(p->elements()[0]).unwrap();
+			auto value_ = PyObject::from(p->elements()[1]).unwrap();
 			// only support string keys for now
-			ASSERT(key_.unwrap());
-			auto key_string = as<PyString>(key_.unwrap())->value();
-			check_value(value_.unwrap(), expected_value[key_string]);
+			ASSERT(key_);
+			auto key_string = as<PyString>(key_)->value();
+			check_value(value_, expected_value[key_string]);
 		}
 	} else {
 		check_value(obj, expected_value);

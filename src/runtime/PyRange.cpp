@@ -90,21 +90,17 @@ PyRange::PyRange(BigIntType start, BigIntType stop, BigIntType step)
 {}
 
 PyRange::PyRange(PyInteger *stop)
-	: PyBaseObject(types::BuiltinTypes::the().range()),
-	  m_stop(std::get<BigIntType>(stop->value().value))
+	: PyBaseObject(types::BuiltinTypes::the().range()), m_stop(stop->as_big_int())
 {}
 
 PyRange::PyRange(PyInteger *start, PyInteger *stop)
-	: PyBaseObject(types::BuiltinTypes::the().range()),
-	  m_start(std::get<BigIntType>(start->value().value)),
-	  m_stop(std::get<BigIntType>(stop->value().value))
+	: PyBaseObject(types::BuiltinTypes::the().range()), m_start(start->as_big_int()),
+	  m_stop(stop->as_big_int())
 {}
 
 PyRange::PyRange(PyInteger *start, PyInteger *stop, PyInteger *step)
-	: PyBaseObject(types::BuiltinTypes::the().range()),
-	  m_start(std::get<BigIntType>(start->value().value)),
-	  m_stop(std::get<BigIntType>(stop->value().value)),
-	  m_step(std::get<BigIntType>(step->value().value))
+	: PyBaseObject(types::BuiltinTypes::the().range()), m_start(start->as_big_int()),
+	  m_stop(stop->as_big_int()), m_step(step->as_big_int())
 {}
 
 std::string PyRange::to_string() const

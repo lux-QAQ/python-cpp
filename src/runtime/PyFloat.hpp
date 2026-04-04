@@ -11,6 +11,8 @@ class PyFloat final : public PyNumber
 #endif
 	friend class ::py::Arena;
 
+	double m_value;
+
 	PyFloat(double);
 
 	PyFloat(PyType *);

@@ -101,9 +101,9 @@ namespace {
 
 		switch (format.front()) {
 		case 'c': {
-			Bytes b;
-			b.b.reserve(1);
-			b.b.push_back(static_cast<std::byte>(*bit_cast<char *>(ptr)));
+			std::vector<std::byte> b;
+			b.reserve(1);
+			b.push_back(static_cast<std::byte>(*bit_cast<char *>(ptr)));
 			return PyBytes::create(std::move(b));
 		} break;
 		case 'b': {

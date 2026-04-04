@@ -29,13 +29,6 @@ class Parser;
 struct Load;
 
 namespace py {
-struct Number;
-struct String;
-struct Bytes;
-struct Ellipsis;
-struct NoneType;
-struct NameConstant;
-struct Tuple;
 class PyObject;
 class RtValue;
 using Value = RtValue;

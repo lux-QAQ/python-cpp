@@ -46,7 +46,7 @@ PySet::PySet(SetType elements) : PySet() { m_elements = std::move(elements); }
 
 PyResult<PySet *> PySet::create(SetType elements)
 {
-	auto *result = PYLANG_ALLOC(PySet, elements);
+	auto *result = PYLANG_ALLOC(PySet, std::move(elements));
 	if (!result) { return Err(memory_error(sizeof(PySet))); }
 	return Ok(result);
 }

@@ -2,7 +2,6 @@
 
 #include "PyObject.hpp"
 #include "PyTuple.hpp"
-#include "runtime/Value.hpp"
 
 #include <optional>
 
@@ -54,16 +53,26 @@ class PyString
   public:
 	// 已有的工厂方法
 	static PyResult<PyString *> create(const std::string &value);
+	static PyResult<PyString *> create(std::string &&value);
 
 	// 新增：字符串驻留 (String Interning)
 	// 对同一个字符串内容，永远返回同一个 PyString 对象
 	// 驻留的字符串不会被 GC 回收
 	static PyString *intern(const char *cstr);
 	static PyString *intern(const std::string &str);
+	static PyString *intern(std::string &&str);
 
 	static PyResult<PyString *> create(PyObject *);
 
-	static PyResult<PyString *> create(const Bytes &, const std::string &encoding);
+	static PyResult<PyString *> create(const std::vector<std::byte> &bytes,
+		const std::string &encoding = "");
+
+	static std::string from_unescaped_string(const std::string &s);
+
+	PyString(const std::string &s);
+	PyString(std::string &&s);
+
+	// static PyResult<PyString *> create(const Bytes &, const std::string &encoding);
 
 	// 修改：将实现移到 .cpp，防止访问 incomplete type PyTuple
 	static PyResult<PyString *> create(PyString *self, PyTuple *args, PyDict *kwargs);
@@ -139,8 +148,6 @@ class PyString
 	static PyResult<PyString *> chr(BigIntType cp);
 
   private:
-	PyString(std::string s);
-
 	size_t get_position_from_slice(int64_t) const;
 
 	PyResult<PyString *> printf(const PyObject *values) const;

@@ -122,20 +122,20 @@ py::PyObject *rt_getitem(py::PyObject *obj, py::PyObject *key)
 		// bytes 索引访问 -> 返回 Tagged Integer
 		if (type == py::types::bytes()) {
 			auto *bytes = static_cast<py::PyBytes *>(b_obj);
-			int64_t sz = static_cast<int64_t>(bytes->value().b.size());
+			int64_t sz = static_cast<int64_t>(bytes->value().size());
 			if (index < 0) index += sz;
 			if (index >= 0 && index < sz) {
-				uint8_t val = static_cast<uint8_t>(bytes->value().b[index]);
+				uint8_t val = static_cast<uint8_t>(bytes->value()[index]);
 				return py::RtValue::from_int(val).as_pyobject_raw();
 			}
 		}
 		// bytearray 索引访问 -> 返回 Tagged Integer
 		else if (type == py::types::bytearray()) {
 			auto *ba = static_cast<py::PyByteArray *>(b_obj);
-			int64_t sz = static_cast<int64_t>(ba->value().b.size());
+			int64_t sz = static_cast<int64_t>(ba->value().size());
 			if (index < 0) index += sz;
 			if (index >= 0 && index < sz) {
-				uint8_t val = static_cast<uint8_t>(ba->value().b[index]);
+				uint8_t val = static_cast<uint8_t>(ba->value()[index]);
 				return py::RtValue::from_int(val).as_pyobject_raw();
 			}
 		}
@@ -212,9 +212,9 @@ void rt_list_append(py::PyObject *list, py::PyObject *value)
 	if (rt_val.is_tagged_int()) {
 		// [核心修复]：如果是 Tagged Integer，转存为 Value 的 Number 分支
 		// 这样既消灭了 PyInteger 对象分配，又保证了 ValueEq 的类型安全
-		b_list->elements().push_back(rt_val);
+		b_list->elements().push_back(py::Value(rt_val));
 	} else {
-		b_list->elements().push_back(rt_val);
+		b_list->elements().push_back(py::Value(rt_val));
 	}
 }
 

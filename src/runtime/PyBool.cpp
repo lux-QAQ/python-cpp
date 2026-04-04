@@ -21,15 +21,11 @@ template<> const PyBool *as(const PyObject *node)
 
 PyBool::PyBool(PyType *type) : PyInteger(type) {}
 
-PyBool::PyBool(bool value) : PyInteger(types::BuiltinTypes::the().bool_(), value) {}
+PyBool::PyBool(bool value) : PyInteger(types::bool_(), value) {}
 
 std::string PyBool::to_string() const { return value() ? "True" : "False"; }
 
-bool PyBool::value() const
-{
-	ASSERT(std::holds_alternative<BigIntType>(m_value.value));
-	return static_cast<bool>(std::get<BigIntType>(m_value.value));
-}
+bool PyBool::value() const { return static_cast<bool>(m_value); }
 
 PyResult<PyObject *> PyBool::__new__(const PyType *type, PyTuple *args, PyDict *kwargs)
 {
@@ -49,11 +45,7 @@ PyResult<PyObject *> PyBool::__new__(const PyType *type, PyTuple *args, PyDict *
 
 PyResult<PyObject *> PyBool::__repr__() const { return PyString::create(to_string()); }
 
-PyResult<bool> PyBool::true_()
-{
-	ASSERT(std::holds_alternative<BigIntType>(m_value.value));
-	return Ok(value());
-}
+PyResult<bool> PyBool::true_() { return Ok(value()); }
 
 PyResult<PyBool *> PyBool::create(bool value)
 {
@@ -126,7 +118,4 @@ std::function<std::unique_ptr<TypePrototype>()> PyBool::type_factory()
 	};
 }
 
-static_assert(std::is_same_v<PyBool::_InterfaceT, PyNumber>);
-static_assert(std::is_same_v<PyBool::_InterfacingT, PyInteger>);
-static_assert(!concepts::HasInterface<PyBool>);
 }// namespace py
