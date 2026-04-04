@@ -18,6 +18,7 @@ namespace cache {
 	{
 		std::atomic<py::PyType *> expected_type{ nullptr };
 		std::atomic<uint64_t> type_version{ 0 };
+		std::atomic<py::Shape *> expected_shape{ nullptr };
 		std::atomic<py::PyString *> attr_name{ nullptr };
 		std::atomic<py::PyObject *> resolved_func{ nullptr };
 

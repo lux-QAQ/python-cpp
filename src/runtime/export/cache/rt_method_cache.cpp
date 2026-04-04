@@ -67,6 +67,7 @@ namespace cache {
 				// 更新缓存槽位记录
 				slot.expected_type.store(type, std::memory_order_release);
 				slot.type_version.store(py::PyType::global_version(), std::memory_order_release);
+				slot.expected_shape.store(b_owner->shape(), std::memory_order_release);
 				slot.attr_name.store(attr_name, std::memory_order_release);
 				slot.resolved_func.store(desc, std::memory_order_release);
 				slot.tag.store(tag, std::memory_order_release);
@@ -99,6 +100,12 @@ py::PyObject *rt_call_method_ic_ptrs(py::cache::MethodCache *cache,
 	py::PyObject *kwargs_dict)
 {
 	auto *b_owner = py::ensure_box(owner);
+	const auto &getattribute_ = b_owner->type()->underlying_type().__getattribute__;
+	if (getattribute_.has_value()
+		&& get_address(*getattribute_)
+			   != get_address(*py::types::object()->underlying_type().__getattribute__)) {
+		return rt_call_method_raw_ptrs(owner, method_name, args, argc, kwargs_dict);
+	}
 	// ==== 内置方法 Intrinsic fast path 原封不动复制保留 ====
 	if (!kwargs_dict || kwargs_dict == py::py_none()) {
 		if (argc == 1) {
@@ -124,20 +131,12 @@ py::PyObject *rt_call_method_ic_ptrs(py::cache::MethodCache *cache,
 
 		if (tag != 0) {
 			auto *expected_type = slot.expected_type.load(std::memory_order_acquire);
+			auto *expected_shape = slot.expected_shape.load(std::memory_order_acquire);
 			auto type_version = slot.type_version.load(std::memory_order_acquire);
 
 			// 类型以及全局类成员没有变动
-			if (expected_type == actual_type && type_version == py::PyType::global_version()) {
-				// 获取 intern 后的缓存属性名
-				auto *interned_name = slot.attr_name.load(std::memory_order_acquire);
-
-				// O(1) 检测：如果用户对象包含 shape，确保对象上没有同名属性
-				if (auto *shape = b_owner->shape()) {
-					if (shape->lookup(interned_name)) {
-						goto NEXT_SLOT;// 发生遮蔽，直接放弃当前槽位，跳转下一个或者慢路径
-					}
-				}
-
+			if (expected_type == actual_type && expected_shape == b_owner->shape()
+				&& type_version == py::PyType::global_version()) {
 				// 缓存命中! 提取已经解析的 callable
 				auto *resolved_func = slot.resolved_func.load(std::memory_order_acquire);
 				bool needs_self = (tag == 1);

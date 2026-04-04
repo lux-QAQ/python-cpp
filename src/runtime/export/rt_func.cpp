@@ -231,6 +231,13 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 	py::PyObject *kwargs_dict)
 {
 	auto *b_owner = py::ensure_box(owner);
+	const auto &getattribute_ = b_owner->type()->underlying_type().__getattribute__;
+	if (getattribute_.has_value()
+		&& get_address(*getattribute_)
+			   != get_address(*py::types::object()->underlying_type().__getattribute__)) {
+		auto *bound = rt_unwrap(b_owner->getattribute(py::PyString::intern(method_name)));
+		return rt_call_raw_ptrs(bound, args, argc, kwargs_dict);
+	}
 
 	// === 内置方法的 Intrinsic Fast Path ===
 	if (!kwargs_dict || kwargs_dict == py::py_none()) {
@@ -258,9 +265,10 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 
 	if (descriptor_.has_value() && descriptor_->is_ok()) {
 		auto *desc = descriptor_->unwrap();
+		auto *desc_type = desc->type();
 
 		// 0. 特例：函数和原生函数绝不是数据描述符，必须最先拦截，直接走 AOT 零分配极速路径
-		if (desc->type() == py::types::function() || desc->type() == py::types::native_function()) {
+		if (desc_type == py::types::function() || desc_type == py::types::native_function()) {
 			// 先检查实例字典是否覆盖了方法 (Python 语义: 实例属性优先于非数据描述符)
 			if (auto *shape = b_owner->shape()) {
 				if (auto offset = shape->lookup(attr_name)) {
@@ -280,6 +288,49 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 					static_cast<py::PyObject **>(alloca(sizeof(py::PyObject *) * total_argc));
 			}
 			final_args[0] = b_owner;
+			for (int i = 0; i < argc; ++i) { final_args[i + 1] = args[i]; }
+
+			auto result = desc->call_fast_ptrs(final_args, total_argc, kwargs);
+			return rt_unwrap(result);
+		}
+
+		// 0.5 非 data descriptor 的 method/slot 直调路径：
+		// 避免先 __get__ 生成绑定 wrapper，再掉回通用 call_fast_ptrs fallback。
+		if (desc_type == py::types::method_wrapper() || desc_type == py::types::slot_wrapper()) {
+			if (auto *shape = b_owner->shape()) {
+				if (auto offset = shape->lookup(attr_name)) {
+					auto func = rt_unwrap(py::PyObject::from(b_owner->slots()[*offset]));
+					return rt_call_raw_ptrs(func, args, argc, kwargs_dict);
+				}
+			}
+
+			size_t total_argc = argc + 1;
+			py::PyObject *raw_args_array[16];
+			py::PyObject **final_args = args;
+			if (total_argc <= 16) {
+				final_args = raw_args_array;
+			} else {
+				final_args =
+					static_cast<py::PyObject **>(alloca(sizeof(py::PyObject *) * total_argc));
+			}
+			final_args[0] = b_owner;
+			for (int i = 0; i < argc; ++i) { final_args[i + 1] = args[i]; }
+
+			auto result = desc->call_fast_ptrs(final_args, total_argc, kwargs);
+			return rt_unwrap(result);
+		}
+
+		if (desc_type == py::types::classmethod_descriptor()) {
+			size_t total_argc = argc + 1;
+			py::PyObject *raw_args_array[16];
+			py::PyObject **final_args = args;
+			if (total_argc <= 16) {
+				final_args = raw_args_array;
+			} else {
+				final_args =
+					static_cast<py::PyObject **>(alloca(sizeof(py::PyObject *) * total_argc));
+			}
+			final_args[0] = b_owner->type();
 			for (int i = 0; i < argc; ++i) { final_args[i + 1] = args[i]; }
 
 			auto result = desc->call_fast_ptrs(final_args, total_argc, kwargs);

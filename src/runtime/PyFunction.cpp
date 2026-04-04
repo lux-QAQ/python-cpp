@@ -271,19 +271,19 @@ PyResult<PyObject *> PyNativeFunction::call_fast_ptrs(PyObject **args, size_t ar
 
 	// [最强 Fast Path]: 纯 Native 方法/函数完全直通，消除 std::variant (Value) 分配!
 	if (m_self) {
-		size_t total_argc = argc + 1;
-		PyObject *raw_args_array[16];
-		PyObject **final_args = args;
-		if (total_argc <= 16) {
-			final_args = raw_args_array;
-		} else {
-			final_args = static_cast<PyObject **>(alloca(sizeof(PyObject *) * total_argc));
-		}
-
-		final_args[0] = m_self;
-		for (size_t i = 0; i < argc; ++i) final_args[i + 1] = args[i];
-
 		if (m_aot_ptr) {
+			size_t total_argc = argc + 1;
+			PyObject *raw_args_array[16];
+			PyObject **final_args = args;
+			if (total_argc <= 16) {
+				final_args = raw_args_array;
+			} else {
+				final_args = static_cast<PyObject **>(alloca(sizeof(PyObject *) * total_argc));
+			}
+
+			final_args[0] = m_self;
+			for (size_t i = 0; i < argc; ++i) final_args[i + 1] = args[i];
+
 			auto *res = reinterpret_cast<py::PyObject
 					*(*)(py::PyObject *, py::PyObject *, py::PyObject **, int32_t, py::PyDict *)>(
 				m_aot_ptr)(
@@ -292,8 +292,15 @@ PyResult<PyObject *> PyNativeFunction::call_fast_ptrs(PyObject **args, size_t ar
 			return Err(runtime_error("AOT call failed"));
 		}
 
-		// Fallback
-		return PyObject::call_fast_ptrs(final_args, total_argc, kwargs);
+		if (argc == 0) { return operator()(m_self, PyTuple::create().unwrap(), kwargs); }
+
+		py::GCVector<Value> tuple_args;
+		tuple_args.reserve(argc);
+		for (size_t i = 0; i < argc; ++i) { tuple_args.push_back(RtValue::from_ptr(args[i])); }
+		return PyTuple::create(std::move(tuple_args))
+			.and_then([this, kwargs](PyTuple *t) -> PyResult<PyObject *> {
+				return operator()(m_self, t, kwargs);
+			});
 	}
 
 	if (m_aot_ptr) {
@@ -305,7 +312,14 @@ PyResult<PyObject *> PyNativeFunction::call_fast_ptrs(PyObject **args, size_t ar
 		return Err(runtime_error("AOT call failed: NULL returned from AOT function"));
 	}
 
-	return PyObject::call_fast_ptrs(args, argc, kwargs);
+	if (argc == 0) { return operator()(PyTuple::create().unwrap(), kwargs); }
+
+	py::GCVector<Value> tuple_args;
+	tuple_args.reserve(argc);
+	for (size_t i = 0; i < argc; ++i) { tuple_args.push_back(RtValue::from_ptr(args[i])); }
+	return PyTuple::create(std::move(tuple_args))
+		.and_then(
+			[this, kwargs](PyTuple *t) -> PyResult<PyObject *> { return operator()(t, kwargs); });
 }
 
 // 旧版 call_raw 兼容回退

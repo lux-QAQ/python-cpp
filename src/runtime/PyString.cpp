@@ -19,6 +19,7 @@
 #include "runtime/PyObject.hpp"
 #include "runtime/Value.hpp"
 #include "runtime/forward.hpp"
+#include "runtime/taggered_pointer/RtValue.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 #include "utilities.hpp"
@@ -394,6 +395,8 @@ PyResult<PyObject *> PyString::__new__(const PyType *type, PyTuple *args, PyDict
 	ASSERT(args && args->size() <= 2);
 	ASSERT(type == types::str());
 
+	if (args->size() == 0) { return PyString::create(""); }
+
 	std::string encoding;
 
 	const auto &string = args->elements()[0];
@@ -415,7 +418,8 @@ PyResult<PyObject *> PyString::__new__(const PyType *type, PyTuple *args, PyDict
 		}
 		return PyString::create(s);
 	} else {
-		TODO();
+		if (string.is_tagged_int()) { return PyString::create(std::to_string(string.as_int())); }
+		return Err(type_error("str() argument 1 has unsupported immediate representation"));
 	}
 }
 

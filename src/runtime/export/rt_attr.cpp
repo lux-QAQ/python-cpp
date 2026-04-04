@@ -1,3 +1,4 @@
+#include "cache/rt_attr_cache.hpp"
 #include "rt_common.hpp"
 #include "runtime/shape/Shape.hpp"
 
@@ -9,60 +10,16 @@
 #include "runtime/PyString.hpp"
 #include "runtime/taggered_pointer/RtValue.hpp"
 
-
-// =============================================================================
-// Tier 0: 属性访问
-// =============================================================================
-
-// PYLANG_EXPORT_ATTR("getattr", "obj", "obj,str")
-// py::PyObject *rt_getattr(py::PyObject *obj, const char *name)
-// {
-// 	// intern：同一个属性名永远复用同一个 PyString，零分配
-// 	return rt_unwrap(obj->getattribute(py::PyString::intern(name)));
-// }
+py::PyObject *rt_getattr_ic(py::cache::AttrCache *cache, py::PyObject *obj, py::PyObject *name_obj);
+void rt_setattr_ic(py::cache::AttrCache *cache,
+	py::PyObject *obj,
+	py::PyObject *name_obj,
+	py::PyObject *value);
 
 PYLANG_EXPORT_ATTR("getattr", "obj", "obj,str")
 py::PyObject *rt_getattr(py::PyObject *obj, const char *name)
 {
-	auto *b_obj = py::ensure_box(obj);
-	auto *type = b_obj->type();
-	uint64_t gv = py::PyType::global_version();
-
-	// 1. 快速路径：哈希表命中 (包含 PYLANG_ATTR_ABSENT)
-	py::PyObject *cached = py::AttrCache::lookup(type, name, gv);
-	if (cached) {
-		if (cached == PYLANG_ATTR_ABSENT) goto try_instance_dict;
-		return rt_unwrap(cached->get(b_obj, type));
-	}
-
-	// 2. 慢速路径：安静地搜索 MRO (lookup 不分配异常对象)
-	{
-		auto *interned_name = py::PyString::intern(name);
-		auto res_opt = type->lookup(interned_name);
-
-		if (res_opt.has_value()) {
-			auto res = res_opt.value();
-			if (res.is_ok()) {
-				auto *attr = res.unwrap();
-				py::AttrCache::update(type, name, attr, gv);
-				return rt_unwrap(attr->get(b_obj, type));
-			}
-		}
-	}
-
-	// 3. 记录负缓存：标记该类 MRO 确定无此属性
-	py::AttrCache::update(type, name, PYLANG_ATTR_ABSENT, gv);
-
-try_instance_dict:
-	// 4. [极致优化] 直接查询实例属性，消灭 99% 的 getattribute 异常分配
-	if (auto *shape = b_obj->shape()) {
-		if (auto offset = shape->lookup(py::PyString::intern(name))) {
-			return b_obj->slots()[*offset];
-		}
-	}
-
-	// 5. 慢速路径：真正抛出异常 (只有这一步会分配 AttributeError)
-	return rt_unwrap(b_obj->getattribute(py::PyString::intern(name)));
+	return rt_getattr_ic(nullptr, obj, py::PyString::intern(name));
 }
 
 
@@ -75,20 +32,7 @@ py::PyObject *rt_getattr_fast(py::PyObject *obj, py::PyObject *name_obj)
 			"This usually means PyInit failed to initialize string constants.");
 		std::abort();
 	}
-	auto *b_obj = py::ensure_box(obj);
-	auto *name = static_cast<py::PyString *>(name_obj);
-
-	// [符合 Python 3.9 语义的快速路径]
-	// 1. 如果是普通对象（没有覆盖 __getattribute__），先查实例属性
-	// 这是 test.py 中 Node 对象最频繁的路径
-	if (auto *shape = b_obj->shape()) {
-		if (auto offset = shape->lookup(name)) { return b_obj->slots()[*offset]; }
-	}
-
-	// 2. 否则，调用虚函数 getattribute。
-	// 如果 Python 类定义了 __getattribute__，生成的 C++ 代码会覆盖此虚函数，
-	// 从而保证多态语义正确。
-	return rt_unwrap(b_obj->getattribute(name));
+	return rt_getattr_ic(nullptr, obj, name_obj);
 }
 
 // PYLANG_EXPORT_ATTR("load_global", "obj", "obj,str")
@@ -166,16 +110,13 @@ void rt_store_global(py::PyObject *module, const char *name, py::PyObject *value
 PYLANG_EXPORT_ATTR("setattr", "void", "obj,str,obj")
 void rt_setattr(py::PyObject *obj, const char *name, py::PyObject *value)
 {
-	rt_unwrap_void(
-		py::ensure_box(obj)->setattribute(py::PyString::intern(name), py::ensure_box(value)));
+	rt_setattr_ic(nullptr, obj, py::PyString::intern(name), value);
 }
 
 PYLANG_EXPORT_ATTR("setattr_fast", "void", "obj,obj,obj")
 void rt_setattr_fast(py::PyObject *obj, py::PyObject *name_obj, py::PyObject *value)
 {
-	auto *b_obj = py::ensure_box(obj);
-	auto *name = static_cast<py::PyString *>(name_obj);
-	rt_unwrap_void(b_obj->setattribute(name, py::ensure_box(value)));
+	rt_setattr_ic(nullptr, obj, name_obj, value);
 }
 
 PYLANG_EXPORT_ATTR("delattr", "void", "obj,str")

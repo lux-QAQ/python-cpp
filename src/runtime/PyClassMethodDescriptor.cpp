@@ -3,6 +3,7 @@
 #include "PyString.hpp"
 #include "PyType.hpp"
 #include "TypeError.hpp"
+#include "taggered_pointer/RtValue.hpp"
 
 #include "types/api.hpp"
 #include "types/builtin.hpp"
@@ -72,6 +73,26 @@ PyResult<PyObject *> PyClassMethodDescriptor::__call__(PyTuple *args, PyDict *kw
 
 	ASSERT(m_method);
 	return m_method->get().method(cls, args, kwargs);
+}
+
+PyResult<PyObject *>
+	PyClassMethodDescriptor::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
+{
+	if (argc == 0) { return Err(type_error("descriptor '{}' requires cls", m_name->value())); }
+
+	auto *cls = RtValue::from_ptr(args[0]).box();
+	ASSERT(m_method);
+
+	if (argc == 1) { return m_method->get().method(cls, PyTuple::create().unwrap(), kwargs); }
+
+	py::GCVector<Value> tuple_args;
+	tuple_args.reserve(argc - 1);
+	for (size_t i = 1; i < argc; ++i) { tuple_args.push_back(RtValue::from_ptr(args[i])); }
+
+	return PyTuple::create(std::move(tuple_args))
+		.and_then([this, cls, kwargs](PyTuple *t) -> PyResult<PyObject *> {
+			return m_method->get().method(cls, t, kwargs);
+		});
 }
 
 PyResult<PyObject *> PyClassMethodDescriptor::__get__(PyObject *object, PyObject *type) const

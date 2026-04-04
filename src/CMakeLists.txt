@@ -214,6 +214,7 @@ set(RUNTIME_SOURCE_FILES
   runtime/PyRange.cpp
   runtime/PyReversed.cpp
   runtime/PySet.cpp
+  runtime/shape/Shape.cpp
   runtime/PySlice.cpp
   runtime/PySlotWrapper.cpp
   runtime/PyString.cpp

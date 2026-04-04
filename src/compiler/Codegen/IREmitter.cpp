@@ -438,7 +438,22 @@ llvm::Value *IREmitter::call_getattr(llvm::Value *obj, std::string_view name)
 	// 从缓存加载 PyObject* (PyString)
 	auto *gvar = get_interned_string_obj(name);
 	auto *name_obj = m_builder.CreateLoad(m_builder.getPtrTy(), gvar);
-	return emit_runtime_call("getattr_fast", { obj, name_obj });
+
+	llvm::Type *cache_struct_ty = nullptr;
+	if (auto *cache_template = m_module->getNamedGlobal("pylang_attr_cache_template")) {
+		cache_struct_ty = cache_template->getValueType();
+	} else {
+		cache_struct_ty = llvm::ArrayType::get(m_builder.getInt64Ty(), 8);
+	}
+
+	auto *cache_gvar = new llvm::GlobalVariable(*m_module,
+		cache_struct_ty,
+		false,
+		llvm::GlobalValue::InternalLinkage,
+		llvm::Constant::getNullValue(cache_struct_ty),
+		".attr_cache");
+
+	return emit_runtime_call("getattr_ic", { cache_gvar, obj, name_obj });
 }
 
 llvm::Value *IREmitter::call_load_global(llvm::Value *module, std::string_view name)
@@ -464,7 +479,22 @@ void IREmitter::call_setattr(llvm::Value *obj, std::string_view name, llvm::Valu
 	// 同理，setattr 也应使用 fast 版本以避免每一步都 intern
 	auto *gvar = get_interned_string_obj(name);
 	auto *name_obj = m_builder.CreateLoad(m_builder.getPtrTy(), gvar);
-	emit_runtime_call("setattr_fast", { obj, name_obj, value });
+
+	llvm::Type *cache_struct_ty = nullptr;
+	if (auto *cache_template = m_module->getNamedGlobal("pylang_attr_cache_template")) {
+		cache_struct_ty = cache_template->getValueType();
+	} else {
+		cache_struct_ty = llvm::ArrayType::get(m_builder.getInt64Ty(), 8);
+	}
+
+	auto *cache_gvar = new llvm::GlobalVariable(*m_module,
+		cache_struct_ty,
+		false,
+		llvm::GlobalValue::InternalLinkage,
+		llvm::Constant::getNullValue(cache_struct_ty),
+		".attr_store_cache");
+
+	emit_runtime_call("setattr_ic", { cache_gvar, obj, name_obj, value });
 }
 
 void IREmitter::call_delattr(llvm::Value *obj, std::string_view name)

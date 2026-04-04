@@ -1208,17 +1208,13 @@ PyResult<PyObject *> PyObject::call_fast_ptrs(PyObject **args, size_t argc, PyDi
 		return call(PyTuple::create().unwrap(), kwargs);
 	}
 
-	// 在没有实现 call_fast_ptrs 的子类上，安全回退到包装 Value 之后调用 call_raw
-	py::Value *value_array =
-		argc > 0 ? static_cast<py::Value *>(alloca(sizeof(py::Value) * argc)) : nullptr;
-	for (size_t i = 0; i < argc; ++i) { new (&value_array[i]) py::Value(py::ensure_box(args[i])); }
+	// 通用回退仍需构造 PyTuple，但不再强制把 tagged int 装箱成 PyInteger。
+	py::GCVector<Value> tuple_args;
+	tuple_args.reserve(argc);
+	for (size_t i = 0; i < argc; ++i) { tuple_args.push_back(RtValue::from_ptr(args[i])); }
 
-	auto result = this->call(
-		PyTuple::create(std::vector<py::Value>(value_array, value_array + argc)).unwrap(), kwargs);
-
-	for (size_t i = 0; i < argc; ++i) { std::destroy_at(&value_array[i]); }
-
-	return result;
+	return PyTuple::create(std::move(tuple_args))
+		.and_then([this, kwargs](PyTuple *t) -> PyResult<PyObject *> { return call(t, kwargs); });
 }
 
 PyResult<PyObject *> PyObject::new_(PyTuple *args, PyDict *kwargs) const
@@ -1273,14 +1269,29 @@ PyResult<PyObject *> PyType::call_fast_ptrs(PyObject **args, size_t argc, PyDict
 		return Ok(args[0]->type());
 	}
 
-	// 2. [性能优化]：如果是无参构造且无关键字参数，使用空元组单例避免分配
+	// 2. 默认 object.__new__ 的零参数构造主路径：直接 __alloc__，不再为了空参数构造 PyTuple。
+	if (argc == 0 && (!kwargs || kwargs->map().empty()) && underlying_type().__new__.has_value()
+		&& get_address(*underlying_type().__new__)
+			   == get_address(*types::object()->underlying_type().__new__)) {
+		auto obj_res = underlying_type().__alloc__(const_cast<PyType *>(this));
+		if (obj_res.is_err()) return obj_res;
+		auto *obj = obj_res.unwrap();
+
+		if (obj->type()->issubclass(const_cast<PyType *>(this))) {
+			auto init_res = obj->init_fast_ptrs(args, argc, kwargs);
+			if (init_res.is_err()) return Err(init_res.unwrap_err());
+		}
+		return Ok(obj);
+	}
+
+	// 3. 回退路径：仍需构造 tuple 交给旧 __new__ 协议
 	PyTuple *tuple_args = nullptr;
 	if (argc == 0 && (!kwargs || kwargs->map().empty())) {
 		tuple_args = PyTuple::create().unwrap();
 	} else {
 		py::GCVector<Value> elements;
 		elements.reserve(argc);
-		for (size_t i = 0; i < argc; ++i) elements.push_back(py::ensure_box(args[i]));
+		for (size_t i = 0; i < argc; ++i) { elements.push_back(RtValue::from_ptr(args[i])); }
 		auto tuple_res = PyTuple::create(std::move(elements));
 		if (tuple_res.is_err()) return Err(tuple_res.unwrap_err());
 		tuple_args = tuple_res.unwrap();
@@ -1290,7 +1301,7 @@ PyResult<PyObject *> PyType::call_fast_ptrs(PyObject **args, size_t argc, PyDict
 	if (obj_res.is_err()) return obj_res;
 	auto *obj = obj_res.unwrap();
 
-	// 3. 调用 obj.__init__
+	// 4. 调用 obj.__init__
 	if (obj->type()->issubclass(const_cast<PyType *>(this))) {
 		auto init_res = obj->init_fast_ptrs(args, argc, kwargs);
 		if (init_res.is_err()) return Err(init_res.unwrap_err());
@@ -1603,7 +1614,7 @@ PyResult<std::monostate> PyObject::__setattribute__(PyObject *attribute, PyObjec
 		}
 	}
 	if (!m_shape) {
-		m_shape = new Shape(nullptr, as<PyString>(attribute), 0);
+		m_shape = Shape::root(type())->transition(as<PyString>(attribute));
 		m_slots.push_back(value);
 		return Ok(std::monostate{});
 	}

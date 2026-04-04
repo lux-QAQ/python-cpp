@@ -1,54 +1,39 @@
 #pragma once
 
-#include "runtime/PyObject.hpp"
-#include "runtime/PyString.hpp"
-#include <memory>
-#include <mutex>
-#include <shared_mutex>
+#include "runtime/forward.hpp"
+
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <unordered_map>
 
 namespace py {
 
 class Shape
 {
-	Shape *m_parent;
-	PyString *m_property_name;
-	size_t m_offset;
+	Shape *m_parent{ nullptr };
+	PyType *m_owner_type{ nullptr };
+	PyString *m_property_name{ nullptr };
+	size_t m_slot_count{ 0 };
+	uint64_t m_version{ 0 };
 
-	// maps property name to next shape
+	// O(1) 属性名 -> slot offset
+	std::unordered_map<PyString *, size_t> m_offsets;
+	// 共享 hidden-class 转移边
 	std::unordered_map<PyString *, Shape *> m_transitions;
 
+	Shape(PyType *owner_type, uint64_t version);
+	Shape(Shape *parent, PyString *name, size_t offset, uint64_t version);
+
   public:
-	Shape() : m_parent(nullptr), m_property_name(nullptr), m_offset(0) {}
-	Shape(Shape *parent, PyString *name, size_t offset)
-		: m_parent(parent), m_property_name(name), m_offset(offset)
-	{}
+	static Shape *root(PyType *owner_type);
 
-	size_t offset() const { return m_offset; }
-	size_t slot_count() const { return m_offset + 1; }
+	size_t slot_count() const { return m_slot_count; }
+	uint64_t version() const { return m_version; }
+	PyType *owner_type() const { return m_owner_type; }
 
-	Shape *transition(PyString *name)
-	{
-		// Ensure name is interned for fast pointer comparisons!
-		auto interned = PyString::intern(name->value());
-		if (auto it = m_transitions.find(interned); it != m_transitions.end()) {
-			return it->second;
-		}
-		auto *next = new Shape(this, interned, slot_count());
-		m_transitions[interned] = next;
-		return next;
-	}
-
-	std::optional<size_t> lookup(PyString *name) const
-	{
-		auto interned = PyString::intern(name->value());
-		const Shape *current = this;
-		while (current && current->m_property_name) {
-			if (current->m_property_name == interned) { return current->m_offset; }
-			current = current->m_parent;
-		}
-		return std::nullopt;
-	}
+	Shape *transition(PyString *name);
+	std::optional<size_t> lookup(PyString *name) const;
 };
 
 }// namespace py

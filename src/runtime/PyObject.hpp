@@ -551,6 +551,7 @@ class PyObject : public Cell
 	const py::GCVector<PyObject *> &slots() const { return m_slots; }
 	Shape *shape() { return m_shape; }
 	py::GCVector<PyObject *> &slots() { return m_slots; }
+	void set_shape(Shape *shape) { m_shape = shape; }
 	PyResult<PyObject *> get_method(PyObject *name) const;
 	PyResult<PyObject *> get_attribute(PyObject *name) const;
 	std::tuple<PyResult<PyObject *>, LookupAttrResult> lookup_attribute(PyObject *name) const;

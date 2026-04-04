@@ -5,6 +5,7 @@
 #include "TypeError.hpp"
 #include "interpreter/InterpreterCore.hpp"
 #include "runtime/compat.hpp"
+#include "taggered_pointer/RtValue.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -78,6 +79,26 @@ PyResult<PyObject *> PyMethodDescriptor::__call__(PyTuple *args, PyDict *kwargs)
 
 	ASSERT(m_method);
 	return m_method->get().method(self, args, kwargs);
+}
+
+PyResult<PyObject *>
+	PyMethodDescriptor::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
+{
+	if (argc == 0) { return Err(type_error("descriptor '{}' requires self", m_name->value())); }
+
+	auto *self = RtValue::from_ptr(args[0]).box();
+	ASSERT(m_method);
+
+	if (argc == 1) { return m_method->get().method(self, PyTuple::create().unwrap(), kwargs); }
+
+	py::GCVector<Value> tuple_args;
+	tuple_args.reserve(argc - 1);
+	for (size_t i = 1; i < argc; ++i) { tuple_args.push_back(RtValue::from_ptr(args[i])); }
+
+	return PyTuple::create(std::move(tuple_args))
+		.and_then([this, self, kwargs](PyTuple *t) -> PyResult<PyObject *> {
+			return m_method->get().method(self, t, kwargs);
+		});
 }
 
 PyResult<PyObject *> PyMethodDescriptor::__get__(PyObject *instance, PyObject * /*owner*/) const
