@@ -1,4 +1,5 @@
 #include "PyObject.hpp"
+#include "shape/Shape.hpp"
 
 #include "AttributeError.hpp"
 #include "NotImplemented.hpp"
@@ -409,7 +410,7 @@ const TypePrototype &PyObject::type_prototype() const { return m_bits_type->unde
 
 // void PyObject::visit_graph(Visitor &visitor)
 // {
-// 	if (m_attributes) { visitor.visit(*m_attributes); }
+//
 // 	for (size_t i = 0, offset = type()->underlying_type().basicsize; i < type()->__slots__.size();
 // 		++i, offset += sizeof(PyObject *)) {
 // 		auto *slot = *bit_cast<PyObject **>(bit_cast<uint8_t *>(this) + offset);
@@ -427,7 +428,6 @@ const TypePrototype &PyObject::type_prototype() const { return m_bits_type->unde
 void PyObject::visit_graph(Visitor &visitor)
 {
 	// 1. 访问属性字典
-	if (m_attributes) { visitor.visit(*m_attributes); }
 
 	// 2. 访问类型对象本身 (这是对象生存的核心)
 	if (m_bits_type) {
@@ -781,7 +781,10 @@ PyResult<PyObject *> PyObject::call(PyTuple *args, PyDict *kwargs)
 	// [修复]：增加 PyType 的旁路放行。动态创建类型（或者类实例化）时，
 	// PyType 没有走 Python 侧插槽，而是由 C++ 底层 call_raw 承接！
 	if (auto *type_obj = py::as<PyType>(this)) {
-		return type_obj->call_raw(args->elements(), kwargs);
+		return type_obj->call_fast_ptrs(
+			reinterpret_cast<PyObject **>(const_cast<py::Value *>(args->elements().data())),
+			args->size(),
+			kwargs);
 	}
 
 	if (type_prototype().__call__.has_value()) {
@@ -1197,34 +1200,7 @@ PyResult<PyObject *> PyObject::get(PyObject *instance, PyObject *owner) const
 	}
 	TODO();
 }
-// PyResult<PyObject *> PyObject::call_raw(std::span<Value> args, PyDict *kwargs)
-// {
-//     // 默认实现：回退到打包为 Tuple
-//     auto tuple_res = PyTuple::create(py::GCVector<Value>(args.begin(), args.end()));
-//     if (tuple_res.is_err()) { return Err(tuple_res.unwrap_err()); }
-
-//     return call(tuple_res.unwrap(), kwargs);
-// }
-
-PyResult<PyObject *> PyObject::call_raw(std::span<const Value> args, PyDict *kwargs)
-{
-	// [极致优化]：Node() 路径。如果子类（如 PySlotWrapper）覆盖了 call_raw，
-	// 这里就不应该再进行默认的 PyTuple 打包。
-
-	if (args.empty() && (!kwargs || kwargs->map().empty())) {
-		return call(PyTuple::create().unwrap(), kwargs);
-	}
-
-	// 只有必须打包时，才使用 GCVector
-	py::GCVector<Value> elements;
-	elements.reserve(args.size());
-	for (auto &v : args) elements.push_back(v);
-
-	return PyTuple::create(std::move(elements)).and_then([this, kwargs](PyTuple *t) {
-		return this->call(t, kwargs);
-	});
-}
-
+//
 // 消除 variant，高速直通传参方案的基类默认实现 (旧版回退兼容)
 PyResult<PyObject *> PyObject::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
 {
@@ -1237,7 +1213,8 @@ PyResult<PyObject *> PyObject::call_fast_ptrs(PyObject **args, size_t argc, PyDi
 		argc > 0 ? static_cast<py::Value *>(alloca(sizeof(py::Value) * argc)) : nullptr;
 	for (size_t i = 0; i < argc; ++i) { new (&value_array[i]) py::Value(py::ensure_box(args[i])); }
 
-	auto result = this->call_raw(std::span<const py::Value>(value_array, argc), kwargs);
+	auto result = this->call(
+		PyTuple::create(std::vector<py::Value>(value_array, value_array + argc)).unwrap(), kwargs);
 
 	for (size_t i = 0; i < argc; ++i) { std::destroy_at(&value_array[i]); }
 
@@ -1282,38 +1259,12 @@ PyResult<PyObject *> PyObject::new_(PyTuple *args, PyDict *kwargs) const
 PyResult<int32_t> PyObject::init(PyTuple *args, PyDict *kwargs)
 {
 	// 重构：复用 init_raw 逻辑
-	return init_raw(args->elements(), kwargs);
+	return init_fast_ptrs(
+		reinterpret_cast<PyObject **>(const_cast<py::Value *>(args->elements().data())),
+		args->size(),
+		kwargs);
 }
 
-PyResult<PyObject *> PyType::call_raw(std::span<const Value> args, PyDict *kwargs)
-{
-	// 1. 特殊处理 type(x)
-	if (this == types::type() && args.size() == 1 && (!kwargs || kwargs->map().empty())) {
-		return Ok(PyObject::from(args[0]).unwrap()->type());
-	}
-
-	// 2. [性能优化]：如果是无参构造且无关键字参数，使用空元组单例避免分配
-	PyTuple *tuple_args = nullptr;
-	if (args.empty() && (!kwargs || kwargs->map().empty())) {
-		tuple_args = PyTuple::create().unwrap();
-	} else {
-		auto tuple_res = PyTuple::create(py::GCVector<Value>(args.begin(), args.end()));
-		if (tuple_res.is_err()) return Err(tuple_res.unwrap_err());
-		tuple_args = tuple_res.unwrap();
-	}
-
-	auto obj_res = new_(tuple_args, kwargs);
-	if (obj_res.is_err()) return obj_res;
-	auto *obj = obj_res.unwrap();
-
-	// 3. 调用 obj.__init__
-	if (obj->type()->issubclass(const_cast<PyType *>(this))) {
-		auto init_res = obj->init_raw(args, kwargs);
-		if (init_res.is_err()) return Err(init_res.unwrap_err());
-	}
-
-	return Ok(obj);
-}
 
 PyResult<PyObject *> PyType::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
 {
@@ -1348,105 +1299,7 @@ PyResult<PyObject *> PyType::call_fast_ptrs(PyObject **args, size_t argc, PyDict
 	return Ok(obj);
 }
 
-// PyResult<int32_t> PyObject::init_raw(std::span<const Value> args, PyDict *kwargs)
-// {
-// 	auto *init_str = PyString::intern("__init__");
-// 	auto [res, found] = type()->lookup_attribute(init_str);
-
-// 	if (found == LookupAttrResult::FOUND) {
-// 		if (res.is_err()) return Err(res.unwrap_err());
-// 		auto *init_method = res.unwrap();
-
-// 		// 准备参数：[self, ...args]
-// 		size_t total_argc = args.size() + 1;
-// 		Value *stack_args = static_cast<Value *>(alloca(sizeof(Value) * total_argc));
-
-// 		new (&stack_args[0]) Value(this);
-// 		for (size_t i = 0; i < args.size(); ++i) { new (&stack_args[i + 1]) Value(args[i]); }
-
-// 		auto call_res =
-// 			init_method->call_raw(std::span<const Value>(stack_args, total_argc), kwargs);
-
-// 		for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&stack_args[i]);
-
-// 		if (call_res.is_err()) return Err(call_res.unwrap_err());
-// 		return Ok(0);
-// 	}
-
-// 	// 回退到 C++ slot
-// 	if (type_prototype().__init__.has_value()) {
-// 		// 注意：Slot 接口目前仍需要 Tuple，但绝大多数 AOT 类不走这里
-// 		auto args_tuple = PyTuple::create(py::GCVector<Value>(args.begin(), args.end()));
-// 		if (args_tuple.is_err()) return Err(args_tuple.unwrap_err());
-// 		return call_slot(*type_prototype().__init__, "", this, args_tuple.unwrap(), kwargs);
-// 	}
-
-// 	return Ok(0);
-// }
-// ===================================
-// 原版 init_raw 保留兼容
-// PyResult<int32_t> PyObject::init_raw(std::span<const Value> args, PyDict *kwargs)
-// {
-// 	auto *init_str = PyString::intern("__init__");
-// 	auto [res, found] = type()->lookup_attribute(init_str);
-
-// 	if (found == LookupAttrResult::FOUND) {
-// 		auto *init_method = res.unwrap();
-// 		size_t total_argc = args.size() + 1;
-// 		// 使用 alloca 在栈上分配，不触发 GC 分配
-// 		Value *stack_args = static_cast<Value *>(alloca(sizeof(Value) * total_argc));
-// 		new (&stack_args[0]) Value(this);
-// 		for (size_t i = 0; i < args.size(); ++i) new (&stack_args[i + 1]) Value(args[i]);
-
-// 		auto call_res =
-// 			init_method->call_raw(std::span<const Value>(stack_args, total_argc), kwargs);
-
-// 		for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&stack_args[i]);
-
-// 		// 显式转换返回类型
-// 		if (call_res.is_err()) return Err(call_res.unwrap_err());
-// 		return Ok(static_cast<int32_t>(0));
-// 	}
-// 	return Ok(static_cast<int32_t>(0));
-// }
-
-
-PyResult<int32_t> PyObject::init_raw(std::span<const Value> args, PyDict *kwargs)
-{
-	auto *init_str = PyString::intern("__init__");
-	auto [res, found] = type()->lookup_attribute(init_str);
-
-	if (found == LookupAttrResult::FOUND) {
-		if (res.is_err()) return Err(res.unwrap_err());
-		auto *init_method = res.unwrap();
-
-		// 准备参数：[self, ...args]
-		size_t total_argc = args.size() + 1;
-		Value *stack_args = static_cast<Value *>(alloca(sizeof(Value) * total_argc));
-
-		new (&stack_args[0]) Value(Value::from_ptr(this));
-		for (size_t i = 0; i < args.size(); ++i) { new (&stack_args[i + 1]) Value(args[i]); }
-
-		auto call_res =
-			init_method->call_raw(std::span<const Value>(stack_args, total_argc), kwargs);
-
-		for (size_t i = 0; i < total_argc; ++i) std::destroy_at(&stack_args[i]);
-
-		if (call_res.is_err()) return Err(call_res.unwrap_err());
-		return Ok(0);
-	}
-
-	// 回退到 C++ slot
-	if (type_prototype().__init__.has_value()) {
-		// 注意：Slot 接口目前仍需要 Tuple，但绝大多数 AOT 类不走这里
-		auto args_tuple = PyTuple::create(py::GCVector<Value>(args.begin(), args.end()));
-		if (args_tuple.is_err()) return Err(args_tuple.unwrap_err());
-		return call_slot(*type_prototype().__init__, "", this, args_tuple.unwrap(), kwargs);
-	}
-
-	return Ok(0);
-}
-
+//
 // 高速 C ABI init
 PyResult<int32_t> PyObject::init_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
 {
@@ -1585,12 +1438,10 @@ PyResult<PyObject *> PyObject::__getattribute__(PyObject *attribute) const
 			return descriptor->get(const_cast<PyObject *>(this), type());
 		}
 	}
-
-	if (m_attributes) {
-		const auto &dict = m_attributes->map();
-		if (auto it = dict.find(name); it != dict.end()) { return PyObject::from(it->second); }
-		// FIXME: we should abort here if PyDict returns an exception that is not an
-		// AttributeError
+	if (m_shape) {
+		if (auto offset = m_shape->lookup(name->to_string())) {
+			return PyObject::from(m_slots[*offset]);
+		}
 	}
 
 	if (descriptor_.has_value() && descriptor_has_get) {
@@ -1678,10 +1529,10 @@ PyResult<PyObject *> PyObject::get_method(PyObject *name) const
 			}
 		}
 	}
-
-	if (m_attributes) {
-		const auto &dict = m_attributes->map();
-		if (auto it = dict.find(name); it != dict.end()) { return PyObject::from(it->second); }
+	if (m_shape) {
+		if (auto offset = m_shape->lookup(name->to_string())) {
+			return PyObject::from(m_slots[*offset]);
+		}
 	}
 
 	if (descriptor_.has_value() && method_found) {
@@ -1751,22 +1602,18 @@ PyResult<std::monostate> PyObject::__setattribute__(PyObject *attribute, PyObjec
 			}
 		}
 	}
-
-	// [核心优化]：延迟分配 m_attributes
-	if (!m_attributes) {
-		// 检查是否在描述符中被标记为只读（如非数据描述符但无 __set__）
-		if (descriptor_.has_value() && descriptor_->is_ok()) {
-			// 如果是只读描述符且没有 __set__，在没有 __dict__ 的情况下通常不允许设置
-			// 但对于普通实例，通常直接进入 __dict__。这里保持 Python 默认行为：
-			// 如果不是数据描述符，则尝试写入实例字典。
-		}
-
-		auto dict_res = PyDict::create();
-		if (dict_res.is_err()) return Err(dict_res.unwrap_err());
-		m_attributes = dict_res.unwrap();
+	if (!m_shape) {
+		m_shape = new Shape(nullptr, attribute->to_string(), 0);
+		m_slots.push_back(value);
+		return Ok(std::monostate{});
 	}
-
-	return m_attributes->__setitem__(attribute, value);
+	if (auto offset = m_shape->lookup(attribute->to_string())) {
+		m_slots[*offset] = value;
+		return Ok(std::monostate{});
+	}
+	m_shape = m_shape->transition(attribute->to_string());
+	m_slots.push_back(value);
+	return Ok(std::monostate{});
 }
 
 
@@ -1786,18 +1633,8 @@ PyResult<std::monostate> PyObject::__delattribute__(PyObject *attribute)
 			return call_slot(*descriptor_delete, "", descriptor, this);
 		}
 	}
-
-	if (!m_attributes) {
-		if (descriptor_.has_value() && descriptor_->is_ok()) {
-			return Err(attribute_error(
-				"'{}' object attribute '{}' is read-only", type()->name(), attribute->to_string()));
-		} else {
-			return Err(attribute_error(
-				"'{}' object has no attribute '{}'", type()->name(), attribute->to_string()));
-		}
-	}
-
-	m_attributes->remove(attribute);
+	// TODO: support delattr in shape
+	return Err(attribute_error("can't delete attribute"));
 
 	return Ok(std::monostate{});
 }

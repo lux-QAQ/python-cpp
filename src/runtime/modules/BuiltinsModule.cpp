@@ -568,7 +568,9 @@ PyResult<PyObject *> ord(const PyTuple *args, const PyDict *)
 	auto *obj = obj_.unwrap();
 	if (auto pystr = as<PyString>(obj)) {
 		if (auto codepoint = pystr->codepoint()) {
-			return PyObject::from(Number{ static_cast<int64_t>(*codepoint) });
+			return PyInteger::create(static_cast<int64_t>(*codepoint)).and_then([](auto *i) {
+				return Ok(static_cast<PyObject *>(i));
+			});
 		} else {
 			auto mapping = pystr->as_mapping();
 			if (mapping.is_err()) { return Err(mapping.unwrap_err()); }
@@ -624,9 +626,9 @@ PyResult<PyObject *> dir(const PyTuple *args, const PyDict *)
 			}
 		} else {
 			auto *object = arg.box();
-			for (const auto &[k, _] : object->attributes()->map()) {
-				dir_list->elements().push_back(k);
-			}
+			// TODO: Shape attributes keys traversal
+			// for (auto *slot : object->slots()) {
+			// }
 		}
 	}
 

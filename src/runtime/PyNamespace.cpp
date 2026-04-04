@@ -28,7 +28,7 @@ PyNamespace::PyNamespace(PyType *type) : PyBaseObject(type) {}
 PyNamespace::PyNamespace(PyDict *dict)
 	: PyBaseObject(types::BuiltinTypes::the().namespace_()), m_dict(dict)
 {
-	m_attributes = m_dict;
+	m_dict = m_dict;
 }
 
 PyResult<PyNamespace *> PyNamespace::create()

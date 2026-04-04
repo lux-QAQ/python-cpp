@@ -45,7 +45,8 @@ PyResult<PyObject *> PyEnumerate::__next__()
 {
 	auto value = m_iterator->next();
 	if (value.is_err()) { return value; }
-	return PyTuple::create(Number{ m_current_index++ }, value.unwrap());
+	return PyTuple::create({ PyInteger::create(m_current_index++).unwrap(), value.unwrap() })
+		.and_then([](auto *t) { return Ok(static_cast<PyObject *>(t)); });
 }
 
 /*

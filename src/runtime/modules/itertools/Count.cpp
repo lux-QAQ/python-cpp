@@ -24,29 +24,32 @@ namespace itertools {
 
 	Count::Count() : Count(s_itertools_count) {}
 
-	Count::Count(Number start) : Count(s_itertools_count)
+	Count::Count(PyObject *start) : Count(s_itertools_count)
 	{
 		m_start = std::move(start);
 		m_current = m_start;
 	}
 
-	Count::Count(Number start, Number step) : Count(s_itertools_count)
+	Count::Count(PyObject *start, PyObject *step) : Count(s_itertools_count)
 	{
 		m_start = std::move(start);
 		m_step = std::move(step);
 		m_current = m_start;
 	}
 
-	PyResult<PyObject *> Count::create() { return create(Number{ 0 }, Number{ 1 }); }
-
-	PyResult<PyObject *> Count::create(Number start)
+	PyResult<PyObject *> Count::create()
 	{
-		return create(std::move(start), Number{ 1 });
+		return create(PyInteger::create(0).unwrap(), PyInteger::create(1).unwrap());
 	}
 
-	PyResult<PyObject *> Count::create(Number start, Number step)
+	PyResult<PyObject *> Count::create(PyObject *start)
 	{
-		auto *obj = PYLANG_ALLOC(Count, std::move(start), std::move(step));
+		return create(start, PyInteger::create(1).unwrap());
+	}
+
+	PyResult<PyObject *> Count::create(PyObject *start, PyObject *step)
+	{
+		auto *obj = PYLANG_ALLOC(Count, start, step);
 		if (!obj) { return Err(memory_error(sizeof(Count))); }
 		return Ok(obj);
 	}
@@ -71,14 +74,14 @@ namespace itertools {
 			return Count::create();
 		}
 
-		Number start_{ 0 };
-		Number step_{ 1 };
+		PyObject *start_ = PyInteger::create(0).unwrap();
+		PyObject *step_ = PyInteger::create(1).unwrap();
 
 		if (start && start != py_none()) {
 			if (start->type()->issubclass(types::integer())) {
-				start_ = Number{ static_cast<const PyInteger &>(*start).as_big_int() };
+				start_ = start;
 			} else if (start->type()->issubclass(types::float_())) {
-				start_ = Number{ static_cast<const PyFloat &>(*start).as_f64() };
+				start_ = start;
 			} else {
 				// TODO also handle complex
 				return Err(type_error("a number is required"));
@@ -87,40 +90,26 @@ namespace itertools {
 
 		if (step && step != py_none()) {
 			if (step->type()->issubclass(types::integer())) {
-				step_ = Number{ static_cast<const PyInteger &>(*step).as_big_int() };
+				step_ = step;
 			} else if (step->type()->issubclass(types::float_())) {
-				step_ = Number{ static_cast<const PyFloat &>(*step).as_f64() };
+				step_ = step;
 			} else {
 				// TODO also handle complex
 				return Err(type_error("a number is required"));
 			}
 		}
 
-		return Count::create(std::move(start_), std::move(step_));
+		return Count::create(start_, step_);
 	}
 
 	PyResult<PyObject *> Count::__iter__() const { return Ok(const_cast<Count *>(this)); }
-
 	PyResult<PyObject *> Count::__next__()
 	{
-		auto to_return = m_current;
-
-		if (std::holds_alternative<BigIntType>(m_current.value)
-			&& std::holds_alternative<BigIntType>(m_step.value)) {
-			m_current.value =
-				std::get<BigIntType>(m_current.value) + std::get<BigIntType>(m_step.value);
-		} else {
-			double curr = std::holds_alternative<BigIntType>(m_current.value)
-							  ? std::get<BigIntType>(m_current.value).get_d()
-							  : std::get<double>(m_current.value);
-			double step = std::holds_alternative<BigIntType>(m_step.value)
-							  ? std::get<BigIntType>(m_step.value).get_d()
-							  : std::get<double>(m_step.value);
-			m_current.value = curr + step;
-		}
-
-		return PyNumber::create(to_return).and_then(
-			[](PyNumber *p) { return Ok(static_cast<PyObject *>(p)); });
+		auto *to_return = m_current;
+		auto added = m_current->add(m_step);
+		if (added.is_err()) { return added; }
+		m_current = added.unwrap();
+		return Ok(to_return);
 	}
 
 	void Count::visit_graph(Visitor &visitor) { PyObject::visit_graph(visitor); }

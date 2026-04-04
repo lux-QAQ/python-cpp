@@ -383,22 +383,4 @@ PyResult<bool> PyNumber::__bool__() const
 	TODO();
 }
 
-PyResult<PyNumber *> PyNumber::create(const Number &number)
-{
-	if (std::holds_alternative<double>(number.value)) {
-		return PyFloat::create(std::get<double>(number.value)).and_then([](PyFloat *p) {
-			return Ok(static_cast<PyNumber *>(p));
-		});
-	} else {
-		return PyInteger::create(std::get<BigIntType>(number.value)).and_then([](PyInteger *p) {
-			return Ok(static_cast<PyNumber *>(p));
-		});
-	}
-}
-
-template<> PyResult<PyObject *> PyObject::from(const Number &value)
-{
-	return PyNumber::create(value).and_then(
-		[](PyNumber *p) { return Ok(static_cast<PyObject *>(p)); });
-}
 }// namespace py

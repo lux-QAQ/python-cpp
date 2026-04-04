@@ -1,6 +1,7 @@
 #include "../rt_common.hpp"
 #include "rt_cache.hpp"
 #include "runtime/export/export.hpp"
+#include "runtime/shape/Shape.hpp"
 
 #include "runtime/AttributeCache.hpp"
 #include "runtime/PyDict.hpp"
@@ -130,10 +131,9 @@ py::PyObject *rt_call_method_ic_ptrs(py::cache::MethodCache *cache,
 				// 获取 intern 后的缓存属性名
 				auto *interned_name = slot.attr_name.load(std::memory_order_acquire);
 
-				// O(1) 检测：如果用户对象包含 __dict__ 字典，确保字典里没有发生同名猴子补丁
-				if (auto *attrs = b_owner->attributes()) {
-					auto &map = attrs->map();
-					if (map.find(py::Value(interned_name)) != map.end()) {
+				// O(1) 检测：如果用户对象包含 shape，确保对象上没有同名属性
+				if (auto *shape = b_owner->shape()) {
+					if (shape->lookup(interned_name->to_string())) {
 						goto NEXT_SLOT;// 发生遮蔽，直接放弃当前槽位，跳转下一个或者慢路径
 					}
 				}

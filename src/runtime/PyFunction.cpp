@@ -45,7 +45,7 @@ PyFunction::PyFunction(std::vector<Value> defaults,
 	auto dict_ = PyDict::create();
 	if (dict_.is_err()) { TODO(); }
 	m_dict = dict_.unwrap();
-	m_attributes = m_dict;
+
 
 	if (!m_closure) { m_closure = PyTuple::create().unwrap(); }
 
@@ -309,59 +309,6 @@ PyResult<PyObject *> PyNativeFunction::call_fast_ptrs(PyObject **args, size_t ar
 }
 
 // 旧版 call_raw 兼容回退
-PyResult<PyObject *> PyNativeFunction::call_raw(std::span<const Value> args, PyDict *kwargs)
-{
-
-	spdlog::debug("[NativeFunc::call_raw] fn='{}', argc={}, has_aot={}, has_self={}",
-		m_name,
-		args.size(),
-		m_aot_ptr != nullptr,
-		m_self != nullptr);
-
-	// 防御非法 argc
-	if (args.size() > 1000000) {
-		spdlog::critical("[call_raw] Corrupt argc detected: {}", args.size());
-		return Err(runtime_error("Corrupt execution stack: invalid argument count"));
-	}
-
-	// 1. 如果有 self (BoundMethod 路径)，需要 prepend self
-	if (m_self) {
-		size_t total_argc = args.size() + 1;
-		Value *stack_args = static_cast<Value *>(alloca(sizeof(Value) * total_argc));
-
-		new (&stack_args[0]) Value(m_self);
-		for (size_t i = 0; i < args.size(); ++i) { new (&stack_args[i + 1]) Value(args[i]); }
-
-		// [修复编译错误]：使用 IIFE 立即初始化 PyResult
-		auto result = [&]() -> PyResult<PyObject *> {
-			if (m_aot_ptr) {
-				PyObject **raw_args =
-					static_cast<PyObject **>(alloca(sizeof(PyObject *) * total_argc));
-				for (size_t i = 0; i < total_argc; ++i) { raw_args[i] = stack_args[i].box(); }
-				auto *res = m_aot_ptr(
-					m_module_ref, m_closure, raw_args, static_cast<int32_t>(total_argc), kwargs);
-				if (res) return Ok(res);
-				return Err(runtime_error("AOT call failed"));
-			}
-			return PyObject::call_raw(std::span<const Value>(stack_args, total_argc), kwargs);
-		}();
-
-		for (size_t i = 0; i < total_argc; ++i) { std::destroy_at(&stack_args[i]); }
-		return result;
-	}
-
-	// 2. 原始函数快速路径
-	if (m_aot_ptr) {
-		PyObject **raw_args = static_cast<PyObject **>(alloca(sizeof(PyObject *) * args.size()));
-		for (size_t i = 0; i < args.size(); ++i) { raw_args[i] = args[i].box(); }
-		auto *res =
-			m_aot_ptr(m_module_ref, m_closure, raw_args, static_cast<int32_t>(args.size()), kwargs);
-		if (res) return Ok(res);
-		return Err(runtime_error("AOT call failed"));
-	}
-
-	return PyObject::call_raw(args, kwargs);
-}
 
 PyResult<PyObject *> PyFunction::__call__(PyTuple *args, PyDict *kwargs)
 {

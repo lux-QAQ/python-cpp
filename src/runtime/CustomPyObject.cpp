@@ -14,7 +14,7 @@ using namespace py;
 
 CustomPyObject::CustomPyObject(const PyType *type) : PyBaseObject(const_cast<PyType *>(type))
 {
-	m_attributes = PyDict::create().unwrap();
+	// shape() = PyDict::create().unwrap();
 }
 
 std::string CustomPyObject::to_string() const

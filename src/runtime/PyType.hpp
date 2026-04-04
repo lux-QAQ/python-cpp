@@ -32,6 +32,7 @@ class PyType : public PyBaseObject
 	PyType(TypePrototype &type_prototype);
 	PyType(std::unique_ptr<TypePrototype> &&type_prototype);
 
+	PyDict *m_dict{ nullptr };
 	static PyResult<PyType *> create(PyType *);
 
   public:
@@ -48,7 +49,6 @@ class PyType : public PyBaseObject
 	PyResult<PyObject *> __repr__() const;
 	PyResult<PyObject *> __getattribute__(PyObject *attribute) const;
 
-	PyResult<PyObject *> call_raw(std::span<const Value> args, PyDict *kwargs) override;
 	[[nodiscard]] PyResult<PyObject *>
 		call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs) override;
 
@@ -90,7 +90,7 @@ class PyType : public PyBaseObject
 
 	std::optional<PyResult<PyObject *>> lookup(PyObject *name) const;
 
-	PyDict *dict() { return m_attributes; }
+	PyDict *dict() { return nullptr; }// TODO: Transition Shape back to PyDict if asked
 
 	static PyResult<PyObject *> heap_object_allocation(PyType *);
 

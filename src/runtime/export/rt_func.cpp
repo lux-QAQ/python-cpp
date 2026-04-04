@@ -1,4 +1,5 @@
 #include "rt_common.hpp"
+#include "runtime/shape/Shape.hpp"
 
 #include "runtime/IndexError.hpp"
 #include "runtime/NameError.hpp"
@@ -261,10 +262,9 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 		// 0. 特例：函数和原生函数绝不是数据描述符，必须最先拦截，直接走 AOT 零分配极速路径
 		if (desc->type() == py::types::function() || desc->type() == py::types::native_function()) {
 			// 先检查实例字典是否覆盖了方法 (Python 语义: 实例属性优先于非数据描述符)
-			if (b_owner->attributes()) {
-				auto &map = b_owner->attributes()->map();
-				if (auto it = map.find(py::Value(attr_name)); it != map.end()) {
-					auto func = rt_unwrap(py::PyObject::from(it->second));
+			if (auto *shape = b_owner->shape()) {
+				if (auto offset = shape->lookup(attr_name->to_string())) {
+					auto func = rt_unwrap(py::PyObject::from(b_owner->slots()[*offset]));
 					return rt_call_raw_ptrs(func, args, argc, kwargs_dict);
 				}
 			}
@@ -294,10 +294,9 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 		}
 
 		// 2. 实例字典 (覆盖类属性)
-		if (b_owner->attributes()) {
-			auto &map = b_owner->attributes()->map();
-			if (auto it = map.find(py::Value(attr_name)); it != map.end()) {
-				auto func = rt_unwrap(py::PyObject::from(it->second));
+		if (auto *shape = b_owner->shape()) {
+			if (auto offset = shape->lookup(attr_name->to_string())) {
+				auto func = rt_unwrap(py::PyObject::from(b_owner->slots()[*offset]));
 				return rt_call_raw_ptrs(func, args, argc, kwargs_dict);
 			}
 		}

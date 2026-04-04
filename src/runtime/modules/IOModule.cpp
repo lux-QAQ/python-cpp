@@ -226,7 +226,8 @@ class IOBase : public PyBaseObject
 			int64_t nreadahead = 1;
 			if (peakable) {
 				auto readahead = std::get<0>(peek).unwrap()->call(
-					PyTuple::create(Number{ 1 }).unwrap(), PyDict::create().unwrap());
+					PyTuple::create({ PyInteger::create(1).unwrap() }).unwrap(),
+					PyDict::create().unwrap());
 				if (readahead.is_err()) return readahead;
 				if (!as<PyBytes>(readahead.unwrap())) {
 					// FIXME: should be a OSError
@@ -243,11 +244,13 @@ class IOBase : public PyBaseObject
 					nreadahead = std::distance(bytes.begin(), it);
 				}
 			}
-			auto b = get_method(PyString::create("read").unwrap())
-						 .and_then([nreadahead](PyObject *read) {
-							 return read->call(PyTuple::create(Number{ nreadahead }).unwrap(),
-								 PyDict::create().unwrap());
-						 });
+			auto b =
+				get_method(PyString::create("read").unwrap())
+					.and_then([nreadahead](PyObject *read) {
+						return read->call(
+							PyTuple::create({ PyInteger::create(nreadahead).unwrap() }).unwrap(),
+							PyDict::create().unwrap());
+					});
 			if (b.is_err()) return b;
 			if (!as<PyBytes>(b.unwrap())) {
 				// FIXME: should be a OSError
@@ -320,7 +323,9 @@ class IOBase : public PyBaseObject
 	{
 		return get_method(PyString::create("seek").unwrap()).and_then([](auto *seek) {
 			return seek->call(
-				PyTuple::create(Number{ 0 }, Number{ 1 }).unwrap(), PyDict::create().unwrap());
+				PyTuple::create({ PyInteger::create(0).unwrap(), PyInteger::create(1).unwrap() })
+					.unwrap(),
+				PyDict::create().unwrap());
 		});
 	}
 
@@ -370,7 +375,7 @@ class IOBase : public PyBaseObject
 
 	PyResult<PyObject *> check_writable_() { return check_writable(this); }
 
-	PyObject *dict() const { return m_attributes; }
+	// PyObject *dict() const { return shape(); }
 
 	// PyType *static_type() const override; { return s_io_base; }
 
@@ -400,7 +405,11 @@ class IOBase : public PyBaseObject
 							if (closed.is_err()) { TODO(); }
 							return Ok(closed.unwrap() ? py_true() : py_false());
 						})
-					.property_readonly("__dict__", [](IOBase *self) { return Ok(self->dict()); })
+					.property_readonly("__dict__",
+						[](IOBase *self) -> PyResult<PyObject *> {
+							return Err(
+								value_error("Shape based objects temporary disable __dict__"));
+						})
 					.def("fileno", &IOBase::fileno)
 					.def("flush", &IOBase::flush)
 					.def("isatty", &IOBase::isatty)
@@ -709,7 +718,8 @@ class BufferedIOBase : public IOBase
 		auto data =
 			get_method(PyString::create(method_name).unwrap()).and_then([&buffer](PyObject *read) {
 				return read->call(
-					PyTuple::create(Number{ buffer.len }).unwrap(), PyDict::create().unwrap());
+					PyTuple::create({ PyInteger::create(buffer.len).unwrap() }).unwrap(),
+					PyDict::create().unwrap());
 			});
 		if (data.is_err()) return data;
 
@@ -2173,7 +2183,7 @@ class FileIO : public RawIOBase
 		}
 
 		if (auto dict = PyDict::create(); dict.is_ok()) {
-			m_attributes = dict.unwrap();
+			// shape() = dict.unwrap();
 		} else {
 			return Err(dict.unwrap_err());
 		}

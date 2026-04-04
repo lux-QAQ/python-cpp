@@ -10,19 +10,19 @@ namespace itertools {
 #endif
 		friend class ::py::Arena;
 
-		Number m_start{ 0 };
-		Number m_step{ 1 };
-		Number m_current{ 0 };
+		PyObject *m_start{ nullptr };
+		PyObject *m_step{ nullptr };
+		PyObject *m_current{ nullptr };
 
 		Count(PyType *type);
 
 		Count();
-		Count(Number start);
-		Count(Number start, Number step);
+		Count(PyObject *start);
+		Count(PyObject *start, PyObject *step);
 
 		static PyResult<PyObject *> create();
-		static PyResult<PyObject *> create(Number start);
-		static PyResult<PyObject *> create(Number start, Number step);
+		static PyResult<PyObject *> create(PyObject *start);
+		static PyResult<PyObject *> create(PyObject *start, PyObject *step);
 
 	  public:
 		static PyResult<PyObject *> __new__(const PyType *type, PyTuple *args, PyDict *kwargs);

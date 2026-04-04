@@ -54,6 +54,8 @@ class PyModule : public PyBaseObject
 
 	PyResult<PyObject *> __repr__() const;
 	PyResult<PyObject *> __getattribute__(PyObject *attribute) const;
+	PyResult<std::monostate> __setattribute__(PyObject *attribute, PyObject *value);
+	PyResult<std::monostate> __delattribute__(PyObject *attribute);
 
 	std::string to_string() const override;
 

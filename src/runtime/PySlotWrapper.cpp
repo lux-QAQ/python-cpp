@@ -68,47 +68,7 @@ PyResult<PyObject *> PySlotWrapper::__call__(PyTuple *args, PyDict *kwargs)
 	return m_slot(self, args_res.unwrap(), kwargs);
 }
 
-// PyResult<PyObject *> PySlotWrapper::call_raw(std::span<const Value> args, PyDict *kwargs)
-// {
-//     if (args.empty()) return Err(type_error("slot wrapper requires self"));
-//     // [修复]：同上
-//     auto self_res = PyObject::from(args[0]);
-//     if (self_res.is_err()) return self_res;
-//     auto *self = self_res.unwrap();
-
-//     if (args.size() == 1) { return m_slot(self, PyTuple::create().unwrap(), kwargs); }
-
-//     py::GCVector<Value> slice_args(args.begin() + 1, args.end());
-//     return PyTuple::create(std::move(slice_args))
-//         .and_then([this, self, kwargs](PyTuple *t) -> PyResult<PyObject *> {
-//             return m_slot(self, t, kwargs);
-//         });
-// }
-
-PyResult<PyObject *> PySlotWrapper::call_raw(std::span<const Value> args, PyDict *kwargs)
-{
-	if (args.empty()) return Err(type_error("slot wrapper requires self"));
-
-	auto self_res = PyObject::from(args[0]);
-	if (self_res.is_err()) return self_res;
-	auto *self = self_res.unwrap();
-
-	// [核心优化]：拦截 Node() 这种无参调用
-	if (args.size() == 1 && (!kwargs || kwargs->map().empty())) {
-		// PyTuple::create() 内部已经实现了 get_empty_tuple_singleton()
-		return m_slot(self, PyTuple::create().unwrap(), kwargs);
-	}
-
-	// 仅在确实有参数时，才进入昂贵的 GCVector 打包流程
-	py::GCVector<Value> slice_args;
-	slice_args.reserve(args.size() - 1);
-	for (size_t i = 1; i < args.size(); ++i) { slice_args.push_back(args[i]); }
-
-	return PyTuple::create(std::move(slice_args))
-		.and_then([this, self, kwargs](
-					  PyTuple *t) -> PyResult<PyObject *> { return m_slot(self, t, kwargs); });
-}
-
+//
 PyResult<PyObject *> PySlotWrapper::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
 {
 	if (argc == 0) return Err(type_error("slot wrapper requires self"));

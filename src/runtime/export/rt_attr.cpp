@@ -1,4 +1,5 @@
 #include "rt_common.hpp"
+#include "runtime/shape/Shape.hpp"
 
 #include "runtime/AttributeCache.hpp"
 #include "runtime/ModuleRegistry.hpp"
@@ -54,10 +55,8 @@ py::PyObject *rt_getattr(py::PyObject *obj, const char *name)
 
 try_instance_dict:
 	// 4. [极致优化] 直接查询实例属性，消灭 99% 的 getattribute 异常分配
-	if (auto *dict = b_obj->attributes()) {
-		// 使用 interned string 作为 key 直接在 unordered_map 中查找
-		auto it = dict->map().find(py::Value(py::PyString::intern(name)));
-		if (it != dict->map().end()) { return it->second.as_pyobject_raw(); }
+	if (auto *shape = b_obj->shape()) {
+		if (auto offset = shape->lookup(name)) { return b_obj->slots()[*offset]; }
 	}
 
 	// 5. 慢速路径：真正抛出异常 (只有这一步会分配 AttributeError)
@@ -80,11 +79,8 @@ py::PyObject *rt_getattr_fast(py::PyObject *obj, py::PyObject *name_obj)
 	// [符合 Python 3.9 语义的快速路径]
 	// 1. 如果是普通对象（没有覆盖 __getattribute__），先查实例属性
 	// 这是 test.py 中 Node 对象最频繁的路径
-	if (auto *inst_dict = b_obj->attributes()) {
-		auto &map = inst_dict->map();
-		// 因为 name 是预 intern 的，这里的 map.find 是 O(1) 的指针比较
-		auto it = map.find(py::Value(name));
-		if (it != map.end()) { return it->second.as_pyobject_raw(); }
+	if (auto *shape = b_obj->shape()) {
+		if (auto offset = shape->lookup(name->to_string())) { return b_obj->slots()[*offset]; }
 	}
 
 	// 2. 否则，调用虚函数 getattribute。

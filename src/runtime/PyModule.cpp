@@ -32,13 +32,13 @@ PyModule::PyModule(PyDict *symbol_table, PyString *module_name, PyObject *doc)
 	m_loader = py_none();
 	m_spec = py_none();
 
-	m_attributes = symbol_table;
-	m_dict = m_attributes;
-	m_attributes->insert(RtValue::from_ptr(PyString::create("__name__").unwrap()), m_module_name);
-	m_attributes->insert(RtValue::from_ptr(PyString::create("__doc__").unwrap()), m_doc);
-	m_attributes->insert(RtValue::from_ptr(PyString::create("__package__").unwrap()), m_package);
-	m_attributes->insert(RtValue::from_ptr(PyString::create("__loader__").unwrap()), m_loader);
-	m_attributes->insert(RtValue::from_ptr(PyString::create("__spec__").unwrap()), m_spec);
+	// m_dict = symbol_table;
+	m_dict = symbol_table;
+	m_dict->insert(RtValue::from_ptr(PyString::create("__name__").unwrap()), m_module_name);
+	m_dict->insert(RtValue::from_ptr(PyString::create("__doc__").unwrap()), m_doc);
+	m_dict->insert(RtValue::from_ptr(PyString::create("__package__").unwrap()), m_package);
+	m_dict->insert(RtValue::from_ptr(PyString::create("__loader__").unwrap()), m_loader);
+	m_dict->insert(RtValue::from_ptr(PyString::create("__spec__").unwrap()), m_spec);
 }
 
 PyResult<PyObject *> PyModule::__repr__() const
@@ -86,12 +86,12 @@ PyResult<int32_t> PyModule::__init__(PyTuple *args, PyDict *kwargs)
 
 	auto attr = PyDict::create();
 	if (attr.is_err()) return Err(attr.unwrap_err());
-	m_attributes = attr.unwrap();
-	m_dict = m_attributes;
+	m_dict = attr.unwrap();
+	m_dict = m_dict;
 
 	// 使用 String key，与构造函数一致
-	m_attributes->insert(RtValue::from_ptr(PyString::create("__name__").unwrap()), m_module_name);
-	m_attributes->insert(RtValue::from_ptr(PyString::create("__doc__").unwrap()), m_doc);
+	m_dict->insert(RtValue::from_ptr(PyString::create("__name__").unwrap()), m_module_name);
+	m_dict->insert(RtValue::from_ptr(PyString::create("__doc__").unwrap()), m_doc);
 
 	return Ok(0);
 }
@@ -99,7 +99,7 @@ PyResult<int32_t> PyModule::__init__(PyTuple *args, PyDict *kwargs)
 /// 添加符号并递增版本号
 void PyModule::add_symbol(PyString *key, const Value &value)
 {
-	m_attributes->insert(RtValue::from_ptr(key), value);
+	m_dict->insert(RtValue::from_ptr(key), value);
 	// 粗粒度: 全局 dict version 递增
 	m_dict_version = s_global_version.fetch_add(1, std::memory_order_relaxed);
 	// 细粒度: 该 key 的 version 递增
@@ -127,23 +127,22 @@ PyResult<PyObject *> PyModule::__getattribute__(PyObject *attribute) const
 	auto attr = PyObject::__getattribute__(attribute);
 	if (attr.is_ok() || attr.unwrap_err()->type() != AttributeError::class_type()) { return attr; }
 
-	if (auto it =
-			m_attributes->map().find(RtValue::from_ptr(PyString::create("__getattr__").unwrap()));
-		it != m_attributes->map().end()) {
+	if (auto it = m_dict->map().find(RtValue::from_ptr(PyString::create("__getattr__").unwrap()));
+		it != m_dict->map().end()) {
 		auto getattr = PyObject::from(it->second);
 		ASSERT(getattr.is_ok());
 		auto args = PyTuple::create(attribute);
 		ASSERT(args.is_ok());
 		return getattr.unwrap()->call(args.unwrap(), nullptr);
-	} else if (auto it = m_attributes->map().find(
-				   RtValue::from_ptr(PyString::create("__name__").unwrap()));
-		it != m_attributes->map().end()) {
+	} else if (auto it =
+				   m_dict->map().find(RtValue::from_ptr(PyString::create("__name__").unwrap()));
+		it != m_dict->map().end()) {
 		auto module_name = PyObject::from(it->second);
 		ASSERT(module_name.is_ok());
 		if (auto name = as<PyString>(module_name.unwrap())) {
-			if (auto it = m_attributes->map().find(
-					RtValue::from_ptr(PyString::create("__spec__").unwrap()));
-				it != m_attributes->map().end()) {
+			if (auto it =
+					m_dict->map().find(RtValue::from_ptr(PyString::create("__spec__").unwrap()));
+				it != m_dict->map().end()) {
 				auto spec = PyObject::from(it->second);
 				ASSERT(spec.is_ok());
 				if (is_initializing(spec.unwrap())) {
@@ -192,13 +191,13 @@ PyResult<PyModule *> PyModule::create(PyDict *symbol_table, PyString *module_nam
 
 // PyResult<PyObject *> PyModule::find_symbol_cstr(const char *name) const
 // {
-//     if (!m_attributes) {
+//     if (!m_dict) {
 //         return Err(name_error("name '{}' is not defined", name));
 //     }
 //     // 直接用 String key 查找，避免 PyString 堆分配
 //     String key{ std::string(name) };
-//     auto it = m_attributes->map().find(key);
-//     if (it != m_attributes->map().end()) {
+//     auto it = m_dict->map().find(key);
+//     if (it != m_dict->map().end()) {
 //         return PyObject::from(it->second);
 //     }
 //     return Err(name_error("name '{}' is not defined", name));
@@ -206,11 +205,11 @@ PyResult<PyModule *> PyModule::create(PyDict *symbol_table, PyString *module_nam
 
 PyResult<PyObject *> PyModule::find_symbol_cstr(const char *name) const
 {
-	if (!m_attributes) {
+	if (!m_dict) {
 		return Err(nullptr);// 返回空错误，不分配异常对象
 	}
-	auto it = m_attributes->map().find(RtValue::from_ptr(PyString::create(name).unwrap()));
-	if (it != m_attributes->map().end()) { return PyObject::from(it->second); }
+	auto it = m_dict->map().find(RtValue::from_ptr(PyString::create(name).unwrap()));
+	if (it != m_dict->map().end()) { return PyObject::from(it->second); }
 	return Err(nullptr);// 没找到直接返回 Err，由调用者决定是否抛出 NameError
 }
 
@@ -231,6 +230,33 @@ namespace {
 		return std::move(klass<PyModule>("module").attr("__dict__", &PyModule::m_dict).type);
 	}
 }// namespace
+
+
+PyResult<std::monostate> PyModule::__setattribute__(PyObject *attribute, PyObject *value)
+{
+	if (!as<PyString>(attribute)) { return Err(type_error("attribute name must be string")); }
+	if (m_dict) {
+		m_dict->insert(RtValue::from_ptr(attribute), value);
+		// invalidate cache
+		m_dict_version = s_global_version.fetch_add(1, std::memory_order_relaxed);
+		if (auto *s = as<PyString>(attribute)) m_key_versions.bump(s->value());
+	}
+	return Ok(std::monostate{});
+}
+
+PyResult<std::monostate> PyModule::__delattribute__(PyObject *attribute)
+{
+	if (!as<PyString>(attribute)) { return Err(type_error("attribute name must be string")); }
+	if (m_dict) {
+		if (auto it = m_dict->map().find(RtValue::from_ptr(attribute)); it != m_dict->map().end()) {
+			m_dict->remove(attribute);
+			m_dict_version = s_global_version.fetch_add(1, std::memory_order_relaxed);
+			if (auto *s = as<PyString>(attribute)) m_key_versions.bump(s->value());
+			return Ok(std::monostate{});
+		}
+	}
+	return Err(attribute_error("can't delete attribute"));
+}
 
 std::function<std::unique_ptr<TypePrototype>()> PyModule::type_factory()
 {

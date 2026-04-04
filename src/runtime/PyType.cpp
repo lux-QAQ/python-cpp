@@ -329,7 +329,7 @@ namespace {
 					"__abstractmethods__",
 					[](PyType *self) -> PyResult<PyObject *> {
 						if (self != types::type()) {
-							if (auto result = (*self->attributes())[RtValue::from_ptr(
+							if (auto result = (*self->m_dict)[RtValue::from_ptr(
 									PyString::create("__abstractmethods__").unwrap())];
 								result.has_value()) {
 								return PyObject::from(*result);
@@ -343,7 +343,7 @@ namespace {
 						// 新代码: 使用 PyObject::true_()，不依赖 VM
 						auto abstract = value->true_();
 						if (abstract.is_err()) { return Err(abstract.unwrap_err()); }
-						self->attributes()->insert(
+						self->m_dict->insert(
 							RtValue::from_ptr(PyString::create("__abstractmethods__").unwrap()),
 							value);
 						return Ok(std::monostate{});
@@ -445,7 +445,7 @@ std::optional<PyResult<PyObject *>> PyType::lookup(PyObject *name) const
 // 		.and_then([](PyObject *obj) -> PyResult<PyObject *> {
 // 			if (!obj->attributes()) {
 // 				if (auto dict = PyDict::create(); dict.is_ok()) {
-// 					obj->m_attributes = dict.unwrap();
+// 					obj->m_dict = dict.unwrap();
 // 				} else {
 // 					return dict;
 // 				}
@@ -472,7 +472,7 @@ std::optional<PyResult<PyObject *>> PyType::lookup(PyObject *name) const
 // 		.and_then([](PyObject *obj) -> PyResult<PyObject *> {
 // 			if (!obj->attributes()) {
 // 				if (auto dict = PyDict::create(); dict.is_ok()) {
-// 					obj->m_attributes = dict.unwrap();
+// 					obj->m_dict = dict.unwrap();
 // 				} else {
 // 					return dict;
 // 				}
@@ -502,7 +502,7 @@ PyResult<std::monostate> PyType::initialize(const std::string &name,
 	auto dict_ = PyDict::create(ns->map());
 	if (dict_.is_err()) { return Err(dict_.unwrap_err()); }
 	auto *dict = dict_.unwrap();
-	bool may_add_dict = base->attributes() == nullptr;
+	bool may_add_dict = base->m_dict == nullptr;
 	if (auto it = dict->map().find(RtValue::from_ptr(PyString::create("__slots__").unwrap()));
 		it != dict->map().end()) {
 		// has slots
@@ -557,9 +557,9 @@ PyResult<std::monostate> PyType::initialize(const std::string &name,
 	underlying_type().basicsize = base->underlying_type().basicsize;
 
 	underlying_type().__dict__ = dict;
-	m_attributes = dict;
+	m_dict = dict;
 
-	if (!m_attributes->map().contains(RtValue::from_ptr(PyString::create("__module__").unwrap()))) {
+	if (!m_dict->map().contains(RtValue::from_ptr(PyString::create("__module__").unwrap()))) {
 		// 旧代码:
 		// auto *globals = VirtualMachine::the().interpreter().execution_frame()->globals();
 		// 新代码: 通过 RuntimeContext 获取 globals
@@ -568,15 +568,14 @@ PyResult<std::monostate> PyType::initialize(const std::string &name,
 		if (g) {
 			if (auto it = g->map().find(RtValue::from_ptr(PyString::create("__name__").unwrap()));
 				it != g->map().end()) {
-				m_attributes->insert(
+				m_dict->insert(
 					RtValue::from_ptr(PyString::create("__module__").unwrap()), it->second);
 			}
 		}
 	}
 
-	if (auto it =
-			m_attributes->map().find(RtValue::from_ptr(PyString::create("__qualname__").unwrap()));
-		it != m_attributes->map().end()) {
+	if (auto it = m_dict->map().find(RtValue::from_ptr(PyString::create("__qualname__").unwrap()));
+		it != m_dict->map().end()) {
 		auto qualname_ = PyObject::from(it->second);
 		ASSERT(qualname_.is_ok());
 		if (!as<PyString>(qualname_.unwrap())) {
@@ -588,8 +587,8 @@ PyResult<std::monostate> PyType::initialize(const std::string &name,
 		__qualname__ = PyString::create(underlying_type().__name__).unwrap();
 	}
 
-	if (auto it = m_attributes->map().find(RtValue::from_ptr(PyString::create("__doc__").unwrap()));
-		it != m_attributes->map().end()) {
+	if (auto it = m_dict->map().find(RtValue::from_ptr(PyString::create("__doc__").unwrap()));
+		it != m_dict->map().end()) {
 		auto doc_ = PyObject::from(it->second);
 		ASSERT(doc_.is_ok());
 		if (auto doc_str = as<PyString>(doc_.unwrap())) {
@@ -598,8 +597,8 @@ PyResult<std::monostate> PyType::initialize(const std::string &name,
 		}
 	}
 
-	if (auto it = m_attributes->map().find(RtValue::from_ptr(PyString::create("__new__").unwrap()));
-		it != m_attributes->map().end()) {
+	if (auto it = m_dict->map().find(RtValue::from_ptr(PyString::create("__new__").unwrap()));
+		it != m_dict->map().end()) {
 		auto new_slot_ = PyObject::from(it->second);
 		ASSERT(new_slot_.is_ok());
 		auto *new_slot = new_slot_.unwrap();
@@ -607,15 +606,15 @@ PyResult<std::monostate> PyType::initialize(const std::string &name,
 			auto new_fn = PyStaticMethod::create(fn);
 			ASSERT(new_fn.is_ok());
 			new_slot = new_fn.unwrap();
-			m_attributes->insert(RtValue::from_ptr(PyString::create("__new__").unwrap()), new_slot);
+			m_dict->insert(RtValue::from_ptr(PyString::create("__new__").unwrap()), new_slot);
 		}
 		underlying_type().__new__ = new_slot;
 	}
 
 	// TODO: uncomment when classmethod is fixed
 	// if (auto it =
-	// m_attributes->map().find(RtValue::from_ptr(PyString::create("__init_subclass__").unwrap()));
-	// 	it != m_attributes->map().end()) {
+	// m_dict->map().find(RtValue::from_ptr(PyString::create("__init_subclass__").unwrap()));
+	// 	it != m_dict->map().end()) {
 	// 	auto init_subclass_slot_ = PyObject::from(it->second);
 	// 	ASSERT(init_subclass_slot_.is_ok());
 	// 	auto *init_subclass_slot = init_subclass_slot_.unwrap();
@@ -623,15 +622,15 @@ PyResult<std::monostate> PyType::initialize(const std::string &name,
 	// 		auto new_fn = PyClassMethod::create(fn);
 	// 		ASSERT(new_fn.is_ok());
 	// 		underlying_type().__new__ = new_fn.unwrap();
-	// 		m_attributes->insert(RtValue::from_ptr(PyString::create("__init_subclass__").unwrap()),
+	// 		m_dict->insert(RtValue::from_ptr(PyString::create("__init_subclass__").unwrap()),
 	// new_fn.unwrap());
 	// 	}
 	// }
 
 	// TODO: uncomment when classmethod is fixed
 	// if (auto it =
-	// m_attributes->map().find(RtValue::from_ptr(PyString::create("___class_getitem__").unwrap()));
-	// 	it != m_attributes->map().end()) {
+	// m_dict->map().find(RtValue::from_ptr(PyString::create("___class_getitem__").unwrap()));
+	// 	it != m_dict->map().end()) {
 	// 	auto class_getitem_slot_ = PyObject::from(it->second);
 	// 	ASSERT(class_getitem_slot_.is_ok());
 	// 	auto *class_getitem_slot = class_getitem_slot_.unwrap();
@@ -639,20 +638,19 @@ PyResult<std::monostate> PyType::initialize(const std::string &name,
 	// 		auto new_fn = PyClassMethod::create(fn);
 	// 		ASSERT(new_fn.is_ok());
 	// 		underlying_type().__new__ = new_fn.unwrap();
-	// 		m_attributes->insert(RtValue::from_ptr(PyString::create("___class_getitem__").unwrap()),
+	// 		m_dict->insert(RtValue::from_ptr(PyString::create("___class_getitem__").unwrap()),
 	// new_fn.unwrap());
 	// 	}
 	// }
 
-	if (auto it =
-			m_attributes->map().find(RtValue::from_ptr(PyString::create("__classcell__").unwrap()));
-		it != m_attributes->map().end()) {
+	if (auto it = m_dict->map().find(RtValue::from_ptr(PyString::create("__classcell__").unwrap()));
+		it != m_dict->map().end()) {
 		auto classcell_ = PyObject::from(it->second);
 		ASSERT(classcell_.is_ok());
 		auto *classcell = classcell_.unwrap();
 		if (auto *cell = as<PyCell>(classcell)) {
 			cell->set_cell(this);
-			auto r = m_attributes->delete_item(PyString::create("__classcell__").unwrap());
+			auto r = m_dict->delete_item(PyString::create("__classcell__").unwrap());
 			if (r.is_err()) { return Err(r.unwrap_err()); }
 		}
 	}
@@ -1012,9 +1010,9 @@ PyResult<std::monostate> PyType::add_operators()
 	for (auto &&slot : get_slotdefs()) {
 		if (!slot.has_member) { continue; }// ?
 		if (slot.name == "__new__") { continue; }
-		if (auto it = m_attributes->map().find(
+		if (auto it = m_dict->map().find(
 				RtValue::from_ptr(PyString::create(std::string{ slot.name }).unwrap()));
-			it != m_attributes->map().end()) {
+			it != m_dict->map().end()) {
 			auto fn = PyObject::from(it->second);
 			if (fn.is_err()) return Err(fn.unwrap_err());
 			slot.update_member(underlying_type(), fn.unwrap());
@@ -1025,18 +1023,16 @@ PyResult<std::monostate> PyType::add_operators()
 			if (name.is_err()) { return Err(name.unwrap_err()); }
 			auto descr = slot.create_slot_wrapper(this);
 			if (descr.is_err()) return Err(descr.unwrap_err());
-			m_attributes->insert(
-				RtValue::from_ptr(PyString::create(std::string{ slot.name }).unwrap()),
+			m_dict->insert(RtValue::from_ptr(PyString::create(std::string{ slot.name }).unwrap()),
 				descr.unwrap());
 		}
 	}
 
 	if (underlying_type().__new__.has_value()) {
-		if (!m_attributes->map().contains(
-				RtValue::from_ptr(PyString::create("__new__").unwrap()))) {
+		if (!m_dict->map().contains(RtValue::from_ptr(PyString::create("__new__").unwrap()))) {
 			auto new_fn_obj = PyNativeFunction::create("__new__", new_wrapper, this);
 			if (new_fn_obj.is_err()) return Err(new_fn_obj.unwrap_err());
-			m_attributes->insert(
+			m_dict->insert(
 				RtValue::from_ptr(PyString::create("__new__").unwrap()), new_fn_obj.unwrap());
 		}
 	}
@@ -1047,7 +1043,7 @@ PyResult<std::monostate> PyType::add_operators()
 PyResult<std::monostate> PyType::add_methods()
 {
 	if (underlying_type().__methods__.empty()) { return Ok(std::monostate{}); }
-	ASSERT(m_attributes);
+	ASSERT(m_dict);
 	for (auto &method : underlying_type().__methods__) {
 		auto [name, fn, flags, doc] = method;
 		auto name_str_ = PyString::create(name);
@@ -1065,12 +1061,11 @@ PyResult<std::monostate> PyType::add_methods()
 		if (descriptor.is_err()) { return Err(descriptor.unwrap_err()); }
 
 		// TODO: Could this check be done before constructing the descriptor?
-		if (m_attributes->map().contains(RtValue::from_ptr(PyString::create(name).unwrap()))) {
+		if (m_dict->map().contains(RtValue::from_ptr(PyString::create(name).unwrap()))) {
 			continue;
 		}
 
-		m_attributes->insert(
-			RtValue::from_ptr(PyString::create(name).unwrap()), descriptor.unwrap());
+		m_dict->insert(RtValue::from_ptr(PyString::create(name).unwrap()), descriptor.unwrap());
 	}
 
 	return Ok(std::monostate{});
@@ -1079,7 +1074,7 @@ PyResult<std::monostate> PyType::add_methods()
 PyResult<std::monostate> PyType::add_members()
 {
 	if (underlying_type().__members__.empty()) { return Ok(std::monostate{}); }
-	ASSERT(m_attributes);
+	ASSERT(m_dict);
 	for (auto &member : underlying_type().__members__) {
 		auto [name, accessor, setter] = member;
 		auto name_str_ = PyString::create(name);
@@ -1089,12 +1084,11 @@ PyResult<std::monostate> PyType::add_members()
 		if (descriptor.is_err()) { return Err(descriptor.unwrap_err()); }
 
 		// TODO: Could this check be done before constructing the descriptor?
-		if (m_attributes->map().contains(RtValue::from_ptr(PyString::create(name).unwrap()))) {
+		if (m_dict->map().contains(RtValue::from_ptr(PyString::create(name).unwrap()))) {
 			continue;
 		}
 
-		m_attributes->insert(
-			RtValue::from_ptr(PyString::create(name).unwrap()), descriptor.unwrap());
+		m_dict->insert(RtValue::from_ptr(PyString::create(name).unwrap()), descriptor.unwrap());
 	}
 	return Ok(std::monostate{});
 }
@@ -1102,7 +1096,7 @@ PyResult<std::monostate> PyType::add_members()
 PyResult<std::monostate> PyType::add_properties()
 {
 	if (underlying_type().__getset__.empty()) { return Ok(std::monostate{}); }
-	ASSERT(m_attributes);
+	ASSERT(m_dict);
 	for (auto &getset : underlying_type().__getset__) {
 		auto [name, accessor, setter] = getset;
 
@@ -1113,12 +1107,11 @@ PyResult<std::monostate> PyType::add_properties()
 		if (descriptor.is_err()) { return Err(descriptor.unwrap_err()); }
 
 		// TODO: Could this check be done before constructing the descriptor?
-		if (m_attributes->map().contains(RtValue::from_ptr(PyString::create(name).unwrap()))) {
+		if (m_dict->map().contains(RtValue::from_ptr(PyString::create(name).unwrap()))) {
 			continue;
 		}
 
-		m_attributes->insert(
-			RtValue::from_ptr(PyString::create(name).unwrap()), descriptor.unwrap());
+		m_dict->insert(RtValue::from_ptr(PyString::create(name).unwrap()), descriptor.unwrap());
 	}
 	return Ok(std::monostate{});
 }
@@ -1365,7 +1358,7 @@ PyResult<std::monostate> PyType::ready()
 		if (dict.is_err()) return Err(dict.unwrap_err());
 		underlying_type().__dict__ = dict.unwrap();
 	}
-	m_attributes = underlying_type().__dict__;
+	m_dict = underlying_type().__dict__;
 
 	if (auto result = add_operators(); result.is_err()) { return result; }
 	if (auto result = add_methods(); result.is_err()) { return result; }
@@ -1395,23 +1388,21 @@ PyResult<std::monostate> PyType::ready()
 	}
 
 	if (underlying_type().__doc__.has_value()) {
-		m_attributes->insert(RtValue::from_ptr(PyString::create("__doc__").unwrap()),
+		m_dict->insert(RtValue::from_ptr(PyString::create("__doc__").unwrap()),
 			RtValue::from_ptr(
 				PyString::create(std::string{ *underlying_type().__doc__ }).unwrap()));
 	} else {
-		m_attributes->insert(RtValue::from_ptr(PyString::create("__doc__").unwrap()), py_none());
+		m_dict->insert(RtValue::from_ptr(PyString::create("__doc__").unwrap()), py_none());
 	}
 
 	if (!underlying_type().__hash__.has_value()) {
-		if (auto it =
-				m_attributes->map().find(RtValue::from_ptr(PyString::create("__hash__").unwrap()));
-			it != m_attributes->map().end()) {
+		if (auto it = m_dict->map().find(RtValue::from_ptr(PyString::create("__hash__").unwrap()));
+			it != m_dict->map().end()) {
 			auto hash_fn_ = PyObject::from(it->second);
 			if (hash_fn_.is_err()) return Err(hash_fn_.unwrap_err());
 			underlying_type().__hash__ = hash_fn_.unwrap();
 		} else {
-			m_attributes->insert(
-				RtValue::from_ptr(PyString::create("__hash__").unwrap()), py_none());
+			m_dict->insert(RtValue::from_ptr(PyString::create("__hash__").unwrap()), py_none());
 		}
 	}
 
@@ -1481,7 +1472,7 @@ namespace {
 			auto *base = base_.unwrap();
 			auto *base_astype = as<PyType>(base);
 			ASSERT(base_astype);
-			auto *dict = base_astype->attributes();
+			auto *dict = base_astype->m_dict;
 			ASSERT(dict);
 			if (auto str_key = PyString::create(std::string{ slot.name }).unwrap();
 				dict->map().find(RtValue::from_ptr(str_key)) != dict->map().end()) {

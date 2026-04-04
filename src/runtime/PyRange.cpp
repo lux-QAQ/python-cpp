@@ -243,7 +243,9 @@ PyResult<PyObject *> PyRangeIterator::__next__()
 		}
 	};
 	if (within_range(m_current_index)) {
-		auto result = PyNumber::from(Number{ m_current_index });
+		auto result = PyInteger::create(m_current_index).and_then([](auto *i) {
+			return Ok(static_cast<PyObject *>(i));
+		});
 		m_current_index += m_pyrange.step();
 		return result;
 	}

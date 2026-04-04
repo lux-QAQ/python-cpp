@@ -31,11 +31,6 @@ namespace py {
 
 using BigIntType = mpz_class;
 
-struct Number
-{
-	// Should we use `mpf_class` instead of `double`?
-	std::variant<double, BigIntType> value;
-};
 
 class BaseException;
 
@@ -109,18 +104,20 @@ template<typename T> class PyResult
 
 	const T &unwrap() const &
 	{
+		if (!is_ok()) { fmt::print("ERROR: Result is Err!\n"); }
 		ASSERT(is_ok());
 		return std::get<Ok<T>>(result).value;
 	}
 
 	T &unwrap() &
 	{
+		if (!is_ok()) { fmt::print("ERROR: Result is Err!\n"); }
 		ASSERT(is_ok());
 		return std::get<Ok<T>>(result).value;
 	}
-
 	T &&unwrap() &&
 	{
+		if (!is_ok()) { fmt::print("ERROR: Result is Err!\n"); }
 		ASSERT(is_ok());
 		return std::move(std::get<Ok<T>>(result).value);
 	}
@@ -169,31 +166,31 @@ PyResult<T> PyResult<T>::or_else(FunctorType &&op) const
 	}
 }
 
-PyResult<Value> add(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> subtract(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> multiply(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> exp(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> modulo(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> true_divide(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> floordiv(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> lshift(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> rshift(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> equals(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> equals(const Value &lhs, const Value &rhs);
-PyResult<Value> not_equals(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> less_than_equals(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> less_than(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> greater_than(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> greater_than_equals(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> and_(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> or_(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<Value> xor_(const Value &lhs, const Value &rhs, Interpreter &interpreter);
+PyResult<Value> add(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> subtract(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> multiply(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> exp(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> modulo(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> true_divide(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> floordiv(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> lshift(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> rshift(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> equals(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> equals(Value lhs, Value rhs);
+PyResult<Value> not_equals(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> less_than_equals(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> less_than(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> greater_than(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> greater_than_equals(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> and_(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> or_(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<Value> xor_(Value lhs, Value rhs, Interpreter &interpreter);
 
-PyResult<bool> is(const Value &lhs, const Value &rhs, Interpreter &interpreter);
-PyResult<bool> in(const Value &lhs, const Value &rhs, Interpreter &interpreter);
+PyResult<bool> is(Value lhs, Value rhs, Interpreter &interpreter);
+PyResult<bool> in(Value lhs, Value rhs, Interpreter &interpreter);
 
-PyResult<bool> truthy(const Value &lhs, Interpreter &);
-PyResult<bool> truthy(const Value &lhs);
+PyResult<bool> truthy(Value lhs, Interpreter &);
+PyResult<bool> truthy(Value lhs);
 
 
 }// namespace py

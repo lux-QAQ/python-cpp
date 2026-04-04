@@ -18,7 +18,6 @@ class PyNumber : public PyBaseObject
 	PyNumber(PyType *);
 
   public:
-	static PyResult<PyNumber *> create(const Number &number);
 	std::string to_string() const override;
 
 	PyResult<PyObject *> __add__(const PyObject *obj) const;
@@ -48,7 +47,6 @@ class PyNumber : public PyBaseObject
 	static const PyNumber *as_number(const PyObject *obj);
 
   private:
-	PyNumber(Number number, const TypePrototype &type);
 };
 
 }// namespace py

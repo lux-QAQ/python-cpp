@@ -144,7 +144,6 @@ class PyNativeFunction : public PyBaseObject
 		if (!result) { return Err(memory_error(sizeof(PyNativeFunction))); }
 		return Ok(result);
 	}
-	PyResult<PyObject *> call_raw(std::span<const Value> args, PyDict *kwargs) override;
 	[[nodiscard]] PyResult<PyObject *>
 		call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs) override;
 	// AOT 编译器工厂

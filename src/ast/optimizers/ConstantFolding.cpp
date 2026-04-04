@@ -18,7 +18,9 @@ namespace optimizer {
 			switch (node->op_type()) {
 			case BinaryOpType::PLUS: {
 				if (lhs->type() == py::types::integer() && rhs->type() == py::types::integer()) {
-					return lhs->add(rhs).unwrap();
+					auto l = static_cast<const py::PyInteger *>(lhs)->as_big_int();
+					auto r = static_cast<const py::PyInteger *>(rhs)->as_big_int();
+					return py::PyInteger::create(l + r).unwrap();
 				} else if (lhs->type() == py::types::float_()
 						   && rhs->type() == py::types::float_()) {
 					return lhs->add(rhs).unwrap();

@@ -10,6 +10,7 @@
 #include "RuntimeError.hpp"
 #include "interpreter/InterpreterCore.hpp"
 #include "runtime/compat.hpp"
+#include "shape/Shape.hpp"
 #include "types/api.hpp"
 #include "types/builtin.hpp"
 
@@ -107,11 +108,11 @@ PyResult<PyObject *> PySuper::__getattribute__(PyObject *name) const
 		if (el.is_err()) return el;
 		auto *candidate = el.unwrap();
 
-		auto *attributes = candidate->attributes();
-		ASSERT(attributes);
+		auto *shape = candidate->shape();
+		if (!shape) continue;
 
-		if (auto it = attributes->map().find(name); it != attributes->map().end()) {
-			auto res_ = PyObject::from(it->second);
+		if (auto offset = shape->lookup(name->to_string())) {
+			auto res_ = PyObject::from(candidate->slots()[*offset]);
 			if (res_.is_err()) return res_;
 			auto *res = res_.unwrap();
 

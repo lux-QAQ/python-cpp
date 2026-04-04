@@ -424,7 +424,8 @@ class PyObject : public Cell
   protected:
 	// std::variant<std::reference_wrapper<const TypePrototype>, PyType *> m_type;
 	PyType *m_bits_type{ nullptr };
-	PyDict *m_attributes{ nullptr };
+	Shape *m_shape{ nullptr };
+	py::GCVector<PyObject *> m_slots;
 
   public:
 	PyObject() = delete;
@@ -515,7 +516,6 @@ class PyObject : public Cell
 	PyResult<PyObject *> call(PyTuple *args, PyDict *kwargs);
 
 	// 新增：接受原始 Value 序列的调用接口
-	virtual PyResult<PyObject *> call_raw(std::span<const Value> args, PyDict *kwargs);
 
 	// 新增：C ABI 高速直通调用接口，消除 variant 和 span，避免装拆箱开销
 	[[nodiscard]] virtual PyResult<PyObject *>
@@ -524,7 +524,6 @@ class PyObject : public Cell
 	virtual PyResult<PyObject *> new_(PyTuple *args, PyDict *kwargs) const;
 	PyResult<int32_t> init(PyTuple *args, PyDict *kwargs);
 	// [新增]：绕过 Tuple 打包的初始化接口
-	PyResult<int32_t> init_raw(std::span<const Value> args, PyDict *kwargs);
 	[[nodiscard]] PyResult<int32_t> init_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs);
 
 	PyResult<PyObject *> getitem(PyObject *key);
@@ -548,8 +547,10 @@ class PyObject : public Cell
 	bool is_callable() const;
 	const std::string &name() const;
 	const TypePrototype &type_prototype() const;
-	const PyDict *attributes() const { return m_attributes; }
-	PyDict *attributes() { return m_attributes; }
+	const Shape *shape() const { return m_shape; }
+	const py::GCVector<PyObject *> &slots() const { return m_slots; }
+	Shape *shape() { return m_shape; }
+	py::GCVector<PyObject *> &slots() { return m_slots; }
 	PyResult<PyObject *> get_method(PyObject *name) const;
 	PyResult<PyObject *> get_attribute(PyObject *name) const;
 	std::tuple<PyResult<PyObject *>, LookupAttrResult> lookup_attribute(PyObject *name) const;

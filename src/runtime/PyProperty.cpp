@@ -214,8 +214,8 @@ PyResult<PyObject *> PyProperty::__get__(PyObject *instance, PyObject *) const
 
 	// return PyTuple::create(instance).and_then(
 	// 	[&](auto *args) { return m_getter->call(args, nullptr); });
-	Value arg = instance;
-	return m_getter->call_raw(std::span<Value>(&arg, 1), nullptr);
+	PyObject *arg = instance;
+	return m_getter->call_fast_ptrs(&arg, 1, nullptr);
 }
 
 PyResult<std::monostate> PyProperty::__set__(PyObject *obj, PyObject *value)
