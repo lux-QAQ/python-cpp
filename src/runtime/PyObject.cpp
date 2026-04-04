@@ -1439,7 +1439,7 @@ PyResult<PyObject *> PyObject::__getattribute__(PyObject *attribute) const
 		}
 	}
 	if (m_shape) {
-		if (auto offset = m_shape->lookup(name->to_string())) {
+		if (auto offset = m_shape->lookup(as<PyString>(name))) {
 			return PyObject::from(m_slots[*offset]);
 		}
 	}
@@ -1530,7 +1530,7 @@ PyResult<PyObject *> PyObject::get_method(PyObject *name) const
 		}
 	}
 	if (m_shape) {
-		if (auto offset = m_shape->lookup(name->to_string())) {
+		if (auto offset = m_shape->lookup(as<PyString>(name))) {
 			return PyObject::from(m_slots[*offset]);
 		}
 	}
@@ -1603,15 +1603,15 @@ PyResult<std::monostate> PyObject::__setattribute__(PyObject *attribute, PyObjec
 		}
 	}
 	if (!m_shape) {
-		m_shape = new Shape(nullptr, attribute->to_string(), 0);
+		m_shape = new Shape(nullptr, as<PyString>(attribute), 0);
 		m_slots.push_back(value);
 		return Ok(std::monostate{});
 	}
-	if (auto offset = m_shape->lookup(attribute->to_string())) {
+	if (auto offset = m_shape->lookup(as<PyString>(attribute))) {
 		m_slots[*offset] = value;
 		return Ok(std::monostate{});
 	}
-	m_shape = m_shape->transition(attribute->to_string());
+	m_shape = m_shape->transition(as<PyString>(attribute));
 	m_slots.push_back(value);
 	return Ok(std::monostate{});
 }

@@ -111,7 +111,7 @@ PyResult<PyObject *> PySuper::__getattribute__(PyObject *name) const
 		auto *shape = candidate->shape();
 		if (!shape) continue;
 
-		if (auto offset = shape->lookup(name->to_string())) {
+		if (auto offset = shape->lookup(as<PyString>(name))) {
 			auto res_ = PyObject::from(candidate->slots()[*offset]);
 			if (res_.is_err()) return res_;
 			auto *res = res_.unwrap();

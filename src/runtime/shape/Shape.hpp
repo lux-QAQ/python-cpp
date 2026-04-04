@@ -1,10 +1,10 @@
 #pragma once
 
 #include "runtime/PyObject.hpp"
+#include "runtime/PyString.hpp"
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
-#include <string>
 #include <unordered_map>
 
 namespace py {
@@ -12,34 +12,39 @@ namespace py {
 class Shape
 {
 	Shape *m_parent;
-	std::string m_property_name;
+	PyString *m_property_name;
 	size_t m_offset;
 
 	// maps property name to next shape
-	std::unordered_map<std::string, Shape *> m_transitions;
+	std::unordered_map<PyString *, Shape *> m_transitions;
 
   public:
-	Shape() : m_parent(nullptr), m_offset(0) {}
-	Shape(Shape *parent, std::string name, size_t offset)
-		: m_parent(parent), m_property_name(std::move(name)), m_offset(offset)
+	Shape() : m_parent(nullptr), m_property_name(nullptr), m_offset(0) {}
+	Shape(Shape *parent, PyString *name, size_t offset)
+		: m_parent(parent), m_property_name(name), m_offset(offset)
 	{}
 
 	size_t offset() const { return m_offset; }
 	size_t slot_count() const { return m_offset + 1; }
 
-	Shape *transition(const std::string &name)
+	Shape *transition(PyString *name)
 	{
-		if (auto it = m_transitions.find(name); it != m_transitions.end()) { return it->second; }
-		auto *next = new Shape(this, name, slot_count());
-		m_transitions[name] = next;
+		// Ensure name is interned for fast pointer comparisons!
+		auto interned = PyString::intern(name->value());
+		if (auto it = m_transitions.find(interned); it != m_transitions.end()) {
+			return it->second;
+		}
+		auto *next = new Shape(this, interned, slot_count());
+		m_transitions[interned] = next;
 		return next;
 	}
 
-	std::optional<size_t> lookup(const std::string &name) const
+	std::optional<size_t> lookup(PyString *name) const
 	{
+		auto interned = PyString::intern(name->value());
 		const Shape *current = this;
-		while (current) {
-			if (current->m_property_name == name) { return current->m_offset; }
+		while (current && current->m_property_name) {
+			if (current->m_property_name == interned) { return current->m_offset; }
 			current = current->m_parent;
 		}
 		return std::nullopt;

@@ -56,7 +56,9 @@ py::PyObject *rt_getattr(py::PyObject *obj, const char *name)
 try_instance_dict:
 	// 4. [极致优化] 直接查询实例属性，消灭 99% 的 getattribute 异常分配
 	if (auto *shape = b_obj->shape()) {
-		if (auto offset = shape->lookup(name)) { return b_obj->slots()[*offset]; }
+		if (auto offset = shape->lookup(py::PyString::intern(name))) {
+			return b_obj->slots()[*offset];
+		}
 	}
 
 	// 5. 慢速路径：真正抛出异常 (只有这一步会分配 AttributeError)
@@ -80,7 +82,7 @@ py::PyObject *rt_getattr_fast(py::PyObject *obj, py::PyObject *name_obj)
 	// 1. 如果是普通对象（没有覆盖 __getattribute__），先查实例属性
 	// 这是 test.py 中 Node 对象最频繁的路径
 	if (auto *shape = b_obj->shape()) {
-		if (auto offset = shape->lookup(name->to_string())) { return b_obj->slots()[*offset]; }
+		if (auto offset = shape->lookup(name)) { return b_obj->slots()[*offset]; }
 	}
 
 	// 2. 否则，调用虚函数 getattribute。

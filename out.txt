@@ -1,0 +1,114 @@
+Running verify()...
+Sieve initialized with limit: 100
+Starting sieve calculation...
+Sieve loops finished, omitting squares...
+Searching for prefix: 2
+Total primes found: 25
+Base primes check for 100: True True True
+Generating trie for primes, list size: 25
+Trie generation complete.
+Navigating to prefix node...
+Link check for char: 2
+Prefix node found. Terminal state of prefix node: True
+Starting queue traversal. Initial queue size: 1
+Queue pop: 2 Terminal: True
+Found children chars at 2 : ['3', '9']
+Pushing to queue: 23
+Pushing to queue: 29
+Queue pop: 23 Terminal: True
+Queue pop: 29 Terminal: True
+Find completed. Results count: 3 Values: [2, 23, 29]
+Verify results match: True
+Expected: [2, 23, 29]
+Actual: [2, 23, 29]
+Starting main calculation (UPPER_BOUND = 5000000 )
+Sieve initialized with limit: 5000000
+Starting sieve calculation...
+Processing loop_x, x = 500
+Processing loop_x, x = 1000
+Processing loop_x, x = 1500
+Processing loop_x, x = 2000
+Sieve loops finished, omitting squares...
+Searching for prefix: 32338
+Total primes found: 348513
+Generating trie for primes, list size: 348513
+[2026-04-04 20:47:52.957] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:       5000
+[2026-04-04 20:47:52.960] [error] [DEBUG_ALLOC] Type: PyDict               | Total:       5000
+[2026-04-04 20:47:52.961] [error] [DEBUG_ALLOC] Type: Type                 | Total:       5000
+[2026-04-04 20:47:52.970] [error] [DEBUG_ALLOC] Type: PyString             | Total:       5000
+[2026-04-04 20:47:52.972] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      10000
+[2026-04-04 20:47:52.973] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:       5000
+[2026-04-04 20:47:52.973] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:       5000
+[2026-04-04 20:47:52.979] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      10000
+[2026-04-04 20:47:52.980] [error] [DEBUG_ALLOC] Type: Type                 | Total:      10000
+[2026-04-04 20:47:52.988] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      15000
+[2026-04-04 20:47:52.998] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      15000
+[2026-04-04 20:47:52.999] [error] [DEBUG_ALLOC] Type: Type                 | Total:      15000
+[2026-04-04 20:47:53.001] [error] [DEBUG_ALLOC] Type: PyString             | Total:      10000
+[2026-04-04 20:47:53.005] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      20000
+[2026-04-04 20:47:53.005] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      10000
+[2026-04-04 20:47:53.005] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      10000
+[2026-04-04 20:47:53.017] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      20000
+[2026-04-04 20:47:53.018] [error] [DEBUG_ALLOC] Type: Type                 | Total:      20000
+[2026-04-04 20:47:53.020] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      25000
+[2026-04-04 20:47:53.034] [error] [DEBUG_ALLOC] Type: PyString             | Total:      15000
+[2026-04-04 20:47:53.037] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      30000
+[2026-04-04 20:47:53.037] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      15000
+[2026-04-04 20:47:53.037] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      15000
+[2026-04-04 20:47:53.037] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      25000
+[2026-04-04 20:47:53.038] [error] [DEBUG_ALLOC] Type: Type                 | Total:      25000
+[2026-04-04 20:47:53.054] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      35000
+[2026-04-04 20:47:53.057] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      30000
+[2026-04-04 20:47:53.057] [error] [DEBUG_ALLOC] Type: Type                 | Total:      30000
+[2026-04-04 20:47:53.067] [error] [DEBUG_ALLOC] Type: PyString             | Total:      20000
+[2026-04-04 20:47:53.070] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      40000
+[2026-04-04 20:47:53.070] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      20000
+[2026-04-04 20:47:53.070] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      20000
+[2026-04-04 20:47:53.077] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      35000
+[2026-04-04 20:47:53.078] [error] [DEBUG_ALLOC] Type: Type                 | Total:      35000
+[2026-04-04 20:47:53.087] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      45000
+[2026-04-04 20:47:53.096] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      40000
+[2026-04-04 20:47:53.097] [error] [DEBUG_ALLOC] Type: Type                 | Total:      40000
+[2026-04-04 20:47:53.101] [error] [DEBUG_ALLOC] Type: PyString             | Total:      25000
+[2026-04-04 20:47:53.103] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      50000
+[2026-04-04 20:47:53.103] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      25000
+[2026-04-04 20:47:53.103] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      25000
+[2026-04-04 20:47:53.115] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      45000
+[2026-04-04 20:47:53.116] [error] [DEBUG_ALLOC] Type: Type                 | Total:      45000
+[2026-04-04 20:47:53.120] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      55000
+[2026-04-04 20:47:53.134] [error] [DEBUG_ALLOC] Type: PyString             | Total:      30000
+[2026-04-04 20:47:53.135] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      50000
+[2026-04-04 20:47:53.135] [error] [DEBUG_ALLOC] Type: Type                 | Total:      50000
+[2026-04-04 20:47:53.136] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      60000
+[2026-04-04 20:47:53.137] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      30000
+[2026-04-04 20:47:53.137] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      30000
+[2026-04-04 20:47:53.153] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      65000
+[2026-04-04 20:47:53.153] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      55000
+[2026-04-04 20:47:53.154] [error] [DEBUG_ALLOC] Type: Type                 | Total:      55000
+[2026-04-04 20:47:53.167] [error] [DEBUG_ALLOC] Type: PyString             | Total:      35000
+[2026-04-04 20:47:53.170] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      70000
+[2026-04-04 20:47:53.170] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      35000
+[2026-04-04 20:47:53.170] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      35000
+[2026-04-04 20:47:53.173] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      60000
+[2026-04-04 20:47:53.174] [error] [DEBUG_ALLOC] Type: Type                 | Total:      60000
+[2026-04-04 20:47:53.186] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      75000
+[2026-04-04 20:47:53.192] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      65000
+[2026-04-04 20:47:53.193] [error] [DEBUG_ALLOC] Type: Type                 | Total:      65000
+[2026-04-04 20:47:53.201] [error] [DEBUG_ALLOC] Type: PyString             | Total:      40000
+[2026-04-04 20:47:53.203] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      80000
+[2026-04-04 20:47:53.204] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      40000
+[2026-04-04 20:47:53.204] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      40000
+[2026-04-04 20:47:53.212] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      70000
+[2026-04-04 20:47:53.213] [error] [DEBUG_ALLOC] Type: Type                 | Total:      70000
+[2026-04-04 20:47:53.224] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      85000
+[2026-04-04 20:47:53.235] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      75000
+[2026-04-04 20:47:53.236] [error] [DEBUG_ALLOC] Type: Type                 | Total:      75000
+[2026-04-04 20:47:53.238] [error] [DEBUG_ALLOC] Type: PyString             | Total:      45000
+[2026-04-04 20:47:53.241] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      90000
+[2026-04-04 20:47:53.241] [error] [DEBUG_ALLOC] Type: PyInteger            | Total:      45000
+[2026-04-04 20:47:53.241] [error] [DEBUG_ALLOC] Type: PyStringIterator     | Total:      45000
+[2026-04-04 20:47:53.254] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      80000
+[2026-04-04 20:47:53.255] [error] [DEBUG_ALLOC] Type: Type                 | Total:      80000
+[2026-04-04 20:47:53.257] [error] [DEBUG_ALLOC] Type: PyTuple              | Total:      95000
+[2026-04-04 20:47:53.271] [error] [DEBUG_ALLOC] Type: PyString             | Total:      50000
+[2026-04-04 20:47:53.273] [error] [DEBUG_ALLOC] Type: PyDict               | Total:      85000

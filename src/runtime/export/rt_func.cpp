@@ -263,7 +263,7 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 		if (desc->type() == py::types::function() || desc->type() == py::types::native_function()) {
 			// 先检查实例字典是否覆盖了方法 (Python 语义: 实例属性优先于非数据描述符)
 			if (auto *shape = b_owner->shape()) {
-				if (auto offset = shape->lookup(attr_name->to_string())) {
+				if (auto offset = shape->lookup(attr_name)) {
 					auto func = rt_unwrap(py::PyObject::from(b_owner->slots()[*offset]));
 					return rt_call_raw_ptrs(func, args, argc, kwargs_dict);
 				}
@@ -295,7 +295,7 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 
 		// 2. 实例字典 (覆盖类属性)
 		if (auto *shape = b_owner->shape()) {
-			if (auto offset = shape->lookup(attr_name->to_string())) {
+			if (auto offset = shape->lookup(attr_name)) {
 				auto func = rt_unwrap(py::PyObject::from(b_owner->slots()[*offset]));
 				return rt_call_raw_ptrs(func, args, argc, kwargs_dict);
 			}

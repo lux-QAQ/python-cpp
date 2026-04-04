@@ -133,7 +133,7 @@ py::PyObject *rt_call_method_ic_ptrs(py::cache::MethodCache *cache,
 
 				// O(1) 检测：如果用户对象包含 shape，确保对象上没有同名属性
 				if (auto *shape = b_owner->shape()) {
-					if (shape->lookup(interned_name->to_string())) {
+					if (shape->lookup(interned_name)) {
 						goto NEXT_SLOT;// 发生遮蔽，直接放弃当前槽位，跳转下一个或者慢路径
 					}
 				}
