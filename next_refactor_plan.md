@@ -450,3 +450,28 @@ cache 建议至少包含：
 
 如果这 6 条没有出现，说明重构仍然停留在“接口形式变化”，还没有真正把成本从主路径上拿掉。
 
+
+
+
+GitHub Copilot: 根据您提供的性能分析日志（promble.md, failed.log, log.log 等）和代码状态，目前的重构虽然替换了底层变体（Variant），但性能瓶颈依然存在，原因主要集中在运行时的隐式装箱、分配以及旧的 fallback 路径未完全消除：
+
+### 1. PyTuple 的海量分配
+当前的参数传递和函数调用虽然切到了 `PyObject**` API，但在很多 fallback 路径（例如 `PyObject::call_fast_ptrs` 或插槽调用时），代码仍在回退到构建 `PyTuple`。
+*   每次未命中绝对 fast_path 的调用都会 `py::ensure_box(args[i])`，填入 `GCVector`，再调用 `PyTuple::create`。
+*   log.log 显示 `PyTuple` 的分配数达到了惊人的 **300,000+** 次。
+
+### 2. 小整数的频繁装箱 (Tagged Integer Boxing)
+原本设计 Tagged Pointer 是为了零分配，但目前的调用链在通过 `rt_call_raw_ptrs` 时，依然会触发 `RtValue::box()` 将 Tagged Integer 转换成了堆上的 `PyInteger`。
+*   这导致原本该是寄存器中位运算的便宜数字，变成了高昂的 `__gmpz_init_set` 和对象分配。
+*   log.log 中 `PyInteger` 分配次数与 `PyNativeFunction` 紧密绑定，达到了 **95,000+** 次。
+
+### 3. Phương法调用与描述符的过度绑定
+在 rt_func.cpp 和 `rt_method_cache.cpp` 中，缓存虽然命中，但实际执行时：
+*   仍会因为描述符（Descriptor）的性质，调用 `__get__` 生成一个临时的 `PyBuiltInMethod` 或 `PyNativeFunction` 包装器。
+*   这意味着**每一次**类方法调用或实例方法调用，都在动态创建一个全新的可调用对象（`PyNativeFunction` 分配暴增）。
+
+### 4. 属性查找（Shape）链未能实现 O(1) 
+尽管有了 Inline Cache，但回退路径（`rt_getattr_ic` -> `PyType::lookup` -> `Shape::lookup`）依然很沉重。之前报错的 failed.log 证实了 `Shape` 相关的链接问题，说明这一块重构仍在动荡期。
+
+### 总结
+当前的性能瓶颈是因为**重构处于“半完成”状态**。ABI 接口已更新为指针数组，但底层的实现逻辑（如泛型函数的 Fallback、`__call__` 的默认行为）仍在使用旧的 Python 语义机制，疯狂地在此过程中进行不必要的动态内存分配。要突破瓶颈，必须消除主路径上的 `PyTuple` 构建，并允许原始函数直接消费 `PyObject**` / `Tagged Pointer` 而绝不触发 `.box()`。
