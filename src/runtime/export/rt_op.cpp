@@ -8,24 +8,53 @@
 
 // =============================================================================
 // Tier 1: 二元运算
+//
+// 每个函数保留 tagged-int 快速路径，堆路径通过 rt_unwrap 正确传播 Python 异常
 // =============================================================================
 
 PYLANG_EXPORT_OP("binary_add", "obj", "obj,obj")
 py::PyObject *rt_binary_add(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return py::RtValue::add(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs)).as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		int64_t result;
+		if (!__builtin_add_overflow(l.as_int(), r.as_int(), &result)
+			&& py::RtValue::fits_tagged_int(result)) {
+			return py::RtValue::from_int(result).as_pyobject_raw();
+		}
+	}
+	return rt_unwrap(l.box()->add(r.box()));
 }
 
 PYLANG_EXPORT_OP("binary_sub", "obj", "obj,obj")
 py::PyObject *rt_binary_sub(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return py::RtValue::sub(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs)).as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		int64_t result;
+		if (!__builtin_sub_overflow(l.as_int(), r.as_int(), &result)
+			&& py::RtValue::fits_tagged_int(result)) {
+			return py::RtValue::from_int(result).as_pyobject_raw();
+		}
+	}
+	return rt_unwrap(l.box()->subtract(r.box()));
 }
 
 PYLANG_EXPORT_OP("binary_mul", "obj", "obj,obj")
 py::PyObject *rt_binary_mul(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return py::RtValue::mul(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs)).as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		int64_t result;
+		if (!__builtin_mul_overflow(l.as_int(), r.as_int(), &result)
+			&& py::RtValue::fits_tagged_int(result)) {
+			return py::RtValue::from_int(result).as_pyobject_raw();
+		}
+	}
+	return rt_unwrap(l.box()->multiply(r.box()));
 }
 
 PYLANG_EXPORT_OP("binary_truediv", "obj", "obj,obj")
@@ -37,14 +66,36 @@ py::PyObject *rt_binary_truediv(py::PyObject *lhs, py::PyObject *rhs)
 PYLANG_EXPORT_OP("binary_floordiv", "obj", "obj,obj")
 py::PyObject *rt_binary_floordiv(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return py::RtValue::floordiv(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs))
-		.as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		int64_t lv = l.as_int(), rv = r.as_int();
+		if (rv != 0) {
+			int64_t q = lv / rv;
+			int64_t rem = lv % rv;
+			if ((rem != 0) && ((rem ^ rv) < 0)) { q--; }
+			if (py::RtValue::fits_tagged_int(q)) {
+				return py::RtValue::from_int(q).as_pyobject_raw();
+			}
+		}
+	}
+	return rt_unwrap(l.box()->floordiv(r.box()));
 }
 
 PYLANG_EXPORT_OP("binary_mod", "obj", "obj,obj")
 py::PyObject *rt_binary_mod(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return py::RtValue::mod(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs)).as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		int64_t lv = l.as_int(), rv = r.as_int();
+		if (rv != 0) {
+			int64_t rem = lv % rv;
+			if ((rem != 0) && ((rem ^ rv) < 0)) { rem += rv; }
+			return py::RtValue::from_int(rem).as_pyobject_raw();
+		}
+	}
+	return rt_unwrap(l.box()->modulo(r.box()));
 }
 
 PYLANG_EXPORT_OP("binary_pow", "obj", "obj,obj")
@@ -56,38 +107,63 @@ py::PyObject *rt_binary_pow(py::PyObject *lhs, py::PyObject *rhs)
 PYLANG_EXPORT_OP("binary_lshift", "obj", "obj,obj")
 py::PyObject *rt_binary_lshift(py::PyObject *lhs, py::PyObject *rhs)
 {
-	// [极致优化]: 拦截位移装箱
-	return py::RtValue::lshift(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs))
-		.as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		int64_t lv = l.as_int(), rv = r.as_int();
+		if (rv >= 0 && rv < 63) {
+			int64_t result = lv << rv;
+			if (py::RtValue::fits_tagged_int(result) && (result >> rv) == lv) {
+				return py::RtValue::from_int(result).as_pyobject_raw();
+			}
+		}
+	}
+	return rt_unwrap(l.box()->lshift(r.box()));
 }
 
 PYLANG_EXPORT_OP("binary_rshift", "obj", "obj,obj")
 py::PyObject *rt_binary_rshift(py::PyObject *lhs, py::PyObject *rhs)
 {
-	// [极致优化]: 拦截位移装箱
-	return py::RtValue::rshift(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs))
-		.as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		int64_t lv = l.as_int(), rv = r.as_int();
+		if (rv >= 0 && rv < 63) { return py::RtValue::from_int(lv >> rv).as_pyobject_raw(); }
+	}
+	return rt_unwrap(l.box()->rshift(r.box()));
 }
 
 PYLANG_EXPORT_OP("binary_and", "obj", "obj,obj")
 py::PyObject *rt_binary_and(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return py::RtValue::bit_and(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs))
-		.as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		return py::RtValue::from_int(l.as_int() & r.as_int()).as_pyobject_raw();
+	}
+	return rt_unwrap(l.box()->and_(r.box()));
 }
 
 PYLANG_EXPORT_OP("binary_or", "obj", "obj,obj")
 py::PyObject *rt_binary_or(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return py::RtValue::bit_or(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs))
-		.as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		return py::RtValue::from_int(l.as_int() | r.as_int()).as_pyobject_raw();
+	}
+	return rt_unwrap(l.box()->or_(r.box()));
 }
 
 PYLANG_EXPORT_OP("binary_xor", "obj", "obj,obj")
 py::PyObject *rt_binary_xor(py::PyObject *lhs, py::PyObject *rhs)
 {
-	return py::RtValue::bit_xor(py::RtValue::flatten(lhs), py::RtValue::flatten(rhs))
-		.as_pyobject_raw();
+	auto l = py::RtValue::flatten(lhs);
+	auto r = py::RtValue::flatten(rhs);
+	if (py::RtValue::are_both_tagged_int(l, r)) {
+		return py::RtValue::from_int(l.as_int() ^ r.as_int()).as_pyobject_raw();
+	}
+	return rt_unwrap(l.box()->xor_(r.box()));
 }
 
 // =============================================================================

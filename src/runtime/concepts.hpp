@@ -142,8 +142,11 @@ namespace concepts {
 		template<typename T> constexpr bool has_add()
 		{
 			if constexpr (HasInterface<T>) { return true; }
-			return std::is_same_v<decltype(&T::__add__),
-				PyResult<PyObject *> (T::*)(const PyObject *) const>;
+			// [修复] 允许从基类继承的 __add__：使用 is_invocable 替代严格的指针类型判定
+			return std::is_invocable_r_v<PyResult<PyObject *>,
+				decltype(&T::__add__),
+				const T *,
+				const PyObject *>;
 		}
 	}// namespace detail
 

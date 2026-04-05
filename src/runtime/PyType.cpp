@@ -1010,8 +1010,9 @@ PyResult<std::monostate> PyType::add_operators()
 	for (auto &&slot : get_slotdefs()) {
 		if (!slot.has_member) { continue; }// ?
 		if (slot.name == "__new__") { continue; }
-		if (auto it = m_dict->map().find(
-				RtValue::from_ptr(PyString::create(std::string{ slot.name }).unwrap()));
+		// [修复] 使用 intern 确保 dict lookup 与 key 指针一致
+		auto *interned_name = PyString::intern(std::string{ slot.name });
+		if (auto it = m_dict->map().find(RtValue::from_ptr(interned_name));
 			it != m_dict->map().end()) {
 			auto fn = PyObject::from(it->second);
 			if (fn.is_err()) return Err(fn.unwrap_err());
@@ -1019,21 +1020,18 @@ PyResult<std::monostate> PyType::add_operators()
 		} else if (!slot.has_member(underlying_type())) {
 			continue;
 		} else {
-			auto name = PyString::create(std::string{ slot.name });
-			if (name.is_err()) { return Err(name.unwrap_err()); }
 			auto descr = slot.create_slot_wrapper(this);
 			if (descr.is_err()) return Err(descr.unwrap_err());
-			m_dict->insert(RtValue::from_ptr(PyString::create(std::string{ slot.name }).unwrap()),
-				descr.unwrap());
+			m_dict->insert(RtValue::from_ptr(interned_name), descr.unwrap());
 		}
 	}
 
 	if (underlying_type().__new__.has_value()) {
-		if (!m_dict->map().contains(RtValue::from_ptr(PyString::create("__new__").unwrap()))) {
+		auto *new_name = PyString::intern("__new__");
+		if (!m_dict->map().contains(RtValue::from_ptr(new_name))) {
 			auto new_fn_obj = PyNativeFunction::create("__new__", new_wrapper, this);
 			if (new_fn_obj.is_err()) return Err(new_fn_obj.unwrap_err());
-			m_dict->insert(
-				RtValue::from_ptr(PyString::create("__new__").unwrap()), new_fn_obj.unwrap());
+			m_dict->insert(RtValue::from_ptr(new_name), new_fn_obj.unwrap());
 		}
 	}
 
@@ -1046,9 +1044,7 @@ PyResult<std::monostate> PyType::add_methods()
 	ASSERT(m_dict);
 	for (auto &method : underlying_type().__methods__) {
 		auto [name, fn, flags, doc] = method;
-		auto name_str_ = PyString::create(name);
-		if (name_str_.is_err()) { return Err(name_str_.unwrap_err()); }
-		auto *name_str = name_str_.unwrap();
+		auto *name_str = PyString::intern(name);
 		auto descriptor = [&, flags = flags]() -> PyResult<PyObject *> {
 			if (flags.is_set(MethodFlags::Flag::CLASSMETHOD)) {
 				return PyClassMethodDescriptor::create(name_str, this, method);
@@ -1060,12 +1056,9 @@ PyResult<std::monostate> PyType::add_methods()
 		}();
 		if (descriptor.is_err()) { return Err(descriptor.unwrap_err()); }
 
-		// TODO: Could this check be done before constructing the descriptor?
-		if (m_dict->map().contains(RtValue::from_ptr(PyString::create(name).unwrap()))) {
-			continue;
-		}
+		if (m_dict->map().contains(RtValue::from_ptr(name_str))) { continue; }
 
-		m_dict->insert(RtValue::from_ptr(PyString::create(name).unwrap()), descriptor.unwrap());
+		m_dict->insert(RtValue::from_ptr(name_str), descriptor.unwrap());
 	}
 
 	return Ok(std::monostate{});
@@ -1077,18 +1070,13 @@ PyResult<std::monostate> PyType::add_members()
 	ASSERT(m_dict);
 	for (auto &member : underlying_type().__members__) {
 		auto [name, accessor, setter] = member;
-		auto name_str_ = PyString::create(name);
-		if (name_str_.is_err()) { return Err(name_str_.unwrap_err()); }
-		auto *name_str = name_str_.unwrap();
+		auto *name_str = PyString::intern(name);
 		auto descriptor = PyMemberDescriptor::create(name_str, this, accessor, setter);
 		if (descriptor.is_err()) { return Err(descriptor.unwrap_err()); }
 
-		// TODO: Could this check be done before constructing the descriptor?
-		if (m_dict->map().contains(RtValue::from_ptr(PyString::create(name).unwrap()))) {
-			continue;
-		}
+		if (m_dict->map().contains(RtValue::from_ptr(name_str))) { continue; }
 
-		m_dict->insert(RtValue::from_ptr(PyString::create(name).unwrap()), descriptor.unwrap());
+		m_dict->insert(RtValue::from_ptr(name_str), descriptor.unwrap());
 	}
 	return Ok(std::monostate{});
 }
@@ -1100,18 +1088,13 @@ PyResult<std::monostate> PyType::add_properties()
 	for (auto &getset : underlying_type().__getset__) {
 		auto [name, accessor, setter] = getset;
 
-		auto name_str_ = PyString::create(name);
-		if (name_str_.is_err()) { return Err(name_str_.unwrap_err()); }
-		auto *name_str = name_str_.unwrap();
+		auto *name_str = PyString::intern(name);
 		auto descriptor = PyGetSetDescriptor::create(name_str, this, getset);
 		if (descriptor.is_err()) { return Err(descriptor.unwrap_err()); }
 
-		// TODO: Could this check be done before constructing the descriptor?
-		if (m_dict->map().contains(RtValue::from_ptr(PyString::create(name).unwrap()))) {
-			continue;
-		}
+		if (m_dict->map().contains(RtValue::from_ptr(name_str))) { continue; }
 
-		m_dict->insert(RtValue::from_ptr(PyString::create(name).unwrap()), descriptor.unwrap());
+		m_dict->insert(RtValue::from_ptr(name_str), descriptor.unwrap());
 	}
 	return Ok(std::monostate{});
 }
@@ -1474,9 +1457,9 @@ namespace {
 			ASSERT(base_astype);
 			auto *dict = base_astype->m_dict;
 			ASSERT(dict);
-			if (auto str_key = PyString::create(std::string{ slot.name }).unwrap();
-				dict->map().find(RtValue::from_ptr(str_key)) != dict->map().end()) {
-				auto it = dict->map().find(RtValue::from_ptr(str_key));
+			// [修复] 使用 intern 确保与 dict 中的 key 指针一致
+			auto *str_key = PyString::intern(std::string{ slot.name });
+			if (auto it = dict->map().find(RtValue::from_ptr(str_key)); it != dict->map().end()) {
 				descr_ = PyObject::from(it->second).unwrap();
 				break;
 			}

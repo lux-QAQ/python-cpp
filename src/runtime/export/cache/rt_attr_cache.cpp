@@ -120,6 +120,13 @@ void rt_setattr_ic(py::cache::AttrCache *cache,
 		return;
 	}
 
+	// 类对象（PyType）的属性存储在 __dict__ 中，不能使用 shape/slots IC
+	// 必须走 setattribute 路径以确保 __dict__ 被正确更新
+	if (py::as<py::PyType>(b_obj)) {
+		rt_unwrap_void(b_obj->setattribute(name, py::ensure_box(value)));
+		return;
+	}
+
 	if (cache && cache->kind.load(std::memory_order_acquire) == 2) {
 		auto *expected_type = cache->expected_type.load(std::memory_order_acquire);
 		auto *expected_shape = cache->expected_shape.load(std::memory_order_acquire);

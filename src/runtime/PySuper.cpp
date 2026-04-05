@@ -108,11 +108,14 @@ PyResult<PyObject *> PySuper::__getattribute__(PyObject *name) const
 		if (el.is_err()) return el;
 		auto *candidate = el.unwrap();
 
-		auto *shape = candidate->shape();
-		if (!shape) continue;
+		// 从 MRO 类型的 __dict__ 中查找（与 PyType::lookup 保持一致）
+		auto *candidate_type = as<PyType>(candidate);
+		if (!candidate_type) continue;
+		auto *dict = candidate_type->underlying_type().__dict__;
+		if (!dict) continue;
 
-		if (auto offset = shape->lookup(as<PyString>(name))) {
-			auto res_ = PyObject::from(candidate->slots()[*offset]);
+		if (auto it = dict->map().find(name); it != dict->map().end()) {
+			auto res_ = PyObject::from(it->second);
 			if (res_.is_err()) return res_;
 			auto *res = res_.unwrap();
 

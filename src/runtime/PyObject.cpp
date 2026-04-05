@@ -799,8 +799,6 @@ PyResult<PyObject *> PyObject::add(const PyObject *other) const
 	if (type_prototype().__add__.has_value()) {
 		return call_slot(*type_prototype().__add__, this, other);
 	} else if (other->type_prototype().__add__.has_value()) {
-		// 注意：这是 __radd__ 的逻辑，如果 lhs 没有 __add__，尝试 rhs 的 __radd__
-		// 但目前的实现似乎是尝试 rhs 的 __add__ (可能不完全符合 Python 语义，但先保持原状)
 		return call_slot(*other->type_prototype().__add__, other, this);
 	} else if (auto seq = const_cast<PyObject *>(this)->as_sequence(); seq.is_ok()) {
 		return seq.unwrap().concat(const_cast<PyObject *>(other));
@@ -1598,7 +1596,14 @@ PyResult<std::monostate> PyObject::__setattribute__(PyObject *attribute, PyObjec
 	}
 
 	// Python 3.9 语义：如果是修改 Type 对象（类属性），必须使全局缓存失效
-	if (as<PyType>(this)) { PyType::inc_global_version(); }
+	if (auto *type_self = as<PyType>(this)) {
+		PyType::inc_global_version();
+		// 类属性存储在 TypePrototype::__dict__ 中，而非 shape/slots
+		// 必须同步更新 __dict__，否则 PyType::lookup / PyType::__getattribute__ 会读到旧值
+		auto *dict = type_self->underlying_type().__dict__;
+		if (dict) { dict->insert(RtValue::from_ptr(attribute), RtValue::from_ptr(value)); }
+		return Ok(std::monostate{});
+	}
 
 	auto descriptor_ = type()->lookup(attribute);
 	if (descriptor_.has_value() && descriptor_->is_err()) { return Err(descriptor_->unwrap_err()); }

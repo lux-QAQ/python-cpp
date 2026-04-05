@@ -10,11 +10,11 @@
 namespace py {
 namespace types {
 
-	using ProtoMap = std::unordered_map<const TypePrototype *,
-		PyType *,
-		std::hash<const TypePrototype *>,
-		std::equal_to<const TypePrototype *>,
-		GCTracingAllocator<std::pair<const TypePrototype *const, PyType *>>>;
+	// [修复] ProtoMap 必须使用 std::allocator 而非 GCTracingAllocator!
+	// proto_map 是全局静态表，存储 TypePrototype* -> PyType* 的映射。
+	// GCTracingAllocator 使用 GC_MALLOC，在 GC 回收压力下，map 内部节点可能被错误回收，
+	// 导致 "bootstrap type missing" 崩溃。使用标准分配器保证节点存活。
+	using ProtoMap = std::unordered_map<const TypePrototype *, PyType *>;
 
 	ProtoMap &get_proto_map();
 	PyType *lookup_type_by_prototype(const TypePrototype *proto);

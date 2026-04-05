@@ -17,7 +17,7 @@
             "type": "lldb",
             "request": "launch",
             // 关键：不要在前面加任何路径前缀
-            "program": "${command:cmake.launchTargetPath}", 
+            "program": "${command:cmake.launchTargetPath}",
             "args": [],
             "cwd": "${workspaceFolder}"
         }
