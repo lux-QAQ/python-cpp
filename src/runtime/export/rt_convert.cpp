@@ -9,13 +9,26 @@
 #include "runtime/PyTraceback.hpp"
 #include "runtime/PyTuple.hpp"
 #include "runtime/taggered_pointer/RtValue.hpp"
+#include "runtime/types/builtin.hpp"
 
 // =============================================================================
 // 编译器原语（不是 Python 函数，无对应的 builtins 名称）
 // =============================================================================
 
 PYLANG_EXPORT_CONVERT("is_true", "bool", "obj")
-bool rt_is_true(py::PyObject *obj) { return py::RtValue::flatten(obj).is_truthy(); }
+bool rt_is_true(py::PyObject *obj)
+{
+	// [性能优化] 避免完整的 flatten() 路径
+	// 最常见的情况: tagged int (来自比较运算) 和 PyBool
+	auto rt = py::RtValue::from_ptr(obj);
+	if (rt.is_tagged_int()) { return rt.as_int() != 0; }
+	if (rt.is_null()) { return false; }
+	// 堆对象快速路径: PyBool 直接判断
+	auto *type = obj->type();
+	if (type == py::types::bool_()) { return static_cast<py::PyBool *>(obj)->value(); }
+	// 通用路径
+	return obj->true_().unwrap();
+}
 
 
 /// list → tuple 转换（用于 *args 展开后的 list→tuple）

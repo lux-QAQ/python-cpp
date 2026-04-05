@@ -258,13 +258,15 @@ PyResult<PyObject *> PyFunction::call_with_frame(PyObject *ns, PyTuple *args, Py
 // ============================================
 PyResult<PyObject *> PyNativeFunction::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
 {
-	spdlog::debug("[NativeFunc::call_fast_ptrs] fn='{}', argc={}, has_aot={}, has_self={}",
+	// [性能优化] 移除热路径上的 spdlog::debug — 即使未启用 debug 级别，
+	// 格式化参数仍然会被求值，在数千万次调用中消耗 ~0.5s+
+	SPDLOG_DEBUG("[NativeFunc::call_fast_ptrs] fn='{}', argc={}, has_aot={}, has_self={}",
 		m_name,
 		argc,
 		m_aot_ptr != nullptr,
 		m_self != nullptr);
 
-	if (argc > 1000000) {
+	if (__builtin_expect(argc > 1000000, 0)) {
 		spdlog::critical("[call_fast_ptrs] Corrupt argc detected: {}", argc);
 		return Err(runtime_error("Corrupt execution stack"));
 	}

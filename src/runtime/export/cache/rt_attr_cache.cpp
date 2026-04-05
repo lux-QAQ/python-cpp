@@ -8,20 +8,41 @@
 
 namespace {
 
+// [性能优化] 缓存 object 类型的 __getattribute__ / __setattribute__ 地址
+// 避免每次调用都走 get_address (std::function::target<> 非常昂贵)
+static size_t s_default_getattribute_addr = 0;
+static size_t s_default_setattribute_addr = 0;
+
+static size_t get_default_getattribute_addr()
+{
+	if (__builtin_expect(s_default_getattribute_addr == 0, 0)) {
+		s_default_getattribute_addr =
+			get_address(*py::types::object()->underlying_type().__getattribute__);
+	}
+	return s_default_getattribute_addr;
+}
+
+static size_t get_default_setattribute_addr()
+{
+	if (__builtin_expect(s_default_setattribute_addr == 0, 0)) {
+		s_default_setattribute_addr =
+			get_address(*py::types::object()->underlying_type().__setattribute__);
+	}
+	return s_default_setattribute_addr;
+}
+
 bool uses_default_getattribute(const py::PyObject *obj)
 {
 	const auto &getattribute_ = obj->type()->underlying_type().__getattribute__;
 	return getattribute_.has_value()
-		   && get_address(*getattribute_)
-				  == get_address(*py::types::object()->underlying_type().__getattribute__);
+		   && get_address(*getattribute_) == get_default_getattribute_addr();
 }
 
 bool uses_default_setattribute(const py::PyObject *obj)
 {
 	const auto &setattribute_ = obj->type()->underlying_type().__setattribute__;
 	return setattribute_.has_value()
-		   && get_address(*setattribute_)
-				  == get_address(*py::types::object()->underlying_type().__setattribute__);
+		   && get_address(*setattribute_) == get_default_setattribute_addr();
 }
 
 py::PyObject *

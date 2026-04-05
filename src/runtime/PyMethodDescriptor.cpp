@@ -84,12 +84,32 @@ PyResult<PyObject *> PyMethodDescriptor::__call__(PyTuple *args, PyDict *kwargs)
 PyResult<PyObject *>
 	PyMethodDescriptor::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
 {
-	if (argc == 0) { return Err(type_error("descriptor '{}' requires self", m_name->value())); }
+	if (__builtin_expect(argc == 0, 0)) {
+		return Err(type_error("descriptor '{}' requires self", m_name->value()));
+	}
 
 	auto *self = RtValue::from_ptr(args[0]).box();
 	ASSERT(m_method);
 
-	if (argc == 1) { return m_method->get().method(self, PyTuple::create().unwrap(), kwargs); }
+	if (argc == 1) {
+		// [性能优化] 使用缓存的空 tuple，避免每次分配
+		static PyTuple *s_empty_tuple = nullptr;
+		if (__builtin_expect(s_empty_tuple == nullptr, 0)) {
+			s_empty_tuple = PyTuple::create().unwrap();
+		}
+		return m_method->get().method(self, s_empty_tuple, kwargs);
+	}
+
+	// [性能优化] 小参数数量 (<=8) 使用栈上数组避免堆分配
+	if (argc - 1 <= 8) {
+		RtValue stack_args[8];
+		for (size_t i = 1; i < argc; ++i) { stack_args[i - 1] = RtValue::from_ptr(args[i]); }
+		py::GCVector<Value> tuple_args(stack_args, stack_args + (argc - 1));
+		return PyTuple::create(std::move(tuple_args))
+			.and_then([this, self, kwargs](PyTuple *t) -> PyResult<PyObject *> {
+				return m_method->get().method(self, t, kwargs);
+			});
+	}
 
 	py::GCVector<Value> tuple_args;
 	tuple_args.reserve(argc - 1);

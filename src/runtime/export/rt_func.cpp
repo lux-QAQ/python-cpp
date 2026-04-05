@@ -231,10 +231,16 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 	py::PyObject *kwargs_dict)
 {
 	auto *b_owner = py::ensure_box(owner);
+
+	// [性能优化] 缓存 object 默认 __getattribute__ 地址
+	static size_t default_getattr_addr = 0;
+	if (__builtin_expect(default_getattr_addr == 0, 0)) {
+		default_getattr_addr =
+			get_address(*py::types::object()->underlying_type().__getattribute__);
+	}
+
 	const auto &getattribute_ = b_owner->type()->underlying_type().__getattribute__;
-	if (getattribute_.has_value()
-		&& get_address(*getattribute_)
-			   != get_address(*py::types::object()->underlying_type().__getattribute__)) {
+	if (getattribute_.has_value() && get_address(*getattribute_) != default_getattr_addr) {
 		auto *bound = rt_unwrap(b_owner->getattribute(py::PyString::intern(method_name)));
 		return rt_call_raw_ptrs(bound, args, argc, kwargs_dict);
 	}

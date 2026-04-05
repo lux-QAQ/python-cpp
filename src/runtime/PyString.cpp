@@ -127,6 +127,15 @@ PyString *PyString::intern(const char *cstr)
 {
 	if (!cstr) return nullptr;
 
+	// [性能优化] 单字符快速路径: 无锁检查 char_cache
+	// trie 查找中大量使用单字符字符串，避免 mutex + hashtable 查找
+	if (cstr[0] != '\0' && cstr[1] == '\0') {
+		auto &cache = get_char_cache();
+		uint8_t c = static_cast<uint8_t>(cstr[0]);
+		PyString *cached = cache[c];
+		if (__builtin_expect(cached != nullptr, 1)) { return cached; }
+	}
+
 	std::lock_guard<std::mutex> lock(g_intern_mutex);// 保护驻留过程
 
 	// [修复]：彻底删除 p_table (指针缓存) 防止临时变量 c_str() 悬空指针复用导致毒化碰撞！
@@ -2137,8 +2146,14 @@ PyObject *PyStringIterator::next_raw()
 		// 1. O(1) 获取当前字符的 UTF-8 字节长度
 		size_t len = utf8::codepoint_length(s[m_current_index]);
 
-		// 2. 切分字符。如果是 ASCII (len=1)，PyString::create 内部会自动命中 256 字符缓存
-		// 这在构建 Trie 树处理 '0'-'9' 时是零分配的
+		// [性能优化] ASCII 单字符 (len=1) 直接走 intern 的无锁 char_cache
+		if (len == 1) {
+			char buf[2] = { s[m_current_index], '\0' };
+			m_current_index += 1;
+			return PyString::intern(buf);
+		}
+
+		// 多字节 UTF-8: 照旧
 		std::string char_val = s.substr(m_current_index, len);
 		m_current_index += len;
 

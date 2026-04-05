@@ -427,7 +427,7 @@ size_t PyInteger::as_size_t() const
 	return m_value.get_ui();
 }
 
-BigIntType PyInteger::as_big_int() const { return m_value; }
+const BigIntType &PyInteger::as_big_int() const { return m_value; }
 
 /*
 PyType *PyInteger::static_type() const { return types::integer(); }

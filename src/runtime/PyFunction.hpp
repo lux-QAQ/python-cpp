@@ -171,6 +171,9 @@ class PyNativeFunction : public PyBaseObject
 	/// 获取所属模块
 	PyObject *module_ref() const { return m_module_ref; }
 
+	/// 获取 AOT 原始函数指针（用于 IC 直接调用）
+	void *aot_raw_ptr() const { return reinterpret_cast<void *>(m_aot_ptr); }
+
 	PyResult<PyObject *> operator()(PyTuple *args, PyDict *kwargs)
 	{
 		ASSERT(is_function());

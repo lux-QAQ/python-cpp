@@ -100,10 +100,17 @@ py::PyObject *rt_call_method_ic_ptrs(py::cache::MethodCache *cache,
 	py::PyObject *kwargs_dict)
 {
 	auto *b_owner = py::ensure_box(owner);
+
+	// [性能优化] 缓存 object 默认 __getattribute__ 地址，避免每次都做 get_address
+	// get_address 使用 std::function::target<>() 非常昂贵 (~1.35s in profiling)
+	static size_t default_getattribute_addr = 0;
+	if (__builtin_expect(default_getattribute_addr == 0, 0)) {
+		default_getattribute_addr =
+			get_address(*py::types::object()->underlying_type().__getattribute__);
+	}
+
 	const auto &getattribute_ = b_owner->type()->underlying_type().__getattribute__;
-	if (getattribute_.has_value()
-		&& get_address(*getattribute_)
-			   != get_address(*py::types::object()->underlying_type().__getattribute__)) {
+	if (getattribute_.has_value() && get_address(*getattribute_) != default_getattribute_addr) {
 		return rt_call_method_raw_ptrs(owner, method_name, args, argc, kwargs_dict);
 	}
 	// ==== 内置方法 Intrinsic fast path 原封不动复制保留 ====
@@ -138,14 +145,13 @@ py::PyObject *rt_call_method_ic_ptrs(py::cache::MethodCache *cache,
 			if (expected_type == actual_type && expected_shape == b_owner->shape()
 				&& type_version == py::PyType::global_version()) {
 				// 缓存命中! 提取已经解析的 callable
-				auto *resolved_func = slot.resolved_func.load(std::memory_order_acquire);
-				bool needs_self = (tag == 1);
 
 				py::PyDict *kwargs = nullptr;
 				if (kwargs_dict && kwargs_dict != py::py_none()) {
 					kwargs = py::as<py::PyDict>(kwargs_dict);
 				}
 
+				bool needs_self = (tag == 1);
 				size_t total_argc = needs_self ? argc + 1 : argc;
 				py::PyObject *raw_args_array[16];
 				py::PyObject **final_args = args;
@@ -158,11 +164,34 @@ py::PyObject *rt_call_method_ic_ptrs(py::cache::MethodCache *cache,
 							alloca(sizeof(py::PyObject *) * total_argc));
 					}
 					final_args[0] = b_owner;
-					for (int i = 0; i < argc; ++i) { final_args[i + 1] = args[i]; }
+					for (int j = 0; j < argc; ++j) { final_args[j + 1] = args[j]; }
+				}
+
+				auto *resolved_func = slot.resolved_func.load(std::memory_order_acquire);
+
+				// [性能优化] AOT 直接分发: 从 resolved_func 提取 AOT 指针
+				// 不改变结构体大小，避免 LLVM IR 内存布局不匹配
+				if (needs_self && resolved_func->type() == py::types::native_function()) {
+					auto *nf = static_cast<py::PyNativeFunction *>(resolved_func);
+					auto *aot = nf->aot_raw_ptr();
+					if (aot) {
+						using AOTFnPtr = py::PyObject *(*)(py::PyObject *,
+							py::PyObject *,
+							py::PyObject **,
+							int32_t,
+							py::PyDict *);
+						auto *res = reinterpret_cast<AOTFnPtr>(aot)(nf->module_ref(),
+							reinterpret_cast<py::PyObject *>(nf->closure()),
+							final_args,
+							static_cast<int32_t>(total_argc),
+							kwargs);
+						if (__builtin_expect(res != nullptr, 1)) return res;
+						// AOT 返回 null 表示异常，propagate null
+						return nullptr;
+					}
 				}
 
 				auto result = resolved_func->call_fast_ptrs(final_args, total_argc, kwargs);
-
 				return rt_unwrap(result);
 			}
 		}
