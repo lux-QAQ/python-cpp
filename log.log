@@ -82,8 +82,8 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 3
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:26.687]  PyDict               | Total:     500000
-[2026-04-06 15:56:26.688]  Type                 | Total:     500000
+[2026-04-06 19:45:56.028]  PyDict               | Total:     500000
+[2026-04-06 19:45:56.028]  Type                 | Total:     500000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -104,15 +104,16 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 3
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:30.146]  PyStringIterator     | Total:     500000
-[2026-04-06 15:56:30.402]  PyDict               | Total:    1000000
-[2026-04-06 15:56:30.403]  Type                 | Total:    1000000
+[2026-04-06 19:45:59.323]  PyStringIterator     | Total:     500000
+[2026-04-06 19:45:59.324]  PyString             | Total:     500000
+[2026-04-06 19:45:59.524]  PyDict               | Total:    1000000
+[2026-04-06 19:45:59.525]  Type                 | Total:    1000000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
 Prefix node found. Terminal state of prefix node: True
 Starting queue traversal. Initial queue size: 1
-[2026-04-06 15:56:31.809]  PyTuple              | Total:     500000
+[2026-04-06 19:46:00.826]  PyTuple              | Total:     500000
 Find completed. Results count: 75290
 >> Stress Test Output | Bound: 5000000 | Prefix: 3 | Match Count: 75290
 Testing with prefix: 32 at max bound: 5000000
@@ -126,9 +127,10 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 32
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:33.980]  PyDict               | Total:    1500000
-[2026-04-06 15:56:33.980]  Type                 | Total:    1500000
-[2026-04-06 15:56:34.470]  PyStringIterator     | Total:    1000000
+[2026-04-06 19:46:02.894]  PyDict               | Total:    1500000
+[2026-04-06 19:46:02.894]  Type                 | Total:    1500000
+[2026-04-06 19:46:03.302]  PyStringIterator     | Total:    1000000
+[2026-04-06 19:46:03.302]  PyString             | Total:    1000000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -148,10 +150,10 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 323
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:36.764]  PyDict               | Total:    2000000
-[2026-04-06 15:56:36.764]  Type                 | Total:    2000000
-[2026-04-06 15:56:38.499]  PyDict               | Total:    2500000
-[2026-04-06 15:56:38.499]  Type                 | Total:    2500000
+[2026-04-06 19:46:06.281]  PyDict               | Total:    2000000
+[2026-04-06 19:46:06.282]  Type                 | Total:    2000000
+[2026-04-06 19:46:07.021]  PyDict               | Total:    2500000
+[2026-04-06 19:46:07.022]  Type                 | Total:    2500000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -172,62 +174,61 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 3233
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:39.790]  PyStringIterator     | Total:    1500000
-[2026-04-06 15:56:40.689]  [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    3000000
+[2026-04-06 19:46:08.912]  PyStringIterator     | Total:    1500000
+[2026-04-06 19:46:08.912]  PyString             | Total:    1500000
+[2026-04-06 19:46:10.423]  [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    3000000
 Stack trace (most recent call first):
-#0  0x0000560469ab1bf8 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:52:17
-#2  0x0000560469973eb6 in py::PyDict::create() at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:52:17
-#3  0x000056046989451b in rt_build_dict(int, py::PyObject**, py::PyObject**) at /home/lux/code/language/python-cpp/src/runtime/export/rt_create.cpp:74:37
-#4  0x000056046988dd13 in test.<module>.0:0.Node.3:0.__init__.4:4 at /tmp/test
-#5  0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#6  0x00005604699e29cf in py::PyObject::init_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1391:32
-#7  0x00005604699e1170 in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1332:26
-#8  0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#9  0x000056046988f1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
-#10 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#11 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#12 0x000056046988f5fe in test.<module>.0:0.find.84:0 at /tmp/test
-#13 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#14 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#15 0x0000560469890ab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
-#16 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#17 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#18 0x000056046988dc3c in PyInit_test at /tmp/test
-#19 0x0000560469890daa in main at /tmp/test
-#20 0x00007f722d02a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#21 0x00007f722d02a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#22 0x000056046988d904 in _start at /tmp/test
-[2026-04-06 15:56:40.750]  [DEBUG_ALLOC_TRACE] Type: Type                 | Total:    3000000
+#2  0x000055f6fb082eb6 in py::PyDict::create() at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:52:17
+#3  0x000055f6fafa351b in rt_build_dict(int, py::PyObject**, py::PyObject**) at /home/lux/code/language/python-cpp/src/runtime/export/rt_create.cpp:74:37
+#4  0x000055f6faf9cd13 in test.<module>.0:0.Node.3:0.__init__.4:4 at /tmp/test
+#5  0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#6  0x000055f6fb0f1b2f in py::PyObject::init_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1409:32
+#7  0x000055f6fb0f00ea in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1342:26
+#8  0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#9  0x000055f6faf9e1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#10 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#11 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#12 0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#13 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#14 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#15 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#16 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#17 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#18 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#19 0x000055f6faf9fdaa in main at /tmp/test
+#20 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#21 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#22 0x000055f6faf9c904 in _start at /tmp/test
+[2026-04-06 19:46:10.483]  [DEBUG_ALLOC_TRACE] Type: Type                 | Total:    3000000
 Stack trace (most recent call first):
-#0  0x0000560469ab1bf8 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:596:12
-#2  0x0000560469c4fff3 in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:596:12
+#2  0x000055f6fb35f803 in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:596:12
 #3  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:588:15
 #4  (inlined)          in py::PyResult<py::PyObject*> std::__invoke_impl<py::PyResult<py::PyObject*>, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*>(std::__invoke_other, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:61:14
 #5  (inlined)          in std::enable_if<is_invocable_r_v<py::PyResult<py::PyObject*>, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*>, py::PyResult<py::PyObject*> >::type std::__invoke_r<py::PyResult<py::PyObject*>, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*>(py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:114:9
-#6  0x0000560469c4fdb5 in std::_Function_handler<py::PyResult<py::PyObject*> (py::PyType*), py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}>::_M_invoke(std::_Any_data const&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:290:9
+#6  0x000055f6fb35f5c5 in std::_Function_handler<py::PyResult<py::PyObject*> (py::PyType*), py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}>::_M_invoke(std::_Any_data const&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:290:9
 #7  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyType*)>::operator()(py::PyType*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
-#8  (inlined)          in py::PyType::heap_object_allocation(py::PyType*)::$_0::operator()(py::PyTuple*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:491:52
-#9  (inlined)          in py::PyResult<py::PyObject*> py::PyResult<py::PyTuple*>::and_then<py::PyType::heap_object_allocation(py::PyType*)::$_0, py::PyObject*>(py::PyType::heap_object_allocation(py::PyType*)::$_0&&) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/Value.hpp:149:10
-#10 0x0000560469a97b29 in py::PyType::heap_object_allocation(py::PyType*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:486:30
-#11 (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyType*)>::operator()(py::PyType*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
-#12 0x00005604699e1012 in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1327:19
-#13 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#14 0x000056046988f1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
-#15 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#16 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#17 0x000056046988f5fe in test.<module>.0:0.find.84:0 at /tmp/test
-#18 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#19 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#20 0x0000560469890ab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
-#21 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#22 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#23 0x000056046988dc3c in PyInit_test at /tmp/test
-#24 0x0000560469890daa in main at /tmp/test
-#25 0x00007f722d02a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#26 0x00007f722d02a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#27 0x000056046988d904 in _start at /tmp/test
+#8  0x000055f6fb1a6883 in py::PyType::heap_object_allocation(py::PyType*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:490:55
+#9  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyType*)>::operator()(py::PyType*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#10 0x000055f6fb0efdd2 in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1329:19
+#11 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#12 0x000055f6faf9e1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#13 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#14 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#15 0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#16 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#17 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#18 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#19 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#20 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#21 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#22 0x000055f6faf9fdaa in main at /tmp/test
+#23 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#24 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#25 0x000055f6faf9c904 in _start at /tmp/test
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -249,9 +250,10 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 32338
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:44.046]  PyDict               | Total:    3500000
-[2026-04-06 15:56:44.047]  Type                 | Total:    3500000
-[2026-04-06 15:56:44.074]  PyStringIterator     | Total:    2000000
+[2026-04-06 19:46:12.903]  PyDict               | Total:    3500000
+[2026-04-06 19:46:12.905]  Type                 | Total:    3500000
+[2026-04-06 19:46:12.927]  PyStringIterator     | Total:    2000000
+[2026-04-06 19:46:12.927]  PyString             | Total:    2000000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -323,9 +325,10 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 3
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:46.860]  PyDict               | Total:    4000000
-[2026-04-06 15:56:46.861]  Type                 | Total:    4000000
-[2026-04-06 15:56:47.584]  PyStringIterator     | Total:    2500000
+[2026-04-06 19:46:16.461]  PyDict               | Total:    4000000
+[2026-04-06 19:46:16.461]  Type                 | Total:    4000000
+[2026-04-06 19:46:17.022]  PyStringIterator     | Total:    2500000
+[2026-04-06 19:46:17.023]  PyString             | Total:    2500000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -346,18 +349,18 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 3
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:50.646]  PyDict               | Total:    4500000
-[2026-04-06 15:56:50.646]  Type                 | Total:    4500000
-[2026-04-06 15:56:51.571]  PyDict               | Total:    5000000
-[2026-04-06 15:56:51.572]  Type                 | Total:    5000000
+[2026-04-06 19:46:19.757]  PyDict               | Total:    4500000
+[2026-04-06 19:46:19.757]  Type                 | Total:    4500000
+[2026-04-06 19:46:20.536]  PyDict               | Total:    5000000
+[2026-04-06 19:46:20.536]  Type                 | Total:    5000000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
 Prefix node found. Terminal state of prefix node: True
 Starting queue traversal. Initial queue size: 1
-[2026-04-06 15:56:51.812]  PyTuple              | Total:    1000000
-[2026-04-06 15:56:52.357]  PyDictItems          | Total:     500000
-[2026-04-06 15:56:52.357]  PyDictItemsIterator  | Total:     500000
+[2026-04-06 19:46:20.741]  PyTuple              | Total:    1000000
+[2026-04-06 19:46:21.246]  PyDictItems          | Total:     500000
+[2026-04-06 19:46:21.246]  PyDictItemsIterator  | Total:     500000
 Find completed. Results count: 75290
 >> Stress Test Output | Bound: 5000000 | Prefix: 3 | Match Count: 75290
 Testing with prefix: 32 at max bound: 5000000
@@ -371,31 +374,52 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 32
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:56.152]  [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:    3000000
+[2026-04-06 19:46:23.556]  [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:    3000000
 Stack trace (most recent call first):
-#0  0x0000560469ab1bf8 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
-#1  (inlined)          in py::PyString::__iter__() const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1433:13
-#2  0x0000560469a3b87b in py::PyString::__iter__() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1433:13
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#1  (inlined)          in py::PyString::__iter__() const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1441:13
+#2  0x000055f6fb14aafb in py::PyString::__iter__() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1441:13
 #3  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>::operator()(py::PyObject const*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
-#4  0x00005604699e46b3 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>, py::PyResult<py::PyObject*>, py::PyObject const*>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>, py::PyObject*> const&, py::PyObject const*&&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:147:11
-#5  0x00005604699f9c26 in py::PyObject::iter() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1174:10
-#6  0x000056046989e72a in rt_get_iter(py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_subscr.cpp:23:86
-#7  0x000056046988f0b5 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
-#8  0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#9  0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#10 0x000056046988f5fe in test.<module>.0:0.find.84:0 at /tmp/test
-#11 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#12 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#13 0x0000560469890ab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
-#14 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#15 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#16 0x000056046988dc3c in PyInit_test at /tmp/test
-#17 0x0000560469890daa in main at /tmp/test
-#18 0x00007f722d02a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#19 0x00007f722d02a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#20 0x000056046988d904 in _start at /tmp/test
-[2026-04-06 15:56:56.556]  PyDict               | Total:    5500000
-[2026-04-06 15:56:56.556]  Type                 | Total:    5500000
+#4  0x000055f6fb0f3813 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>, py::PyResult<py::PyObject*>, py::PyObject const*>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>, py::PyObject*> const&, py::PyObject const*&&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:147:11
+#5  0x000055f6fb108d86 in py::PyObject::iter() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1174:10
+#6  0x000055f6fafad72a in rt_get_iter(py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_subscr.cpp:23:86
+#7  0x000055f6faf9e0b5 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#8  0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#9  0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#10 0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#11 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#12 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#13 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#14 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#15 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#16 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#17 0x000055f6faf9fdaa in main at /tmp/test
+#18 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#19 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#20 0x000055f6faf9c904 in _start at /tmp/test
+[2026-04-06 19:46:23.558]  [DEBUG_ALLOC_TRACE] Type: PyString             | Total:    3000000
+Stack trace (most recent call first):
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#1  (inlined)          in py::PyString::create_raw(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:326:17
+#2  0x000055f6fb1307ab in py::PyString::create_raw(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:326:17
+#3  0x000055f6fb0eee4c in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1283:11
+#4  0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#5  0x000055f6faf9e090 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#6  0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#7  0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#8  0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#9  0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#10 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#11 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#12 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#13 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#14 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#15 0x000055f6faf9fdaa in main at /tmp/test
+#16 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#17 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#18 0x000055f6faf9c904 in _start at /tmp/test
+[2026-04-06 19:46:24.946]  PyDict               | Total:    5500000
+[2026-04-06 19:46:24.946]  Type                 | Total:    5500000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -415,62 +439,61 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 323
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[2026-04-06 15:56:59.351]  [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    6000000
+[2026-04-06 19:46:27.267]  [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    6000000
 Stack trace (most recent call first):
-#0  0x0000560469ab1bf8 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:52:17
-#2  0x0000560469973eb6 in py::PyDict::create() at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:52:17
-#3  0x000056046989451b in rt_build_dict(int, py::PyObject**, py::PyObject**) at /home/lux/code/language/python-cpp/src/runtime/export/rt_create.cpp:74:37
-#4  0x000056046988dd13 in test.<module>.0:0.Node.3:0.__init__.4:4 at /tmp/test
-#5  0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#6  0x00005604699e29cf in py::PyObject::init_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1391:32
-#7  0x00005604699e1170 in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1332:26
-#8  0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#9  0x000056046988f1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
-#10 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#11 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#12 0x000056046988f5fe in test.<module>.0:0.find.84:0 at /tmp/test
-#13 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#14 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#15 0x0000560469890ab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
-#16 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#17 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#18 0x000056046988dc3c in PyInit_test at /tmp/test
-#19 0x0000560469890daa in main at /tmp/test
-#20 0x00007f722d02a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#21 0x00007f722d02a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#22 0x000056046988d904 in _start at /tmp/test
-[2026-04-06 15:56:59.353]  [DEBUG_ALLOC_TRACE] Type: Type                 | Total:    6000000
+#2  0x000055f6fb082eb6 in py::PyDict::create() at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:52:17
+#3  0x000055f6fafa351b in rt_build_dict(int, py::PyObject**, py::PyObject**) at /home/lux/code/language/python-cpp/src/runtime/export/rt_create.cpp:74:37
+#4  0x000055f6faf9cd13 in test.<module>.0:0.Node.3:0.__init__.4:4 at /tmp/test
+#5  0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#6  0x000055f6fb0f1b2f in py::PyObject::init_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1409:32
+#7  0x000055f6fb0f00ea in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1342:26
+#8  0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#9  0x000055f6faf9e1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#10 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#11 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#12 0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#13 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#14 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#15 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#16 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#17 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#18 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#19 0x000055f6faf9fdaa in main at /tmp/test
+#20 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#21 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#22 0x000055f6faf9c904 in _start at /tmp/test
+[2026-04-06 19:46:27.268]  [DEBUG_ALLOC_TRACE] Type: Type                 | Total:    6000000
 Stack trace (most recent call first):
-#0  0x0000560469ab1bf8 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:596:12
-#2  0x0000560469c4fff3 in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:596:12
+#2  0x000055f6fb35f803 in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:596:12
 #3  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:588:15
 #4  (inlined)          in py::PyResult<py::PyObject*> std::__invoke_impl<py::PyResult<py::PyObject*>, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*>(std::__invoke_other, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:61:14
 #5  (inlined)          in std::enable_if<is_invocable_r_v<py::PyResult<py::PyObject*>, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*>, py::PyResult<py::PyObject*> >::type std::__invoke_r<py::PyResult<py::PyObject*>, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*>(py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:114:9
-#6  0x0000560469c4fdb5 in std::_Function_handler<py::PyResult<py::PyObject*> (py::PyType*), py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}>::_M_invoke(std::_Any_data const&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:290:9
+#6  0x000055f6fb35f5c5 in std::_Function_handler<py::PyResult<py::PyObject*> (py::PyType*), py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}>::_M_invoke(std::_Any_data const&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:290:9
 #7  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyType*)>::operator()(py::PyType*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
-#8  (inlined)          in py::PyType::heap_object_allocation(py::PyType*)::$_0::operator()(py::PyTuple*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:491:52
-#9  (inlined)          in py::PyResult<py::PyObject*> py::PyResult<py::PyTuple*>::and_then<py::PyType::heap_object_allocation(py::PyType*)::$_0, py::PyObject*>(py::PyType::heap_object_allocation(py::PyType*)::$_0&&) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/Value.hpp:149:10
-#10 0x0000560469a97b29 in py::PyType::heap_object_allocation(py::PyType*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:486:30
-#11 (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyType*)>::operator()(py::PyType*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
-#12 0x00005604699e1012 in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1327:19
-#13 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#14 0x000056046988f1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
-#15 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#16 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#17 0x000056046988f5fe in test.<module>.0:0.find.84:0 at /tmp/test
-#18 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#19 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#20 0x0000560469890ab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
-#21 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#22 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#23 0x000056046988dc3c in PyInit_test at /tmp/test
-#24 0x0000560469890daa in main at /tmp/test
-#25 0x00007f722d02a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#26 0x00007f722d02a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#27 0x000056046988d904 in _start at /tmp/test
-[2026-04-06 15:56:59.632]  PyStringIterator     | Total:    3500000
+#8  0x000055f6fb1a6883 in py::PyType::heap_object_allocation(py::PyType*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:490:55
+#9  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyType*)>::operator()(py::PyType*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#10 0x000055f6fb0efdd2 in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1329:19
+#11 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#12 0x000055f6faf9e1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#13 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#14 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#15 0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#16 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#17 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#18 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#19 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#20 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#21 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#22 0x000055f6faf9fdaa in main at /tmp/test
+#23 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#24 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#25 0x000055f6faf9c904 in _start at /tmp/test
+[2026-04-06 19:46:27.496]  PyStringIterator     | Total:    3500000
+[2026-04-06 19:46:27.496]  PyString             | Total:    3500000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -491,8 +514,8 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 3233
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[02.977]  PyDict               | Total:    6500000
-[02.978]  Type                 | Total:    6500000
+[2026-04-06 19:46:30.507]  PyDict               | Total:    6500000
+[2026-04-06 19:46:30.507]  Type                 | Total:    6500000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -514,11 +537,12 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 32338
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[05.606]  PyDict               | Total:    7000000
-[05.607]  Type                 | Total:    7000000
-[05.666]  PyStringIterator     | Total:    4000000
-[06.524]  PyDict               | Total:    7500000
-[06.524]  Type                 | Total:    7500000
+[2026-04-06 19:46:32.797]  PyDict               | Total:    7000000
+[2026-04-06 19:46:32.798]  Type                 | Total:    7000000
+[2026-04-06 19:46:32.842]  PyStringIterator     | Total:    4000000
+[2026-04-06 19:46:32.842]  PyString             | Total:    4000000
+[2026-04-06 19:46:33.538]  PyDict               | Total:    7500000
+[2026-04-06 19:46:33.538]  Type                 | Total:    7500000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -590,15 +614,16 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 3
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[09.222]  PyStringIterator     | Total:    4500000
-[09.377]  PyDict               | Total:    8000000
-[09.378]  Type                 | Total:    8000000
+[2026-04-06 19:46:36.205]  PyStringIterator     | Total:    4500000
+[2026-04-06 19:46:36.206]  PyString             | Total:    4500000
+[2026-04-06 19:46:36.335]  PyDict               | Total:    8000000
+[2026-04-06 19:46:36.335]  Type                 | Total:    8000000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
 Prefix node found. Terminal state of prefix node: True
 Starting queue traversal. Initial queue size: 1
-[10.515]  PyTuple              | Total:    1500000
+[2026-04-06 19:46:37.494]  PyTuple              | Total:    1500000
 Find completed. Results count: 75290
 >> Range Test Output | Bound: 5000000 | Prefix: 3 | Match Count: 75290
 
@@ -614,9 +639,10 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 3
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[13.305]  PyDict               | Total:    8500000
-[13.305]  Type                 | Total:    8500000
-[13.841]  PyStringIterator     | Total:    5000000
+[2026-04-06 19:46:39.650]  PyDict               | Total:    8500000
+[2026-04-06 19:46:39.650]  Type                 | Total:    8500000
+[2026-04-06 19:46:40.096]  PyStringIterator     | Total:    5000000
+[2026-04-06 19:46:40.097]  PyString             | Total:    5000000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -635,68 +661,66 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 32
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[16.841]  [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    9000000
+[2026-04-06 19:46:43.802]  [DEBUG_ALLOC_TRACE] Type: PyDict               | Total:    9000000
 Stack trace (most recent call first):
-#0  0x0000560469ab1bf8 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::PyDict::create()::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:52:17
-#2  0x0000560469973eb6 in py::PyDict::create() at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:52:17
-#3  0x000056046989451b in rt_build_dict(int, py::PyObject**, py::PyObject**) at /home/lux/code/language/python-cpp/src/runtime/export/rt_create.cpp:74:37
-#4  0x000056046988dd13 in test.<module>.0:0.Node.3:0.__init__.4:4 at /tmp/test
-#5  0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#6  0x00005604699e29cf in py::PyObject::init_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1391:32
-#7  0x00005604699e1170 in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1332:26
-#8  0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#9  0x000056046988f1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
-#10 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#11 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#12 0x000056046988f5fe in test.<module>.0:0.find.84:0 at /tmp/test
-#13 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#14 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#15 0x0000560469890ab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
-#16 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#17 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#18 0x000056046988dc3c in PyInit_test at /tmp/test
-#19 0x0000560469890daa in main at /tmp/test
-#20 0x00007f722d02a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#21 0x00007f722d02a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#22 0x000056046988d904 in _start at /tmp/test
-[16.843]  [DEBUG_ALLOC_TRACE] Type: Type                 | Total:    9000000
+#2  0x000055f6fb082eb6 in py::PyDict::create() at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyDict.cpp:52:17
+#3  0x000055f6fafa351b in rt_build_dict(int, py::PyObject**, py::PyObject**) at /home/lux/code/language/python-cpp/src/runtime/export/rt_create.cpp:74:37
+#4  0x000055f6faf9cd13 in test.<module>.0:0.Node.3:0.__init__.4:4 at /tmp/test
+#5  0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#6  0x000055f6fb0f1b2f in py::PyObject::init_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1409:32
+#7  0x000055f6fb0f00ea in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1342:26
+#8  0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#9  0x000055f6faf9e1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#10 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#11 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#12 0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#13 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#14 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#15 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#16 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#17 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#18 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#19 0x000055f6faf9fdaa in main at /tmp/test
+#20 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#21 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#22 0x000055f6faf9c904 in _start at /tmp/test
+[2026-04-06 19:46:43.807]  [DEBUG_ALLOC_TRACE] Type: Type                 | Total:    9000000
 Stack trace (most recent call first):
-#0  0x0000560469ab1bf8 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
 #1  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:596:12
-#2  0x0000560469c4fff3 in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:596:12
+#2  0x000055f6fb35f803 in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const::{lambda()#1}::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:596:12
 #3  (inlined)          in py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}::operator()(py::PyType*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.hpp:588:15
 #4  (inlined)          in py::PyResult<py::PyObject*> std::__invoke_impl<py::PyResult<py::PyObject*>, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*>(std::__invoke_other, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:61:14
 #5  (inlined)          in std::enable_if<is_invocable_r_v<py::PyResult<py::PyObject*>, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*>, py::PyResult<py::PyObject*> >::type std::__invoke_r<py::PyResult<py::PyObject*>, py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*>(py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/invoke.h:114:9
-#6  0x0000560469c4fdb5 in std::_Function_handler<py::PyResult<py::PyObject*> (py::PyType*), py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}>::_M_invoke(std::_Any_data const&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:290:9
+#6  0x000055f6fb35f5c5 in std::_Function_handler<py::PyResult<py::PyObject*> (py::PyType*), py::TypePrototype::create<py::PyObject>(std::basic_string_view<char, std::char_traits<char> >)::{lambda(py::PyType*)#1}>::_M_invoke(std::_Any_data const&, py::PyType*&&) at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:290:9
 #7  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyType*)>::operator()(py::PyType*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
-#8  (inlined)          in py::PyType::heap_object_allocation(py::PyType*)::$_0::operator()(py::PyTuple*) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:491:52
-#9  (inlined)          in py::PyResult<py::PyObject*> py::PyResult<py::PyTuple*>::and_then<py::PyType::heap_object_allocation(py::PyType*)::$_0, py::PyObject*>(py::PyType::heap_object_allocation(py::PyType*)::$_0&&) const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/Value.hpp:149:10
-#10 0x0000560469a97b29 in py::PyType::heap_object_allocation(py::PyType*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:486:30
-#11 (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyType*)>::operator()(py::PyType*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
-#12 0x00005604699e1012 in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1327:19
-#13 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#14 0x000056046988f1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
-#15 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#16 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#17 0x000056046988f5fe in test.<module>.0:0.find.84:0 at /tmp/test
-#18 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#19 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#20 0x0000560469890ab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
-#21 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#22 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#23 0x000056046988dc3c in PyInit_test at /tmp/test
-#24 0x0000560469890daa in main at /tmp/test
-#25 0x00007f722d02a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#26 0x00007f722d02a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#27 0x000056046988d904 in _start at /tmp/test
+#8  0x000055f6fb1a6883 in py::PyType::heap_object_allocation(py::PyType*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyType.cpp:490:55
+#9  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyType*)>::operator()(py::PyType*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
+#10 0x000055f6fb0efdd2 in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1329:19
+#11 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#12 0x000055f6faf9e1d3 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#13 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#14 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#15 0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#16 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#17 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#18 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#19 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#20 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#21 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#22 0x000055f6faf9fdaa in main at /tmp/test
+#23 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#24 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#25 0x000055f6faf9c904 in _start at /tmp/test
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
 Link check for char: 2
 Prefix node found. Terminal state of prefix node: False
 Starting queue traversal. Initial queue size: 1
-[17.722]  PyInteger            | Total:     500000
+[2026-04-06 19:46:44.410]  PyInteger            | Total:     500000
 Find completed. Results count: 7604
 >> Stress Test Output | Bound: 5000000 | Prefix: 32 | Match Count: 7604
 Testing with prefix: 323 at max bound: 5000000
@@ -710,11 +734,12 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 323
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[19.612]  PyDict               | Total:    9500000
-[19.613]  Type                 | Total:    9500000
-[21.071]  PyStringIterator     | Total:    5500000
-[21.678]  PyDict               | Total:   10000000
-[21.678]  Type                 | Total:   10000000
+[145]  PyDict               | Total:    9500000
+[146]  Type                 | Total:    9500000
+[394]  PyStringIterator     | Total:    5500000
+[394]  PyString             | Total:    5500000
+[871]  PyDict               | Total:   10000000
+[872]  Type                 | Total:   10000000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -735,31 +760,52 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 3233
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[24.534]  PyDict               | Total:   10500000
-[24.535]  Type                 | Total:   10500000
-[24.647]  [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:    6000000
+[2026-04-06 19:46:50.160]  PyDict               | Total:   10500000
+[2026-04-06 19:46:50.161]  Type                 | Total:   10500000
+[2026-04-06 19:46:50.233]  [DEBUG_ALLOC_TRACE] Type: PyStringIterator     | Total:    6000000
 Stack trace (most recent call first):
-#0  0x0000560469ab1bf8 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
-#1  (inlined)          in py::PyString::__iter__() const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1433:13
-#2  0x0000560469a3b87b in py::PyString::__iter__() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1433:13
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#1  (inlined)          in py::PyString::__iter__() const::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1441:13
+#2  0x000055f6fb14aafb in py::PyString::__iter__() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:1441:13
 #3  (inlined)          in std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>::operator()(py::PyObject const*) const at /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/std_function.h:591:9
-#4  0x00005604699e46b3 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>, py::PyResult<py::PyObject*>, py::PyObject const*>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>, py::PyObject*> const&, py::PyObject const*&&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:147:11
-#5  0x00005604699f9c26 in py::PyObject::iter() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1174:10
-#6  0x000056046989e72a in rt_get_iter(py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_subscr.cpp:23:86
-#7  0x000056046988f0b5 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
-#8  0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#9  0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#10 0x000056046988f5fe in test.<module>.0:0.find.84:0 at /tmp/test
-#11 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#12 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#13 0x0000560469890ab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
-#14 0x000056046998eff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
-#15 0x00005604698968f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
-#16 0x000056046988dc3c in PyInit_test at /tmp/test
-#17 0x0000560469890daa in main at /tmp/test
-#18 0x00007f722d02a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
-#19 0x00007f722d02a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
-#20 0x000056046988d904 in _start at /tmp/test
+#4  0x000055f6fb0f3813 in py::PyResult<py::PyObject*> py::(anonymous namespace)::call_slot<std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>, py::PyResult<py::PyObject*>, py::PyObject const*>(std::variant<std::function<py::PyResult<py::PyObject*> (py::PyObject const*)>, py::PyObject*> const&, py::PyObject const*&&) requires std::is_same_v<py::PyResult<py::PyObject*>::OkType, py::PyObject*> at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:147:11
+#5  0x000055f6fb108d86 in py::PyObject::iter() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1174:10
+#6  0x000055f6fafad72a in rt_get_iter(py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_subscr.cpp:23:86
+#7  0x000055f6faf9e0b5 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#8  0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#9  0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#10 0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#11 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#12 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#13 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#14 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#15 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#16 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#17 0x000055f6faf9fdaa in main at /tmp/test
+#18 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#19 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#20 0x000055f6faf9c904 in _start at /tmp/test
+[2026-04-06 19:46:50.235]  [DEBUG_ALLOC_TRACE] Type: PyString             | Total:    6000000
+Stack trace (most recent call first):
+#0  0x000055f6fb1c1288 in _pylang_debug_log_alloc(char const*, std::atomic<unsigned long>&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/compat.hpp:35:16
+#1  (inlined)          in py::PyString::create_raw(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&)::$_0::operator()() const at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:326:17
+#2  0x000055f6fb1307ab in py::PyString::create_raw(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyString.cpp:326:17
+#3  0x000055f6fb0eee4c in py::PyType::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyObject.cpp:1283:11
+#4  0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#5  0x000055f6faf9e090 in test.<module>.0:0.generate_trie.70:0 at /tmp/test
+#6  0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#7  0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#8  0x000055f6faf9e5fe in test.<module>.0:0.find.84:0 at /tmp/test
+#9  0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#10 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#11 0x000055f6faf9fab0 in test.<module>.0:0.run_stress_test.141:0 at /tmp/test
+#12 0x000055f6fb09dff1 in py::PyNativeFunction::call_fast_ptrs(py::PyObject**, unsigned long, py::PyDict*) at /home/lux/code/language/python-cpp/src/runtime/export/../../runtime/PyFunction.cpp:324:15
+#13 0x000055f6fafa58f6 in rt_call_raw_ptrs(py::PyObject*, py::PyObject**, int, py::PyObject*) at /home/lux/code/language/python-cpp/src/runtime/export/rt_func.cpp:224:42
+#14 0x000055f6faf9cc3c in PyInit_test at /tmp/test
+#15 0x000055f6faf9fdaa in main at /tmp/test
+#16 0x00007f18f582a1c9 in __libc_start_call_main at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#17 0x00007f18f582a28a in __libc_start_main_impl at ./csu/../csu/libc-start.c:360:3
+#18 0x000055f6faf9c904 in _start at /tmp/test
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3
@@ -781,8 +827,8 @@ Sieve loops finished, omitting squares...
 Searching for prefix: 32338
 Total primes found: 348513
 Generating trie for primes, list size: 348513
-[27.398]  PyDict               | Total:   11000000
-[27.398]  Type                 | Total:   11000000
+[.499]  PyDict               | Total:   11000000
+[.499]  Type                 | Total:   11000000
 Trie generation complete.
 Navigating to prefix node...
 Link check for char: 3

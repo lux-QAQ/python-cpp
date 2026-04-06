@@ -483,15 +483,27 @@ std::optional<PyResult<PyObject *>> PyType::lookup(PyObject *name) const
 
 PyResult<PyObject *> PyType::heap_object_allocation(PyType *type)
 {
-	return type->mro_internal().and_then([type](PyTuple *mro_tuple) -> PyResult<PyObject *> {
-		for (const auto &el : mro_tuple->elements()) {
-			ASSERT(el.is_heap_object());
-			ASSERT(as<PyType>(el.as_ptr()));
-			auto *t = as<PyType>(el.as_ptr());
-			if (!t->underlying_type().is_heaptype) { return t->underlying_type().__alloc__(type); }
-		}
-		return types::object()->underlying_type().__alloc__(type);
-	});
+	// [性能优化] 缓存解析后的 __alloc__ 函数，避免每次创建对象都遍历 MRO
+	// 对于 Node(object) 这样的简单类，MRO = [Node, object]，每次都要遍历找到 object.__alloc__
+	// 缓存后直接调用，消除 9M 次 MRO 遍历
+	auto &cached = type->m_cached_base_alloc;
+	if (__builtin_expect(cached != nullptr, 1)) { return (*cached)(type); }
+
+	return type->mro_internal().and_then(
+		[type, &cached](PyTuple *mro_tuple) -> PyResult<PyObject *> {
+			for (const auto &el : mro_tuple->elements()) {
+				ASSERT(el.is_heap_object());
+				ASSERT(as<PyType>(el.as_ptr()));
+				auto *t = as<PyType>(el.as_ptr());
+				if (!t->underlying_type().is_heaptype) {
+					// 缓存找到的 alloc 函数，下次直接使用
+					cached = &t->underlying_type().__alloc__;
+					return t->underlying_type().__alloc__(type);
+				}
+			}
+			cached = &types::object()->underlying_type().__alloc__;
+			return types::object()->underlying_type().__alloc__(type);
+		});
 }
 
 PyResult<std::monostate> PyType::initialize(const std::string &name,

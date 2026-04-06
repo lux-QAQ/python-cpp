@@ -1278,7 +1278,9 @@ PyResult<PyObject *> PyType::call_fast_ptrs(PyObject **args, size_t argc, PyDict
 		auto rt = RtValue::from_ptr(args[0]);
 		if (rt.is_tagged_int()) {
 			auto s = std::to_string(rt.as_int());
-			return PyString::create(std::move(s));
+			// [性能优化] 使用 create_raw 跳过 intern，避免 mutex + hashtable 开销
+			// 数字字符串通常不做 dict key，只被临时迭代（如 trie 构建中 for ch in str(n)）
+			return PyString::create_raw(std::move(s));
 		}
 		auto *obj = args[0];// 已经是真实 PyObject*（非 tagged）
 		// 如果已经是 str 直接返回
@@ -1328,10 +1330,26 @@ PyResult<PyObject *> PyType::call_fast_ptrs(PyObject **args, size_t argc, PyDict
 			if (obj_res.is_err()) return obj_res;
 			auto *obj = obj_res.unwrap();
 
+			// [性能优化] 预分配 slot vector 容量，避免 __init__ 中每次 setattr 的 push_back 触发
+			// realloc 对于 Node(children, terminal)，slot 从 0 增长到 2，每次 push_back 都 realloc
+			// 预分配后一次性到位，消除 6M 次 realloc
+			if (underlying_type().is_heaptype) {
+				auto expected = m_cached_slot_count.load(std::memory_order_relaxed);
+				if (__builtin_expect(expected > 0, 1)) { obj->m_slots.reserve(expected); }
+			}
+
 			if (obj->type()->issubclass(const_cast<PyType *>(this))) {
 				auto init_res = obj->init_fast_ptrs(args, argc, kwargs);
 				if (init_res.is_err()) return Err(init_res.unwrap_err());
 			}
+
+			// [性能优化] 记录第一次 __init__ 完成后的 slot 数量，用于后续预分配
+			if (underlying_type().is_heaptype
+				&& m_cached_slot_count.load(std::memory_order_relaxed) == 0) {
+				auto actual = obj->m_slots.size();
+				if (actual > 0) { m_cached_slot_count.store(actual, std::memory_order_relaxed); }
+			}
+
 			return Ok(obj);
 		}
 	}

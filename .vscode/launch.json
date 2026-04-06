@@ -8,7 +8,7 @@
             "name": "CodeLLDB: /tmp/test2",
             "type": "lldb",
             "request": "launch",
-            "program": "/tmp/test4",
+            "program": "/tmp/test",
             "args": [],
             "cwd": "${workspaceFolder}"
         },

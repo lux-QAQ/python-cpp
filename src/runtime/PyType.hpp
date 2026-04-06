@@ -3,6 +3,8 @@
 #include "PyObject.hpp"
 #include "memory/GCTracingAllocator.hpp"
 
+#include <atomic>
+
 namespace py {
 
 class PyType : public PyBaseObject
@@ -25,6 +27,13 @@ class PyType : public PyBaseObject
 	PyString *__module__{ nullptr };
 	mutable PyTuple *__mro__{ nullptr };
 	std::variant<std::monostate, std::reference_wrapper<TypePrototype>, PyType *> m_metaclass;
+
+	// [性能优化] 缓存 heap type 解析后的基类 __alloc__ 函数指针，跳过 MRO 遍历
+	using AllocFn = std::function<PyResult<PyObject *>(PyType *)>;
+	mutable AllocFn *m_cached_base_alloc{ nullptr };
+
+	// [性能优化] 缓存实例 slot 数量，用于预分配 slot vector，避免 push_back 触发 realloc
+	mutable std::atomic<size_t> m_cached_slot_count{ 0 };
 
   public:
 	PyType(PyType *);

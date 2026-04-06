@@ -319,6 +319,15 @@ PyResult<PyString *> PyString::create(std::string &&value)
 	return Ok(result);
 }
 
+PyResult<PyString *> PyString::create_raw(std::string &&value)
+{
+	// [性能优化] 不走 intern 的原始创建，避免 mutex + hashtable 开销
+	// 用于 str(int) 等场景：结果字符串只被临时迭代，不做 dict key
+	auto *result = PYLANG_ALLOC(PyString, std::move(value));
+	if (!result) { return Err(memory_error(sizeof(PyString))); }
+	return Ok(result);
+}
+
 
 PyResult<PyString *> PyString::create(PyObject *obj)
 {
@@ -1429,7 +1438,6 @@ PyType *PyString::static_type() const { return types::str(); }
 
 PyResult<PyObject *> PyString::__iter__() const
 {
-
 	auto *it = PYLANG_ALLOC(PyStringIterator, *this);
 	if (!it) { return Err(memory_error(sizeof(PyStringIterator))); }
 	return Ok(it);
@@ -2110,7 +2118,7 @@ std::function<std::unique_ptr<TypePrototype>()> PyString::type_factory()
 }
 
 PyStringIterator::PyStringIterator(const PyString &pystring)
-	: PyBaseObject(types::BuiltinTypes::the().str_iterator()), m_pystring(pystring)
+	: PyBaseObject(types::BuiltinTypes::the().str_iterator()), m_pystring_ptr(&pystring)
 {}
 
 std::string PyStringIterator::to_string() const
@@ -2121,7 +2129,7 @@ std::string PyStringIterator::to_string() const
 void PyStringIterator::visit_graph(Visitor &visitor)
 {
 	PyObject::visit_graph(visitor);
-	visitor.visit(const_cast<PyString &>(m_pystring));
+	if (m_pystring_ptr) visitor.visit(const_cast<PyString &>(*m_pystring_ptr));
 }
 
 PyResult<PyObject *> PyStringIterator::__repr__() const { return PyString::create(to_string()); }
@@ -2141,7 +2149,7 @@ PyResult<PyObject *> PyStringIterator::__repr__() const { return PyString::creat
 
 PyObject *PyStringIterator::next_raw()
 {
-	const std::string &s = m_pystring.value();
+	const std::string &s = m_pystring_ptr->value();
 	if (m_current_index < s.size()) {
 		// 1. O(1) 获取当前字符的 UTF-8 字节长度
 		size_t len = utf8::codepoint_length(s[m_current_index]);

@@ -55,6 +55,9 @@ class PyString
 	static PyResult<PyString *> create(const std::string &value);
 	static PyResult<PyString *> create(std::string &&value);
 
+	// [性能优化] 不走 intern 的原始创建，用于不做 dict key 的临时字符串（如 str(int)）
+	static PyResult<PyString *> create_raw(std::string &&value);
+
 	// 新增：字符串驻留 (String Interning)
 	// 对同一个字符串内容，永远返回同一个 PyString 对象
 	// 驻留的字符串不会被 GC 回收
@@ -159,12 +162,22 @@ class PyStringIterator : public PyBaseObject
 	friend class ::Heap;
 #endif
 	friend class ::py::Arena;
+	friend class PyString;// 允许 __iter__ 访问私有成员进行复用
 
-	const PyString &m_pystring;
+	const PyString *m_pystring_ptr;
 	size_t m_current_index{ 0 };
 
   public:
 	PyStringIterator(const PyString &pystring);
+
+	// [性能优化] 复用接口：重置迭代器指向新字符串
+	void reset(const PyString &pystring)
+	{
+		m_pystring_ptr = &pystring;
+		m_current_index = 0;
+	}
+
+	const PyString &pystring() const { return *m_pystring_ptr; }
 
 	std::string to_string() const override;
 

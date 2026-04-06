@@ -208,7 +208,11 @@ PyResult<PyObject *> PyModule::find_symbol_cstr(const char *name) const
 	if (!m_dict) {
 		return Err(nullptr);// 返回空错误，不分配异常对象
 	}
-	auto it = m_dict->map().find(RtValue::from_ptr(PyString::create(name).unwrap()));
+	// [性能优化] 使用 intern 代替 create，intern 有单字符无锁缓存，
+	// 且避免 PyResult 包装开销。intern 保证返回驻留对象，指针稳定。
+	auto *key = PyString::intern(name);
+	if (!key) { return Err(nullptr); }
+	auto it = m_dict->map().find(RtValue::from_ptr(key));
 	if (it != m_dict->map().end()) { return PyObject::from(it->second); }
 	return Err(nullptr);// 没找到直接返回 Err，由调用者决定是否抛出 NameError
 }
