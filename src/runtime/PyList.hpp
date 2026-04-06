@@ -85,6 +85,9 @@ class PyListIterator : public PyBaseObject
 	PyResult<PyObject *> __repr__() const;
 	PyResult<PyObject *> __next__();
 
+	// [性能优化] 零分配快速路径：直接返回 PyObject* 而不经过 Value::box()
+	PyObject *next_raw();
+
 	static std::function<std::unique_ptr<TypePrototype>()> type_factory();
 	// PyType *static_type() const override;;
 };

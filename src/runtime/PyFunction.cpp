@@ -294,7 +294,22 @@ PyResult<PyObject *> PyNativeFunction::call_fast_ptrs(PyObject **args, size_t ar
 			return Err(runtime_error("AOT call failed"));
 		}
 
-		if (argc == 0) { return operator()(m_self, PyTuple::create().unwrap(), kwargs); }
+		if (argc == 0) {
+			static PyTuple *s_empty_tuple = nullptr;
+			if (__builtin_expect(s_empty_tuple == nullptr, 0)) {
+				s_empty_tuple = PyTuple::create().unwrap();
+			}
+			return operator()(m_self, s_empty_tuple, kwargs);
+		}
+
+		// [性能优化] 1 参数快速路径
+		if (argc == 1 && (!kwargs)) {
+			py::GCVector<Value> one(1);
+			one[0] = RtValue::from_ptr(args[0]);
+			auto t = PyTuple::create(std::move(one));
+			if (t.is_err()) return t;
+			return operator()(m_self, t.unwrap(), kwargs);
+		}
 
 		py::GCVector<Value> tuple_args;
 		tuple_args.reserve(argc);
@@ -314,7 +329,22 @@ PyResult<PyObject *> PyNativeFunction::call_fast_ptrs(PyObject **args, size_t ar
 		return Err(runtime_error("AOT call failed: NULL returned from AOT function"));
 	}
 
-	if (argc == 0) { return operator()(PyTuple::create().unwrap(), kwargs); }
+	if (argc == 0) {
+		static PyTuple *s_empty_tuple = nullptr;
+		if (__builtin_expect(s_empty_tuple == nullptr, 0)) {
+			s_empty_tuple = PyTuple::create().unwrap();
+		}
+		return operator()(s_empty_tuple, kwargs);
+	}
+
+	// [性能优化] 1 参数快速路径
+	if (argc == 1 && (!kwargs)) {
+		py::GCVector<Value> one(1);
+		one[0] = RtValue::from_ptr(args[0]);
+		auto t = PyTuple::create(std::move(one));
+		if (t.is_err()) return t;
+		return operator()(t.unwrap(), kwargs);
+	}
 
 	py::GCVector<Value> tuple_args;
 	tuple_args.reserve(argc);

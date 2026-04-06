@@ -64,6 +64,10 @@ PyResult<RtValue> floordiv(RtValue lhs, RtValue rhs, Interpreter &)
 
 PyResult<RtValue> equals(RtValue lhs, RtValue rhs, Interpreter &)
 {
+	// [性能优化] tagged int 快速路径
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) {
+		return Ok(RtValue::from_ptr(lhs.as_int() == rhs.as_int() ? py_true() : py_false()));
+	}
 	return lhs.box()->richcompare(rhs.box(), RichCompare::Py_EQ).and_then([](PyObject *obj) {
 		return Ok(RtValue::from_ptr(obj));
 	});
@@ -71,6 +75,10 @@ PyResult<RtValue> equals(RtValue lhs, RtValue rhs, Interpreter &)
 
 PyResult<RtValue> equals(RtValue lhs, RtValue rhs)
 {
+	// [性能优化] tagged int 快速路径
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) {
+		return Ok(RtValue::from_ptr(lhs.as_int() == rhs.as_int() ? py_true() : py_false()));
+	}
 	return lhs.box()->richcompare(rhs.box(), RichCompare::Py_EQ).and_then([](PyObject *obj) {
 		return Ok(RtValue::from_ptr(obj));
 	});
@@ -78,6 +86,10 @@ PyResult<RtValue> equals(RtValue lhs, RtValue rhs)
 
 PyResult<RtValue> not_equals(RtValue lhs, RtValue rhs, Interpreter &)
 {
+	// [性能优化] tagged int 快速路径
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) {
+		return Ok(RtValue::from_ptr(lhs.as_int() != rhs.as_int() ? py_true() : py_false()));
+	}
 	return lhs.box()->richcompare(rhs.box(), RichCompare::Py_NE).and_then([](PyObject *obj) {
 		return Ok(RtValue::from_ptr(obj));
 	});
@@ -85,6 +97,10 @@ PyResult<RtValue> not_equals(RtValue lhs, RtValue rhs, Interpreter &)
 
 PyResult<RtValue> less_than_equals(RtValue lhs, RtValue rhs, Interpreter &)
 {
+	// [性能优化] tagged int 快速路径：避免装箱分配 PyInteger
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) {
+		return Ok(RtValue::from_ptr(lhs.as_int() <= rhs.as_int() ? py_true() : py_false()));
+	}
 	return lhs.box()->richcompare(rhs.box(), RichCompare::Py_LE).and_then([](PyObject *obj) {
 		return Ok(RtValue::from_ptr(obj));
 	});
@@ -92,6 +108,10 @@ PyResult<RtValue> less_than_equals(RtValue lhs, RtValue rhs, Interpreter &)
 
 PyResult<RtValue> less_than(RtValue lhs, RtValue rhs, Interpreter &)
 {
+	// [性能优化] tagged int 快速路径：避免装箱分配 PyInteger
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) {
+		return Ok(RtValue::from_ptr(lhs.as_int() < rhs.as_int() ? py_true() : py_false()));
+	}
 	return lhs.box()->richcompare(rhs.box(), RichCompare::Py_LT).and_then([](PyObject *obj) {
 		return Ok(RtValue::from_ptr(obj));
 	});
@@ -99,6 +119,10 @@ PyResult<RtValue> less_than(RtValue lhs, RtValue rhs, Interpreter &)
 
 PyResult<RtValue> greater_than(RtValue lhs, RtValue rhs, Interpreter &)
 {
+	// [性能优化] tagged int 快速路径：避免装箱分配 PyInteger
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) {
+		return Ok(RtValue::from_ptr(lhs.as_int() > rhs.as_int() ? py_true() : py_false()));
+	}
 	return lhs.box()->richcompare(rhs.box(), RichCompare::Py_GT).and_then([](PyObject *obj) {
 		return Ok(RtValue::from_ptr(obj));
 	});
@@ -106,6 +130,10 @@ PyResult<RtValue> greater_than(RtValue lhs, RtValue rhs, Interpreter &)
 
 PyResult<RtValue> greater_than_equals(RtValue lhs, RtValue rhs, Interpreter &)
 {
+	// [性能优化] tagged int 快速路径：避免装箱分配 PyInteger
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) {
+		return Ok(RtValue::from_ptr(lhs.as_int() >= rhs.as_int() ? py_true() : py_false()));
+	}
 	return lhs.box()->richcompare(rhs.box(), RichCompare::Py_GE).and_then([](PyObject *obj) {
 		return Ok(RtValue::from_ptr(obj));
 	});
@@ -129,7 +157,12 @@ PyResult<RtValue> xor_(RtValue lhs, RtValue rhs, Interpreter &)
 		[](PyObject *obj) { return Ok(RtValue::from_ptr(obj)); });
 }
 
-PyResult<bool> is(RtValue lhs, RtValue rhs, Interpreter &) { return Ok(lhs.box() == rhs.box()); }
+PyResult<bool> is(RtValue lhs, RtValue rhs, Interpreter &)
+{
+	// [性能优化] tagged int 快速路径：避免 box
+	if (lhs.is_tagged_int() && rhs.is_tagged_int()) { return Ok(lhs.as_int() == rhs.as_int()); }
+	return Ok(lhs.box() == rhs.box());
+}
 
 PyResult<bool> in(RtValue lhs, RtValue rhs, Interpreter &)
 {

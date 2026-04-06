@@ -125,6 +125,10 @@ class IREmitter
 	/// 如果迭代结束，has_value 设为 false，返回值为 nullptr
 	llvm::Value *call_iter_next(llvm::Value *iter, llvm::Value *has_value_out);
 
+	/// [性能优化] 融合 iter_next + unpack2：跳过中间 PyTuple 分配
+	/// 返回 i32 (1=有数据, 0=结束)
+	llvm::Value *call_iter_next_unpack2(llvm::Value *iter, llvm::Value *out_a, llvm::Value *out_b);
+
 	// ========== Tier 3: 下标访问 ==========
 	llvm::Value *call_getitem(llvm::Value *obj, llvm::Value *key);
 	void call_setitem(llvm::Value *obj, llvm::Value *key, llvm::Value *value);

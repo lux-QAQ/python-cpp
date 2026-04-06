@@ -1504,23 +1504,58 @@ ast::Value *PylangCodegen::visit(const ast::For *node)
 
 	m_builder.CreateBr(cond_bb);
 
-	// 在 entry block 分配判定标志，循环重复利用这 1 bytes 地址，从此杜绝爆栈
-	auto *has_value_alloca =
-		m_codegen_ctx.create_local("for_has_value", llvm::Type::getInt1Ty(m_ctx));
+	// [性能优化] 检测 for a, b in iterable 的 2-元组解包模式
+	// 使用 rt_iter_next_unpack2 融合调用，避免中间 PyTuple 分配
+	const ast::ASTNode *target = node->target().get();
+	bool use_unpack2 = false;
+	const std::vector<std::shared_ptr<ast::ASTNode>> *unpack2_elements = nullptr;
 
-	// 条件: has_value = iter_next(iter, &flag)
-	m_builder.SetInsertPoint(cond_bb);
-	auto *next_val = m_emitter.call_iter_next(iterator, has_value_alloca);
-	auto *has_value = m_builder.CreateLoad(llvm::Type::getInt1Ty(m_ctx), has_value_alloca);
-	m_builder.CreateCondBr(has_value, body_bb, else_bb ? else_bb : merge_bb);
+	if (target->node_type() == ast::ASTNodeType::Tuple) {
+		auto *tuple_target = static_cast<const ast::Tuple *>(target);
+		if (tuple_target->elements().size() == 2) {
+			use_unpack2 = true;
+			unpack2_elements = &tuple_target->elements();
+		}
+	}
 
-	// 循环体
-	m_codegen_ctx.push_loop({ merge_bb, cond_bb });
-	m_builder.SetInsertPoint(body_bb);
-	generate_store_target(node->target().get(), next_val);
-	generate_body(node->body());
-	if (!m_builder.GetInsertBlock()->getTerminator()) { m_builder.CreateBr(cond_bb); }
-	m_codegen_ctx.pop_loop();
+	if (use_unpack2) {
+		// 使用融合路径
+		auto *ptr_ty = m_emitter.pyobject_ptr_type();
+		auto *out_a = m_codegen_ctx.create_local("unpack2_a", ptr_ty);
+		auto *out_b = m_codegen_ctx.create_local("unpack2_b", ptr_ty);
+
+		m_builder.SetInsertPoint(cond_bb);
+		auto *result_i32 = m_emitter.call_iter_next_unpack2(iterator, out_a, out_b);
+		auto *has_value =
+			m_builder.CreateICmpNE(result_i32, m_builder.getInt32(0), "unpack2.has_value");
+		m_builder.CreateCondBr(has_value, body_bb, else_bb ? else_bb : merge_bb);
+
+		m_codegen_ctx.push_loop({ merge_bb, cond_bb });
+		m_builder.SetInsertPoint(body_bb);
+		auto *val_a = m_builder.CreateLoad(ptr_ty, out_a);
+		auto *val_b = m_builder.CreateLoad(ptr_ty, out_b);
+		generate_store_target((*unpack2_elements)[0].get(), val_a);
+		generate_store_target((*unpack2_elements)[1].get(), val_b);
+		generate_body(node->body());
+		if (!m_builder.GetInsertBlock()->getTerminator()) { m_builder.CreateBr(cond_bb); }
+		m_codegen_ctx.pop_loop();
+	} else {
+		// 通用路径
+		auto *has_value_alloca =
+			m_codegen_ctx.create_local("for_has_value", llvm::Type::getInt1Ty(m_ctx));
+
+		m_builder.SetInsertPoint(cond_bb);
+		auto *next_val = m_emitter.call_iter_next(iterator, has_value_alloca);
+		auto *has_value = m_builder.CreateLoad(llvm::Type::getInt1Ty(m_ctx), has_value_alloca);
+		m_builder.CreateCondBr(has_value, body_bb, else_bb ? else_bb : merge_bb);
+
+		m_codegen_ctx.push_loop({ merge_bb, cond_bb });
+		m_builder.SetInsertPoint(body_bb);
+		generate_store_target(node->target().get(), next_val);
+		generate_body(node->body());
+		if (!m_builder.GetInsertBlock()->getTerminator()) { m_builder.CreateBr(cond_bb); }
+		m_codegen_ctx.pop_loop();
+	}
 
 	// else
 	if (else_bb) {

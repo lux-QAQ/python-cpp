@@ -667,7 +667,35 @@ PyResult<PyObject *> PyList::sort(PyTuple *args, PyDict *kwargs)
 		}
 	} else {
 		// 【最正确的写法版本 2：无 key 排序】
+
+		// [性能优化] 检测是否全部为 tagged int，使用零分配直接比较
+		bool all_tagged_int = true;
+		for (const auto &el : m_elements) {
+			if (!el.is_tagged_int()) {
+				all_tagged_int = false;
+				break;
+			}
+		}
+
+		if (all_tagged_int) {
+			// 零分配极速排序路径
+			auto fast_cmp = [](const Value &lhs, const Value &rhs) -> bool {
+				return lhs.as_int() < rhs.as_int();
+			};
+			if (reverse) {
+				auto rev_cmp = [](const Value &lhs, const Value &rhs) -> bool {
+					return lhs.as_int() > rhs.as_int();
+				};
+				std::stable_sort(m_elements.begin(), m_elements.end(), rev_cmp);
+			} else {
+				std::stable_sort(m_elements.begin(), m_elements.end(), fast_cmp);
+			}
+			return err;
+		}
+
 		auto cmp = [&err](const Value &lhs, const Value &rhs) -> bool {
+			// [性能优化] tagged int 快速路径
+			if (lhs.is_tagged_int() && rhs.is_tagged_int()) { return lhs.as_int() < rhs.as_int(); }
 			// 短路：如果之前的比较已经抛出了异常，直接返回 false
 			if (err.is_err()) { return false; }
 			if (!RuntimeContext::has_current()) { return false; }
@@ -788,6 +816,17 @@ PyResult<PyObject *> PyListIterator::__next__()
 	if (m_current_index < m_pylist.elements().size())
 		return PyObject::from(m_pylist.elements()[m_current_index++]);
 	return Err(stop_iteration());
+}
+
+// [性能优化] 零分配快速迭代：直接返回 raw PyObject*，
+// 对 tagged int 使用 as_pyobject_raw() 避免装箱为 PyInteger。
+PyObject *PyListIterator::next_raw()
+{
+	if (m_current_index < m_pylist.elements().size()) {
+		const auto &val = m_pylist.elements()[m_current_index++];
+		return val.as_pyobject_raw();
+	}
+	return nullptr;
 }
 
 /*

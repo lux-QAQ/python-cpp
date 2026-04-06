@@ -448,6 +448,33 @@ std::function<std::unique_ptr<TypePrototype>()> PyTupleIterator::type_factory()
 
 PyResult<std::monostate> unpack_sequence(PyObject *iterable, int32_t count, PyObject **out)
 {
+	// [性能优化] PyTuple 快速路径：直接索引取值，零分配
+	if (auto *tuple = as<PyTuple>(iterable)) {
+		if (static_cast<int32_t>(tuple->size()) != count) {
+			if (static_cast<int32_t>(tuple->size()) < count) {
+				return Err(value_error(
+					"not enough values to unpack (expected {}, got {})", count, tuple->size()));
+			}
+			return Err(value_error("too many values to unpack (expected {})", count));
+		}
+		for (int32_t i = 0; i < count; ++i) { out[i] = tuple->elements()[i].box(); }
+		return Ok(std::monostate{});
+	}
+
+	// [性能优化] PyList 快速路径：同理
+	if (auto *list = as<PyList>(iterable)) {
+		if (static_cast<int32_t>(list->elements().size()) != count) {
+			if (static_cast<int32_t>(list->elements().size()) < count) {
+				return Err(value_error("not enough values to unpack (expected {}, got {})",
+					count,
+					list->elements().size()));
+			}
+			return Err(value_error("too many values to unpack (expected {})", count));
+		}
+		for (int32_t i = 0; i < count; ++i) { out[i] = list->elements()[i].box(); }
+		return Ok(std::monostate{});
+	}
+
 	auto iter_result = iterable->iter();
 	if (iter_result.is_err()) return Err(iter_result.unwrap_err());
 	auto *iter = iter_result.unwrap();

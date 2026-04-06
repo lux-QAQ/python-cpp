@@ -55,7 +55,13 @@ PyResult<PyObject *> PySlotWrapper::__call__(PyTuple *args, PyDict *kwargs)
 	auto *self = self_res.unwrap();
 
 	// 1. 无参优化：如果是 Node() 调用（仅含 self），复用空元组单例
-	if (args->size() == 1) { return m_slot(self, PyTuple::create().unwrap(), kwargs); }
+	if (args->size() == 1) {
+		static PyTuple *s_empty_tuple = nullptr;
+		if (__builtin_expect(s_empty_tuple == nullptr, 0)) {
+			s_empty_tuple = PyTuple::create().unwrap();
+		}
+		return m_slot(self, s_empty_tuple, kwargs);
+	}
 
 	// 2. 切片优化：使用 GCVector 触发移动语义，避免 O(N) 内存拷贝
 	py::GCVector<Value> new_args_vector;
@@ -75,9 +81,34 @@ PyResult<PyObject *> PySlotWrapper::call_fast_ptrs(PyObject **args, size_t argc,
 
 	auto *self = RtValue::from_ptr(args[0]).box();
 
-	// [核心优化]：无参调用快速路径
+	// [核心优化]：无参调用快速路径 - 使用缓存的空 tuple
 	if (argc == 1 && (!kwargs || kwargs->map().empty())) {
-		return m_slot(self, PyTuple::create().unwrap(), kwargs);
+		static PyTuple *s_empty_tuple = nullptr;
+		if (__builtin_expect(s_empty_tuple == nullptr, 0)) {
+			s_empty_tuple = PyTuple::create().unwrap();
+		}
+		return m_slot(self, s_empty_tuple, kwargs);
+	}
+
+	// [性能优化] 1 参数快速路径 (常见: __init__(self, arg) 等)
+	if (argc == 2 && (!kwargs || kwargs->map().empty())) {
+		py::GCVector<Value> one_arg;
+		one_arg.reserve(1);
+		one_arg.push_back(RtValue::from_ptr(args[1]));
+		auto t = PyTuple::create(std::move(one_arg));
+		if (t.is_err()) return t;
+		return m_slot(self, t.unwrap(), kwargs);
+	}
+
+	// [性能优化] 2 参数快速路径
+	if (argc == 3 && (!kwargs || kwargs->map().empty())) {
+		py::GCVector<Value> two_args;
+		two_args.reserve(2);
+		two_args.push_back(RtValue::from_ptr(args[1]));
+		two_args.push_back(RtValue::from_ptr(args[2]));
+		auto t = PyTuple::create(std::move(two_args));
+		if (t.is_err()) return t;
+		return m_slot(self, t.unwrap(), kwargs);
 	}
 
 	py::GCVector<Value> slice_args;

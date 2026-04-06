@@ -859,6 +859,19 @@ PyResult<PyObject *> PyDictItemsIterator::__next__()
 	return Err(stop_iteration());
 }
 
+// [性能优化] 零分配 kv 直出
+bool PyDictItemsIterator::next_kv_raw(PyObject **out_key, PyObject **out_value)
+{
+	if (m_current_iterator != m_pydictitems->get().m_pydict->get().map().end()) {
+		const auto &[key, value] = *m_current_iterator;
+		m_current_iterator++;
+		*out_key = key.box();
+		*out_value = value.box();
+		return true;
+	}
+	return false;
+}
+
 bool PyDictItemsIterator::operator==(const PyDictItemsIterator &other) const
 {
 	return m_pydictitems.has_value() && other.m_pydictitems.has_value()

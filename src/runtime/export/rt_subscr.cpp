@@ -52,6 +52,30 @@ py::PyObject *rt_iter_next(py::PyObject *iter, bool *has_value)
 		return nullptr;
 	}
 
+	// 3. [性能优化] list 迭代器快速路径 - 避免 RtValue::box() 装箱 PyInteger
+	if (b_iter->type() == py::types::list_iterator()) {
+		auto *l_iter = static_cast<py::PyListIterator *>(b_iter);
+		if (auto *val = l_iter->next_raw()) {
+			*has_value = true;
+			return val;
+		}
+		*has_value = false;
+		return nullptr;
+	}
+
+	// 4. [性能优化] dict_items 迭代器快速路径
+	//    直接返回 PyTuple，但避免通过 slot 派发的开销
+	if (b_iter->type() == py::types::dict_items_iterator()) {
+		auto *di_iter = static_cast<py::PyDictItemsIterator *>(b_iter);
+		auto result = di_iter->__next__();
+		if (result.is_ok()) {
+			*has_value = true;
+			return result.unwrap();
+		}
+		*has_value = false;
+		return nullptr;
+	}
+
 
 	auto result = b_iter->next();
 	if (result.is_ok()) {
@@ -74,6 +98,41 @@ PYLANG_EXPORT_SUBSCR("unpack_sequence", "void", "obj,i32,ptr")
 void rt_unpack_sequence(py::PyObject *iterable, int32_t count, py::PyObject **out)
 {
 	rt_unwrap_void(py::unpack_sequence(py::ensure_box(iterable), count, out));
+}
+
+// [性能优化] 融合迭代+解包：dict_items 迭代时，一步完成 next + unpack
+// 返回值: 1 = 有数据 (out[0]=key, out[1]=value), 0 = 迭代结束
+PYLANG_EXPORT_SUBSCR("iter_next_unpack2", "i32", "obj,ptr,ptr")
+int32_t rt_iter_next_unpack2(py::PyObject *iter, py::PyObject **out_a, py::PyObject **out_b)
+{
+	auto *b_iter = py::ensure_box(iter);
+
+	// dict_items_iterator 零分配快速路径
+	if (b_iter->type() == py::types::dict_items_iterator()) {
+		auto *di_iter = static_cast<py::PyDictItemsIterator *>(b_iter);
+		py::PyObject *key = nullptr;
+		py::PyObject *value = nullptr;
+		if (di_iter->next_kv_raw(&key, &value)) {
+			*out_a = key;
+			*out_b = value;
+			return 1;
+		}
+		return 0;
+	}
+
+	// 通用回退：先 next，再 unpack2
+	auto result = b_iter->next();
+	if (result.is_ok()) {
+		py::PyObject *item = result.unwrap();
+		py::PyObject *out_arr[2];
+		rt_unwrap_void(py::unpack_sequence(item, 2, out_arr));
+		*out_a = out_arr[0];
+		*out_b = out_arr[1];
+		return 1;
+	}
+	if (result.unwrap_err()->type() == py::stop_iteration()->type()) { return 0; }
+	rt_raise(result.unwrap_err());
+	return 0;
 }
 
 PYLANG_EXPORT_SUBSCR("unpack_ex", "void", "obj,i32,i32,ptr")

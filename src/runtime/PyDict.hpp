@@ -227,6 +227,10 @@ class PyDictItemsIterator : public PyBaseObject
 	PyResult<PyObject *> __repr__() const;
 	PyResult<PyObject *> __next__();
 
+	// [性能优化] 零分配 kv 直出：直接返回 key/value 指针，跳过 PyTuple 创建
+	// 返回 true 表示有数据，false 表示迭代结束
+	bool next_kv_raw(PyObject **out_key, PyObject **out_value);
+
 	bool operator==(const PyDictItemsIterator &) const;
 	value_type operator*() const;
 	PyDictItemsIterator &operator++();

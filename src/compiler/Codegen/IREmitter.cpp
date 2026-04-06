@@ -365,6 +365,12 @@ llvm::Value *IREmitter::call_iter_next(llvm::Value *iter, llvm::Value *has_value
 	return emit_runtime_call("iter_next", { iter, has_value_out });
 }
 
+llvm::Value *
+	IREmitter::call_iter_next_unpack2(llvm::Value *iter, llvm::Value *out_a, llvm::Value *out_b)
+{
+	return emit_runtime_call("iter_next_unpack2", { iter, out_a, out_b });
+}
+
 // =============================================================================
 // Tier 3: 下标访问
 // =============================================================================

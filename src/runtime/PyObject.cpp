@@ -1203,7 +1203,11 @@ PyResult<PyObject *> PyObject::get(PyObject *instance, PyObject *owner) const
 PyResult<PyObject *> PyObject::call_fast_ptrs(PyObject **args, size_t argc, PyDict *kwargs)
 {
 	if (argc == 0 && (!kwargs || kwargs->map().empty())) {
-		return call(PyTuple::create().unwrap(), kwargs);
+		static PyTuple *s_empty_tuple = nullptr;
+		if (__builtin_expect(s_empty_tuple == nullptr, 0)) {
+			s_empty_tuple = PyTuple::create().unwrap();
+		}
+		return call(s_empty_tuple, kwargs);
 	}
 
 	// 通用回退仍需构造 PyTuple，但不再强制把 tagged int 装箱成 PyInteger。
@@ -1264,28 +1268,82 @@ PyResult<PyObject *> PyType::call_fast_ptrs(PyObject **args, size_t argc, PyDict
 {
 	// 1. 特殊处理 type(x)
 	if (this == py::types::type() && argc == 1 && (!kwargs || kwargs->map().empty())) {
-		return Ok(args[0]->type());
+		return Ok(py::ensure_box(args[0])->type());
 	}
 
-	// 2. 默认 object.__new__ 的零参数构造主路径：直接 __alloc__，不再为了空参数构造 PyTuple。
-	if (argc == 0 && (!kwargs || kwargs->map().empty()) && underlying_type().__new__.has_value()
-		&& get_address(*underlying_type().__new__)
-			   == get_address(*types::object()->underlying_type().__new__)) {
-		auto obj_res = underlying_type().__alloc__(const_cast<PyType *>(this));
-		if (obj_res.is_err()) return obj_res;
-		auto *obj = obj_res.unwrap();
-
-		if (obj->type()->issubclass(const_cast<PyType *>(this))) {
-			auto init_res = obj->init_fast_ptrs(args, argc, kwargs);
-			if (init_res.is_err()) return Err(init_res.unwrap_err());
+	// 1.5 [性能优化] str(x) 快速路径：直接调用 x.__str__() 或 x.__repr__()，
+	//     完全跳过 __new__ / PyTuple 打包。（等价于 CPython str_new 对单参数的优化）
+	if (this == py::types::str() && argc == 1 && (!kwargs || kwargs->map().empty())) {
+		// [性能优化] tagged int 直接转字符串，避免先 box 再 __str__
+		auto rt = RtValue::from_ptr(args[0]);
+		if (rt.is_tagged_int()) {
+			auto s = std::to_string(rt.as_int());
+			return PyString::create(std::move(s));
 		}
-		return Ok(obj);
+		auto *obj = args[0];// 已经是真实 PyObject*（非 tagged）
+		// 如果已经是 str 直接返回
+		if (obj->type() == py::types::str()) { return Ok(obj); }
+		// 调用 __str__
+		auto str_res = obj->str();
+		if (str_res.is_ok()) { return str_res; }
+		// 回退到 __repr__
+		return obj->repr();
+	}
+
+	// 1.6 [性能优化] int(x) 快速路径
+	if (this == py::types::integer() && argc == 1 && (!kwargs || kwargs->map().empty())) {
+		auto *obj = py::ensure_box(args[0]);
+		if (obj->type() == py::types::integer()) { return Ok(obj); }
+	}
+
+	// 2. [性能优化] 默认 object.__new__ 的快速路径：
+	//    对于 heap type（用户自定义类），__new__ 始终是 PyObject::__new__
+	//    （只调 __alloc__），无需打包 PyTuple，直接 alloc + init。
+	//    同时支持任意 argc（不再限于 argc == 0），大幅减少 PyTuple 分配。
+	//
+	//    对 Python 层覆盖 def __new__ 的类，__new__ slot 存为 PyObject* variant，
+	//    此时走回退路径。
+	{
+		bool is_default_new = false;
+		if (underlying_type().is_heaptype && underlying_type().__new__.has_value()
+			&& !std::holds_alternative<PyObject *>(*underlying_type().__new__)) {
+			is_default_new = true;
+		}
+		// 非 heaptype（内建类型 str/int/list 等）仍然使用旧的地址比较。
+		// 在同一 TU 内它是可靠的。
+		if (!is_default_new && !underlying_type().is_heaptype
+			&& underlying_type().__new__.has_value() && argc == 0
+			&& (!kwargs || kwargs->map().empty())) {
+			static size_t default_new_addr = 0;
+			if (__builtin_expect(default_new_addr == 0, 0)) {
+				default_new_addr = get_address(*types::object()->underlying_type().__new__);
+			}
+			if (get_address(*underlying_type().__new__) == default_new_addr) {
+				is_default_new = true;
+			}
+		}
+
+		if (is_default_new) {
+			auto obj_res = underlying_type().__alloc__(const_cast<PyType *>(this));
+			if (obj_res.is_err()) return obj_res;
+			auto *obj = obj_res.unwrap();
+
+			if (obj->type()->issubclass(const_cast<PyType *>(this))) {
+				auto init_res = obj->init_fast_ptrs(args, argc, kwargs);
+				if (init_res.is_err()) return Err(init_res.unwrap_err());
+			}
+			return Ok(obj);
+		}
 	}
 
 	// 3. 回退路径：仍需构造 tuple 交给旧 __new__ 协议
 	PyTuple *tuple_args = nullptr;
 	if (argc == 0 && (!kwargs || kwargs->map().empty())) {
-		tuple_args = PyTuple::create().unwrap();
+		static PyTuple *s_empty_tuple = nullptr;
+		if (__builtin_expect(s_empty_tuple == nullptr, 0)) {
+			s_empty_tuple = PyTuple::create().unwrap();
+		}
+		tuple_args = s_empty_tuple;
 	} else {
 		py::GCVector<Value> elements;
 		elements.reserve(argc);

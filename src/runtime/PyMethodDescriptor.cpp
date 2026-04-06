@@ -100,15 +100,25 @@ PyResult<PyObject *>
 		return m_method->get().method(self, s_empty_tuple, kwargs);
 	}
 
-	// [性能优化] 小参数数量 (<=8) 使用栈上数组避免堆分配
-	if (argc - 1 <= 8) {
-		RtValue stack_args[8];
-		for (size_t i = 1; i < argc; ++i) { stack_args[i - 1] = RtValue::from_ptr(args[i]); }
-		py::GCVector<Value> tuple_args(stack_args, stack_args + (argc - 1));
-		return PyTuple::create(std::move(tuple_args))
-			.and_then([this, self, kwargs](PyTuple *t) -> PyResult<PyObject *> {
-				return m_method->get().method(self, t, kwargs);
-			});
+	// [性能优化] 1 参数快速路径 (常见: list.append, dict.__setitem__ 等)
+	if (argc == 2 && (!kwargs || !kwargs->map().size())) {
+		py::GCVector<Value> one_arg;
+		one_arg.reserve(1);
+		one_arg.push_back(RtValue::from_ptr(args[1]));
+		auto t = PyTuple::create(std::move(one_arg));
+		if (t.is_err()) return Err(t.unwrap_err());
+		return m_method->get().method(self, t.unwrap(), kwargs);
+	}
+
+	// [性能优化] 2 参数快速路径
+	if (argc == 3 && (!kwargs || !kwargs->map().size())) {
+		py::GCVector<Value> two_args;
+		two_args.reserve(2);
+		two_args.push_back(RtValue::from_ptr(args[1]));
+		two_args.push_back(RtValue::from_ptr(args[2]));
+		auto t = PyTuple::create(std::move(two_args));
+		if (t.is_err()) return Err(t.unwrap_err());
+		return m_method->get().method(self, t.unwrap(), kwargs);
 	}
 
 	py::GCVector<Value> tuple_args;

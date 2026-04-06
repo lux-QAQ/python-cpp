@@ -8,41 +8,31 @@
 
 namespace {
 
-// [性能优化] 缓存 object 类型的 __getattribute__ / __setattribute__ 地址
-// 避免每次调用都走 get_address (std::function::target<> 非常昂贵)
-static size_t s_default_getattribute_addr = 0;
-static size_t s_default_setattribute_addr = 0;
-
-static size_t get_default_getattribute_addr()
-{
-	if (__builtin_expect(s_default_getattribute_addr == 0, 0)) {
-		s_default_getattribute_addr =
-			get_address(*py::types::object()->underlying_type().__getattribute__);
-	}
-	return s_default_getattribute_addr;
-}
-
-static size_t get_default_setattribute_addr()
-{
-	if (__builtin_expect(s_default_setattribute_addr == 0, 0)) {
-		s_default_setattribute_addr =
-			get_address(*py::types::object()->underlying_type().__setattribute__);
-	}
-	return s_default_setattribute_addr;
-}
+// [性能优化] 使用 variant 检查代替 get_address(std::function::target<>)\n// 见
+// uses_default_getattribute / uses_default_setattribute
 
 bool uses_default_getattribute(const py::PyObject *obj)
 {
-	const auto &getattribute_ = obj->type()->underlying_type().__getattribute__;
-	return getattribute_.has_value()
-		   && get_address(*getattribute_) == get_default_getattribute_addr();
+	// [性能优化] 避免 get_address (std::function::target<>) 的高开销（~1.46s）。
+	// 只有 Python 层显式 def __getattribute__ 才会将 slot 存为 PyObject* variant。
+	// 内建类型（list, dict, str 等）的 __getattribute__ 都是 C++ lambda (function variant)，
+	// 无需地址比较即可确认为默认实现。
+	const auto &ga = obj->type()->underlying_type().__getattribute__;
+	if (!ga.has_value()) return false;
+	// 如果 slot 存的是 PyObject*，则是用户自定义的 __getattribute__
+	if (std::holds_alternative<py::PyObject *>(*ga)) return false;
+	// type 元类自身的 __getattribute__ 有特殊行为
+	if (obj->type() == py::types::type()) return false;
+	return true;
 }
 
 bool uses_default_setattribute(const py::PyObject *obj)
 {
-	const auto &setattribute_ = obj->type()->underlying_type().__setattribute__;
-	return setattribute_.has_value()
-		   && get_address(*setattribute_) == get_default_setattribute_addr();
+	const auto &sa = obj->type()->underlying_type().__setattribute__;
+	if (!sa.has_value()) return false;
+	if (std::holds_alternative<py::PyObject *>(*sa)) return false;
+	if (obj->type() == py::types::type()) return false;
+	return true;
 }
 
 py::PyObject *

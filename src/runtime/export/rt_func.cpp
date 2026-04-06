@@ -4,8 +4,12 @@
 #include "runtime/IndexError.hpp"
 #include "runtime/NameError.hpp"
 #include "runtime/PyCell.hpp"
+#include "runtime/PyClassMethod.hpp"
 #include "runtime/PyDict.hpp"
 #include "runtime/PyFunction.hpp"
+#include "runtime/PyInteger.hpp"
+#include "runtime/PyList.hpp"
+#include "runtime/PyStaticMethod.hpp"
 #include "runtime/PyString.hpp"
 #include "runtime/PyTuple.hpp"
 #include "runtime/RuntimeError.hpp"
@@ -232,17 +236,18 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 {
 	auto *b_owner = py::ensure_box(owner);
 
-	// [性能优化] 缓存 object 默认 __getattribute__ 地址
-	static size_t default_getattr_addr = 0;
-	if (__builtin_expect(default_getattr_addr == 0, 0)) {
-		default_getattr_addr =
-			get_address(*py::types::object()->underlying_type().__getattribute__);
-	}
-
-	const auto &getattribute_ = b_owner->type()->underlying_type().__getattribute__;
-	if (getattribute_.has_value() && get_address(*getattribute_) != default_getattr_addr) {
-		auto *bound = rt_unwrap(b_owner->getattribute(py::PyString::intern(method_name)));
-		return rt_call_raw_ptrs(bound, args, argc, kwargs_dict);
+	// [性能优化] 检测自定义 __getattribute__
+	// 旧方法用 get_address 比较跨 TU 的 std::function 指针地址，不可靠。
+	// 新方法：只有 PyObject* variant (Python 层覆盖) 或 type 元类才触发完整 getattribute 路径。
+	{
+		const auto &ga = b_owner->type()->underlying_type().__getattribute__;
+		if (ga.has_value()) {
+			if (std::holds_alternative<py::PyObject *>(*ga)
+				|| b_owner->type() == py::types::type()) {
+				auto *bound = rt_unwrap(b_owner->getattribute(py::PyString::intern(method_name)));
+				return rt_call_raw_ptrs(bound, args, argc, kwargs_dict);
+			}
+		}
 	}
 
 	// === 内置方法的 Intrinsic Fast Path ===
@@ -258,6 +263,63 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 				&& std::strcmp(method_name, "add") == 0) {
 				rt_set_add(owner, args[0]);
 				return py::py_none();
+			}
+		}
+
+		// [性能优化] dict 方法的 Intrinsic Fast Path
+		if (b_owner->type() == py::types::dict()) {
+			auto *dict = static_cast<py::PyDict *>(b_owner);
+			if (method_name[0] == 'g' && std::strcmp(method_name, "get") == 0) {
+				if (argc == 1) {
+					auto *key = py::ensure_box(args[0]);
+					return rt_unwrap(dict->get(key, nullptr));
+				}
+				if (argc == 2) {
+					auto *key = py::ensure_box(args[0]);
+					auto *def = py::ensure_box(args[1]);
+					return rt_unwrap(dict->get(key, def));
+				}
+			}
+			if (argc == 0 && method_name[0] == 'i' && std::strcmp(method_name, "items") == 0) {
+				return rt_unwrap(py::PyDictItems::create(*dict));
+			}
+			if (argc == 0 && method_name[0] == 'k' && std::strcmp(method_name, "keys") == 0) {
+				return rt_unwrap(dict->keys());
+			}
+			if (argc == 0 && method_name[0] == 'v' && std::strcmp(method_name, "values") == 0) {
+				return rt_unwrap(dict->values());
+			}
+		}
+
+		// [性能优化] list 方法的 Intrinsic Fast Path
+		if (b_owner->type() == py::types::list()) {
+			auto *list = static_cast<py::PyList *>(b_owner);
+			if (argc == 0 && method_name[0] == 'p' && std::strcmp(method_name, "pop") == 0) {
+				return rt_unwrap(list->pop(nullptr));
+			}
+			if (argc == 2 && method_name[0] == 'i' && std::strcmp(method_name, "insert") == 0) {
+				auto *value = py::ensure_box(args[1]);
+				auto idx_rt = py::RtValue::from_ptr(args[0]);
+				long index = 0;
+				if (idx_rt.is_tagged_int()) {
+					index = idx_rt.as_int();
+				} else {
+					auto *idx_int = py::as<py::PyInteger>(idx_rt.box());
+					if (!idx_int) goto skip_list_insert;
+					index = idx_int->as_big_int().get_si();
+				}
+				{
+					auto &elems = list->elements();
+					long sz = static_cast<long>(elems.size());
+					if (index < 0) {
+						index += sz;
+						if (index < 0) index = 0;
+					}
+					if (index > sz) { index = sz; }
+					elems.insert(elems.begin() + index, value);
+					return py::py_none();
+				}
+			skip_list_insert:;
 			}
 		}
 	}
@@ -343,6 +405,24 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 			return rt_unwrap(result);
 		}
 
+		// 0.7 Python @staticmethod 描述符:
+		//     staticmethod.__get__ 返回底层函数，调用时不传 self
+		if (desc_type == py::types::static_method()) {
+			auto *sm = static_cast<py::PyStaticMethod *>(desc);
+			auto *func = sm->static_method();
+			return rt_call_raw_ptrs(func, args, argc, kwargs_dict);
+		}
+
+		// 0.8 Python @classmethod 描述符:
+		//     classmethod.__get__ 返回绑定到 cls 的方法
+		if (desc_type == py::types::classmethod()) {
+			auto *cm = static_cast<py::PyClassMethod *>(desc);
+			// 通过 __get__ 获取绑定到 owner 类型的方法
+			auto bound = cm->__get__(b_owner, b_owner->type());
+			if (bound.is_err()) return rt_unwrap(bound);
+			return rt_call_raw_ptrs(bound.unwrap(), args, argc, kwargs_dict);
+		}
+
 		// 1. 数据描述符 (例如 @property 或是错误的 hack 产物)
 		// 修复：必须获取属性后，将其作为 callable 执行 rt_call_raw_ptrs！
 		if (py::descriptor_is_data(desc)) {
@@ -356,6 +436,25 @@ py::PyObject *rt_call_method_raw_ptrs(py::PyObject *owner,
 				auto func = rt_unwrap(py::PyObject::from(b_owner->slots()[*offset]));
 				return rt_call_raw_ptrs(func, args, argc, kwargs_dict);
 			}
+		}
+
+		// 3. [性能优化] 通用非数据描述符 catch-all: 直接 call_fast_ptrs 带 self
+		// 避免走 getattribute → __get__ → PyNativeFunction 分配的昂贵路径
+		{
+			size_t total_argc = argc + 1;
+			py::PyObject *raw_args_array[16];
+			py::PyObject **final_args = args;
+			if (total_argc <= 16) {
+				final_args = raw_args_array;
+			} else {
+				final_args =
+					static_cast<py::PyObject **>(alloca(sizeof(py::PyObject *) * total_argc));
+			}
+			final_args[0] = b_owner;
+			for (int i = 0; i < argc; ++i) { final_args[i + 1] = args[i]; }
+
+			auto result = desc->call_fast_ptrs(final_args, total_argc, kwargs);
+			return rt_unwrap(result);
 		}
 	}
 
